@@ -1,0 +1,82 @@
+---
+title: "Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient"
+author:
+  - "---"
+  - Lewis A. Jones^1^, Bethany J. Allen^2,3^, William Gearty^4^, and Lucas Buffan^4^
+  - "---"
+  - "^1^Grupo de Ecoloxía Animal, Departamento de Ecoloxía e Bioloxía Animal, Universidade de Vigo, 36310 Vigo, Spain."
+  - "^2^Department of Biosystems Science and Engineering, ETH Zürich, 4058 Basel, Switzerland."
+  - "^3^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland."
+  - "^4^Smithsonian National Museum of Natural History, Department of Paleobiology, Washington, DC, 20560, USA"
+  - "^5^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
+  - "---"
+  - "**Corresponding author:** LewisAlan.Jones@uvigo.es"
+  - "**All authors contributed equally to this work**"
+abstract: \newpage Abstract
+format:
+  docx:
+    reference-doc: template.docx
+    highlight-style: github
+    fig-dpi: 900
+  pdf:
+    documentclass: scrartcl
+    papersize: letter
+    geometry:
+      - top=25.4mm
+      - bottom=25.4mm
+      - left=25.4mm
+      - right=25.4mm
+      - heightrounded
+bibliography: references.bib
+csl: biology-letters.csl
+---
+
+# Keywords
+
+Latitudinal biodiversity gradient, marine invertebrates, macroecology, global plate model, palaeogeographic uncertainty
+
+\newpage
+
+# Introduction (700 words)
+
+* Could flat, unimodal and bimodal type gradients be observed depending on model choice?
+* Is there a temporal relationship?
+
+# Materials and Methods (600 words)
+
+## Occurrence data
+
+* What data was used
+* How was it prepared
+
+## Palaeogeographic reconstruction
+
+* Which models were used and details
+* How were they implemented
+
+## Quantifying the latitudinal biodiveristy gradient
+
+* Metrics used to quantify the gradient
+
+# Results (500 words)
+
+* Summary of reconstructions (could all points be reconstructed for each model?)
+* Summary of results from metrics, do different gradients emerge?
+
+# Discussion (700 words)
+
+* Recap on importance of GPMs for deep time macroecology?
+* What have we shown? 
+* Are some times or areas more problematic than others?
+* Importance for other fields beyond palaeobiology?
+* Consider importance of GPM choice in future work... or not?
+
+# Data accessibility
+
+# Authors' contributions
+
+# Funding
+
+# Acknowledgements
+
+# References
