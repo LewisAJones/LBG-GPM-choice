@@ -10,8 +10,8 @@ author:
   - "^4^Smithsonian National Museum of Natural History, Department of Paleobiology, Washington, DC, 20560, USA"
   - "^5^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
   - "---"
-  - "**Corresponding author:** LewisAlan.Jones@uvigo.es"
   - "**All authors contributed equally to this work**"
+  - "**Corresponding author:** LewisAlan.Jones@uvigo.es"
 abstract: \newpage Abstract
 format:
   docx:
@@ -29,47 +29,84 @@ format:
       - heightrounded
 bibliography: references.bib
 csl: biology-letters.csl
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
 # Keywords
 
-Latitudinal biodiversity gradient, marine invertebrates, macroecology, global plate model, palaeogeographic uncertainty
+Latitudinal biodiversity gradient, marine invertebrates, macroecology,
+global plate model, palaeogeographic uncertainty
 
 \newpage
 
 # Introduction (700 words)
 
-* Could flat, unimodal and bimodal type gradients be observed depending on model choice?
-* Is there a temporal relationship?
+-   Could flat, unimodal and bimodal type gradients be observed
+    depending on model choice?
+-   Is there a temporal relationship?
 
 # Materials and Methods (600 words)
 
 ## Occurrence data
 
-* What data was used
-* How was it prepared
+<!-- Download data -->
 
-## Palaeogeographic reconstruction
+`r ddate <- format(file.info("../data/raw/pbdb_data.RDS")$ctime, format = "%B %d %Y")`
+<!-- Palaeoverse version -->
+`r palaeoverse_ver <- packageVersion("palaeoverse")`
+<!-- Analysis options --> `r source("../R/options.R")`
+<!-- Number of occurrences -->
+`r n_occ <- format(nrow(readRDS("../data/processed/pbdb_data.RDS")), big.mark = ",")`
+<!-- Number of collections -->
+`r n_coll <- format(length(unique(readRDS("../data/processed/pbdb_data.RDS")$collection_no)), big.mark = ",")`
 
-* Which models were used and details
-* How were they implemented
+We downloaded Fortunian--Piacenzian (541--0 Ma) fossil occurrence data
+from the Paleobiology Database (PBDB; <https://paleobiodb.org/>) for
+five major marine invertebrate groups (Bivalvia, Brachiopoda,
+Cephalopoda, Gastropoda, Trilobita) on `r ddate`. Fossil occurrence data
+were downloaded using the PBDB API service and were restricted to marine
+environments, valid taxa and regular preservation (i.e. excluding form
+taxa and ichnotaxa). Occurrence data were subsequently binned into
+stratigraphic time bins following the Geological Timescale 2020
+[@gradstein2020]. To do so, we used the bin_time() function from the
+palaeoverse R package ver. `r palaeoverse_ver` using the 'majority'
+approach [@jones2023]. Subsequently, we removed all occurrences with
+less than `r params$threshold`% of their age range covered by their
+assigned bin. After data preparation, the occurrence dataset contained
+`r n_occ` occurrences, from `r n_coll` collections.
+
+## Palaeogeographic reconstruction and binning
+
+To reconstruct the palaeogeographic distribution of fossil occurrences,
+we used their present-day distribution and the midpoint age from their
+assigned temporal bin with three Global Plate Models: PALEOMAP
+[@scotese2018], GOLONKA [@wright2013], and MERDITH2021 [@merdith2021].
+Palaeorotations were implemented via the GPlates Web Service
+(<https://gwsdoc.gplates.org>) using the palaeorotate() function in
+palaeoverse ver. `r palaeoverse_ver` [@jones2023]. Subsequently, fossil
+occurrences were binned into one of twelve equal-area latitudinal bins
+(assuming a spherical Earth with a mean radius of \~6,371 km) using the
+palaeolatitudes estimated by each Global Plate Model.
 
 ## Quantifying the latitudinal biodiveristy gradient
 
-* Metrics used to quantify the gradient
+-   Metrics used to quantify the gradient
 
 # Results (500 words)
 
-* Summary of reconstructions (could all points be reconstructed for each model?)
-* Summary of results from metrics, do different gradients emerge?
+-   Summary of reconstructions (could all points be reconstructed for
+    each model?)
+-   Summary of results from metrics, do different gradients emerge?
 
 # Discussion (700 words)
 
-* Recap on importance of GPMs for deep time macroecology?
-* What have we shown? 
-* Are some times or areas more problematic than others?
-* Importance for other fields beyond palaeobiology?
-* Consider importance of GPM choice in future work... or not?
+-   Recap on importance of GPMs for deep time macroecology?
+-   What have we shown?
+-   Are some times or areas more problematic than others?
+-   Importance for other fields beyond palaeobiology?
+-   Consider importance of GPM choice in future work... or not?
 
 # Data accessibility
 
