@@ -26,7 +26,7 @@ params <- list(
   # How should occurrences be temporally binned?
   method = "majority",
   # Threshold for majority binning rule
-  threshold = 90,
+  threshold = 95,
   # PBDB API link for occurrences
   pbdb_api = paste0("https://paleobiodb.org/data1.2/occs/list.csv?base_name=",
                     "Bivalvia,Brachiopoda,Cephalopoda,Gastropoda,Trilobita",

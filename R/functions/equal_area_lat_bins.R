@@ -1,33 +1,23 @@
-# Calculate surface area of polygon (latitudinally bounded)
-# x: the minimum and maximum latitude of the segment
-# crs: desired CRS to be used
-bounded_surface_area <- function(x, crs = 4326) {
-  # Define lngs
-  lng <- c(0, 0, 90, 90)
-  # Define lats
-  lat <- c(x[1], x[2], x[1], x[2])
-  # Create point dataframe
-  p <- data.frame(lng = lng,
-                  lat = lat)
-  # Create polygon for area calc
-  poly <- p |>
-    sf::st_as_sf(coords = c("lng", "lat"), crs = crs) |>
-    sf::st_bbox() |>
-    sf::st_as_sfc()
-  # Calculate area
-  as.numeric(sf::st_area(x = poly) * 4)
+# Calculate bounded surface area
+# x: A vector with the latitudes defining of the segment
+# r: mean radius of the Earth
+bounded_surface_area <- function(x, r = 6371008.7714) {
+  min <- min(x) * (pi / 180)
+  max <- max(x) * (pi / 180)
+  a <- (2 * pi) * (r^2) * abs(sin(max) - sin(min))
+  return(a)
 }
 # Example
-# bounded_surface_area(x = c(80, 90), crs = 4326)
+# bounded_surface_area(x = c(0, 20))
 
 # Generate equal area latitudinal bins
 # n: number of bins desired
-# fun: function be used to calculate geographic area
-# crs: desired CRS to be used
+# fun: function used to calculate geographic area
 # by: the step size used for calculating latitudinal bins (smaller values)
 # result in more evenness between bins.
-equal_area_lat_bins <- function(n = 12, fun = bounded_surface_area,
-                                crs = 4326, by = 0.1) {
+equal_area_lat_bins <- function(n = 12,
+                                fun = bounded_surface_area,
+                                by = 0.1) {
   # Calculate surface area of the Earth assuming an oblate spheroid
   earth_area <- bounded_surface_area(x = c(-90, 90))
   # How many bins should be made?

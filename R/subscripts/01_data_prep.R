@@ -1,7 +1,7 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 01_data_prep.R
-# Last updated: 2023-03-06
+# Last updated: 2023-03-07
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Load libraries --------------------------------------------------------
 library(palaeoverse)
