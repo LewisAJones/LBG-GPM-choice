@@ -7,7 +7,7 @@ author:
   - "^1^Grupo de Ecoloxía Animal, Departamento de Ecoloxía e Bioloxía Animal, Universidade de Vigo, 36310 Vigo, Spain."
   - "^2^Department of Biosystems Science and Engineering, ETH Zürich, 4058 Basel, Switzerland."
   - "^3^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland."
-  - "^4^Smithsonian National Museum of Natural History, Department of Paleobiology, Washington, DC, 20560, USA"
+  - "^4^Division of Paleontology, American Museum of Natural History, New York, NY, 10024 USA."
   - "^5^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
   - "---"
   - "**All authors contributed equally to this work**"
