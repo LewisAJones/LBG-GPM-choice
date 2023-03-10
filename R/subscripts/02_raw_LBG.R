@@ -35,6 +35,10 @@ count_NAs <- data.frame()
 for (i in 1:length(params$models)){
   # Specify column name using rotation model name
   column_name <- data_sym(paste0(params$models[i], "_bin"))
+  # Filter genera in each spatio-temporal bin, so each row is a unique
+  # genus, according to the relevant plate model spatial bins
+  genus_occs <- distinct(genus_occs, family, genus, bin_assignment,
+                         !!column_name)
   # Generate genus counts per time bin per palaeolatitude bin
   counts <- group_by(genus_occs, bin_assignment, !!column_name) %>%
     count()
