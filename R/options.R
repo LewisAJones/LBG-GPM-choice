@@ -38,6 +38,8 @@ params <- list(
                     "&interval=Fortunian,Holocene",
                     "&envtype=marine",
                     "&show=genus,pres,strat,coll,coords,paleoloc,loc,class"),
+  # Number of lat/lng decimal places to define stacked collections
+  n_decs = 2,
   # Should a new version of PBDB data be downloaded?
   download = FALSE,
   # Should results be plotted?
