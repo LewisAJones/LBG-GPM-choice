@@ -13,7 +13,7 @@ source("./R/options.R")
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
 # Process data ----------------------------------------------------------
 # Collapse subgenera (remove characters from space onwards)
-if (params$collapse_subgenera = TRUE) {
+if (params$collapse_subgenera == TRUE) {
   occdf$genus <- sub(" .*", "", occdf$genus)
 }
 # Filter for unique occurrences from each collection
@@ -36,13 +36,13 @@ genus_occs <- cbind.data.frame(genus_occs, occdf[, c(
 # Count unique genera in each spatio-temporal bin for each rotation model
 genus_counts <- data.frame()
 count_NAs <- data.frame()
-for (i in 1:length(params$models)){
+for (i in 1:length(params$models)) {
   # Specify column name using rotation model name
   column_name <- data_sym(paste0(params$models[i], "_bin"))
   # Filter genera in each spatio-temporal bin, so each row is a unique
   # genus, according to the relevant plate model spatial bins
   genus_occs <- distinct(genus_occs, family, genus, bin_assignment,
-                         !!column_name)
+                         !!column_name, .keep_all = TRUE)
   # Generate genus counts per time bin per palaeolatitude bin
   counts <- group_by(genus_occs, bin_assignment, !!column_name) %>%
     count()
@@ -50,6 +50,19 @@ for (i in 1:length(params$models)){
   counts <- filter(counts, !is.na(!!column_name))
   # Rename columns
   colnames(counts) <- c("stage_bin", "paleolat_bin", "n_genera")
+  # Create vector of stages
+  stages <- sort(unique(genus_occs$bin_assignment))
+  # Fill in any gaps
+  counts <- as.data.frame(counts)
+  for (j in 1:length(stages)) {
+    one_stage <- filter(counts, stage_bin == stages[j])
+    for (k in 1:12) {
+      if ((k %in% one_stage$paleolat_bin) == FALSE) {
+        counts <- rbind(counts, c(stages[j], k, 0))
+      }
+    }
+  }
+  counts <- arrange(counts, stage_bin, paleolat_bin)
   # Add model label
   counts$model <- params$models[i]
   # Add counts to overall dataframe
