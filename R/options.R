@@ -38,10 +38,12 @@ params <- list(
                     "&interval=Fortunian,Holocene",
                     "&envtype=marine",
                     "&show=genus,pres,strat,coll,coords,paleoloc,loc,class"),
-  #Should subgenera be collapsed?
+  # Should subgenera be collapsed?
   collapse_subgenera = TRUE,
   # Number of lat/lng decimal places to define stacked collections
   n_decs = 2,
+  # Quorum level used by iNEXT (between 0 and 1)
+  quorum_level <- 0.4,
   # Should a new version of PBDB data be downloaded?
   download = FALSE,
   # Should results be plotted?

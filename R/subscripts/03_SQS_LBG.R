@@ -35,7 +35,7 @@ genus_occs <- cbind.data.frame(genus_occs, occdf[, c(
   grep("_bin", x = colnames(occdf)))])
 # Create abundance strings ----------------------------------------------
 # Count unique genera in each spatio-temporal bin for each rotation model
-genus_counts <- data.frame()
+interpolations <- data.frame()
 count_NAs <- data.frame()
 for (i in 1:length(params$models)){
   # Specify column name using rotation model name
@@ -43,11 +43,9 @@ for (i in 1:length(params$models)){
   # Generate a table of sample sizes
   counts <- group_by(genus_occs, bin_assignment, !!column_name) %>%
     count()
-  # Remove NA values into a separate data frame
+  # Keep NA values
   keep_NAs <- filter(counts, is.na(!!column_name))
-  counts <- filter(counts, !is.na(!!column_name))
   # Rename columns
-  colnames(counts) <- c("stage_bin", "paleolat_bin", "n_genera")
   colnames(keep_NAs) <- c("stage_bin", "paleolat_bin", "n_genera")
   # Add model label
   keep_NAs$model <- params$models[i]
@@ -55,19 +53,6 @@ for (i in 1:length(params$models)){
   count_NAs <- rbind.data.frame(count_NAs, keep_NAs[, -2])
   # Create vector of stages
   stages <- sort(unique(genus_occs$bin_assignment))
-  # Fill in any gaps in count data
-  counts <- as.data.frame(counts)
-  for (j in 1:length(stages)) {
-    one_stage <- filter(counts, stage_bin == stages[j])
-    for (k in 1:12) {
-      if ((k %in% one_stage$paleolat_bin) == FALSE) {
-        counts <- rbind(counts, c(stages[j], k, 0))
-      }
-    }
-  }
-  counts <- arrange(counts, stage_bin, paleolat_bin)
-  # Add model label
-  counts$model <- params$models[i]
   # Filter occurrences to one stage
   for (l in 1:length(stages)) {
     one_stage <- filter(genus_occs, bin_assignment == stages[l])
@@ -80,15 +65,43 @@ for (i in 1:length(params$models)){
         add_row(n = sum(.$n), .before = 1) %>%
         select(n)
       lat_list <- unlist(lat_list, use.names = F)
-      if(lat_list[1] < 3){lat_list <- NA}
-      if(length(lat_list) < 3){lat_list <- NA}
+      if(lat_list[1] < 4){lat_list <- NA}
+      if(length(lat_list) < 4){lat_list <- NA}
       lat_freq[[m]] <- lat_list
     }
-    #Filter out empty lists
+    # Name lists
+    names(lat_freq) <- seq(1, 12, 1)
+    # Filter out empty lists
     lat_freq <- lat_freq[!is.na(lat_freq)]
-  
+    # Estimate D using estimateD in iNEXT
+    estD <- estimateD(lat_freq, datatype = "incidence_freq",
+                      base = "coverage", level = params$quorum_level)
+    # Filter for species richness values
+    estD <- filter(estD, Order.q == 0)
+    # Add sample size in additional column (from first value in lists)
+    estD$reference_t <- unlist(lapply(lat_freq, '[[', 1))
+    # Remove values when t is more than two times the sample size
+    estD[which(estD$t >= 2 * estD$reference_t),
+         c("qD", "qD.LCL", "qD.UCL")] <- rep(NA, 3)
+    # Add latitude bin labels
+    estD$bin <- names(lat_freq)
+    # Fill in any gaps
+    for (n in 1:12) {
+      if ((n %in% estD$bin) == FALSE) {
+        estD <- rbind.data.frame(estD, c(rep(NA, 9), n))
+      }
+    }
+    # Sort rows
+    estD$bin <- as.numeric(estD$bin)
+    estD <- arrange(estD, bin)
+    # Add stage label
+    estD$stage <- stages[l]
+    # Add model label
+    estD$model <- params$models[i]
+    # Add values to overall dataframe
+    interpolations <- rbind.data.frame(interpolations, estD)
   }
 }
 # Save interpolated estimates and NA counts
-# saveRDS(object = genus_counts, file = "./data/processed/genus_counts.RDS")
+saveRDS(object = interpolations, file = "./data/processed/interpolations.RDS")
 saveRDS(object = count_NAs, file = "./data/processed/NA_counts.RDS")
