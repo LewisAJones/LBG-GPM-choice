@@ -24,21 +24,101 @@ if (params$download) {
 }
 # Process data ----------------------------------------------------------
 # Bin data by collection for faster processing
-colldf <- occdf[, c("collection_no", "lng", "lat", "min_ma", "max_ma")]
+colldf <- occdf[, c("collection_no", "lng", "lat",
+                    "early_interval", "late_interval",
+                    "max_ma", "min_ma")]
 colldf <- unique(colldf)
-# Create time bins
+
+## Clean up age assignments ---------------------------------------------
+# interval names wrong way around in PBDB
+vec <- which(colldf$early_interval == "Paibian" &
+             colldf$late_interval == "Guzhangian")
+colldf[vec, c("early_interval",
+              "late_interval")] <- colldf[vec, c("late_interval",
+                                                 "early_interval")]
+# Remove any regular prefixes
+# Early
+colldf$early_interval <- gsub(pattern = "Early ",
+                              replacement = "",
+                              x = colldf$early_interval)
+colldf$late_interval <- gsub(pattern = "Early ",
+                              replacement = "",
+                              x = colldf$late_interval)
+# Middle
+colldf$early_interval <- gsub(pattern = "Middle ",
+                              replacement = "",
+                              x = colldf$early_interval)
+colldf$late_interval <- gsub(pattern = "Middle ",
+                             replacement = "",
+                             x = colldf$late_interval)
+# Late
+colldf$early_interval <- gsub(pattern = "Late ",
+                              replacement = "",
+                              x = colldf$early_interval)
+colldf$late_interval <- gsub(pattern = "Late ",
+                             replacement = "",
+                             x = colldf$late_interval)
+# Look up ages for intervals names using GTS2020
+colldf <- look_up(occdf = colldf,
+                  early_interval = "early_interval",
+                  late_interval = "late_interval",
+                  assign_with_GTS = "GTS2020")
+# Which intervals could not be looked up?
+vec_max <- which(is.na(colldf$interval_max_ma))
+vec_min <- which(is.na(colldf$interval_min_ma))
+# Use original input ages
+colldf$interval_max_ma[vec_max] <- colldf$max_ma[vec_max]
+colldf$interval_min_ma[vec_min] <- colldf$min_ma[vec_min]
+colldf$early_stage[vec_max] <- colldf$early_interval[vec_max]
+colldf$late_stage[vec_min] <- colldf$late_interval[vec_min]
+# Replace max_ma and min_ma ages
+colldf$max_ma <- colldf$interval_max_ma
+colldf$min_ma <- colldf$interval_min_ma
+# Calculate interval_mid_ma
+colldf$interval_mid_ma <- (colldf$interval_max_ma + colldf$interval_min_ma) / 2
+# Remove any collections with a large age range (> 50 Myr)
+colldf <- colldf[-which(abs(colldf$max_ma - colldf$min_ma) > 50), ]
+
+## Set up time bins -----------------------------------------------------
 bins <- time_bins(interval = "Phanerozoic",
                   rank = params$rank,
                   scale = params$GTS)
+# Collapse Holocene equivalent bins
+vec <- which(bins$interval_name == "Greenlandian")
+bins$interval_name[vec] <- "Holocene"
+# Update min_ma
+bins$min_ma[vec] <- 0.0000
+# Update mid_ma
+bins$mid_ma[vec] <- (bins$min_ma[vec] + bins$max_ma[vec]) / 2
+# Update duration
+bins$duration_myr[vec] <- (bins$max_ma[vec] - bins$min_ma[vec])
+# Drop rows
+bins <- bins[-which(bins$interval_name %in% c("Meghalayan", "Northgrippian")), ]
+# Collapse Pleistocene equivalent bins
+vec <- which(bins$interval_name == "Chibanian")
+bins$interval_name[vec] <- "Pleistocene"
+# Update min_ma
+bins$min_ma[vec] <- bins[which(bins$interval_name == "Holocene"), "max_ma"]
+# Update mid_ma
+bins$mid_ma[vec] <- (bins$min_ma[vec] + bins$max_ma[vec]) / 2
+# Update duration
+bins$duration_myr[vec] <- (bins$max_ma[vec] - bins$min_ma[vec])
+# Drop rows
+bins <- bins[-which(bins$interval_name == "Upper Pleistocene"), ]
+# Update bin numbers
+bins$bin <- 1:nrow(bins)
 # Save time bins
 saveRDS(object = bins, file = "./data/time_bins.RDS")
-# Temporal binning (using the majority method)
+
+## Temporal binning -----------------------------------------------------
+# Use the majority method
 colldf <- bin_time(occdf = colldf,
                    bins = bins,
                    method = params$method)
 # Remove data which do not hit the majority threshold (params$threshold)
 colldf <- colldf[-which(colldf$overlap_percentage < params$threshold), ]
-# Palaeorotate collections (this can take some time, put on a coffee)
+
+## Palaeorotate collections ---------------------------------------------
 colldf <- palaeorotate(occdf = colldf,
                        lng = params$lng,
                        lat = params$lat,
@@ -69,13 +149,8 @@ for (i in params$models) {
 occdf <- occdf[which(occdf$collection_no %in% colldf$collection_no), ]
 # Join datasets (for loop used to prevent vector memory exhaustion)
 m <- match(x = occdf$collection_no, table = colldf$collection_no)
-# Which columns are the palaeocoords?
-coord_cols <- sort(c(grep("p_lng_", x = colnames(colldf)),
-                     grep("p_lat_", x = colnames(colldf))))
-# Which columns are not already present in occdf?
-cols <- !colnames(colldf) %in% colnames(occdf)
-# Bind data
-occdf <- cbind.data.frame(occdf, colldf[m, cols])
+# Add data
+occdf[, colnames(colldf)] <- colldf[m, colnames(colldf)]
 # Save processed data
 saveRDS(object = occdf, file = "./data/processed/pbdb_data.RDS")
 # Notify
