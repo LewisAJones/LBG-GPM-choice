@@ -12,6 +12,10 @@ source("./R/options.R")
 # Get data --------------------------------------------------------------
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
 # Process data ----------------------------------------------------------
+# Collapse subgenera (remove characters from space onwards)
+if (params$collapse_subgenera = TRUE) {
+  occdf$genus <- sub(" .*", "", occdf$genus)
+}
 # Filter for unique occurrences from each collection
 occdf <- distinct(occdf, collection_no, family, genus, bin_assignment,
                   .keep_all = TRUE)
