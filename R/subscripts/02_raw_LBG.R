@@ -35,7 +35,6 @@ genus_occs <- cbind.data.frame(genus_occs, occdf[, c(
 # Count genera ----------------------------------------------------------
 # Count unique genera in each spatio-temporal bin for each rotation model
 genus_counts <- data.frame()
-count_NAs <- data.frame()
 for (i in 1:length(params$models)) {
   # Specify column name using rotation model name
   column_name <- data_sym(paste0(params$models[i], "_bin"))
