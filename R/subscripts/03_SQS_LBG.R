@@ -56,16 +56,16 @@ for (i in 1:length(params$models)){
   # Filter occurrences to one stage
   for (l in 1:length(stages)) {
     one_stage <- filter(genus_occs, bin_assignment == stages[l])
-    # Generate list of frequencies by stage, starting with total value,
-    # as needed by iNEXT
+    # Generate list of frequencies by stage, starting with number of 
+    # samples, as needed by iNEXT
     lat_freq <- list()
     for (m in 1:12) {
-      lat_list <- one_stage %>% filter(!!column_name == m) %>%
-        count(., genus) %>% arrange(desc(n)) %>%
-        add_row(n = sum(.$n), .before = 1) %>%
-        select(n)
+      one_bin <- filter(one_stage, !!column_name == m)
+      lat_list <- count(one_bin, genus) %>% arrange(desc(n)) %>%
+        add_row(n = length(unique(one_bin$collection_no)),
+                .before = 1) %>% select(n)
       lat_list <- unlist(lat_list, use.names = F)
-      if(lat_list[1] < 4){lat_list <- NA}
+      if(lat_list[1] < 3){lat_list <- NA}
       if(length(lat_list) < 4){lat_list <- NA}
       lat_freq[[m]] <- lat_list
     }
@@ -73,35 +73,43 @@ for (i in 1:length(params$models)){
     names(lat_freq) <- seq(1, 12, 1)
     # Filter out empty lists
     lat_freq <- lat_freq[!is.na(lat_freq)]
-    # Estimate D using estimateD in iNEXT
-    estD <- estimateD(lat_freq, datatype = "incidence_freq",
-                      base = "coverage", level = params$quorum_level)
-    # Filter for species richness values
-    estD <- filter(estD, Order.q == 0)
-    # Add sample size in additional column (from first value in lists)
-    estD$reference_t <- unlist(lapply(lat_freq, '[[', 1))
-    # Remove values when t is more than two times the sample size
-    estD[which(estD$t >= 2 * estD$reference_t),
-         c("qD", "qD.LCL", "qD.UCL")] <- rep(NA, 3)
-    # Add latitude bin labels
-    estD$bin <- names(lat_freq)
-    # Fill in any gaps
-    for (n in 1:12) {
-      if ((n %in% estD$bin) == FALSE) {
-        estD <- rbind.data.frame(estD, c(rep(NA, 9), n))
+    if (length(lat_freq) > 0) {
+      # Estimate D using estimateD in iNEXT
+      estD <- estimateD(lat_freq, q = 0, datatype = "incidence_freq",
+                        base = "coverage", level = params$quorum_level)
+      # Add sample size in additional column (from first value in lists)
+      estD$reference_t <- unlist(lapply(lat_freq, '[[', 1))
+      # Remove values when t is more than two times the sample size
+      estD[which(estD$t >= 2 * estD$reference_t),
+           c("qD", "qD.LCL", "qD.UCL")] <- rep(NA, 3)
+      # Add latitude bin labels
+      estD$paleolat_bin <- names(lat_freq)
+      # Fill in any gaps
+      for (n in 1:12) {
+        if ((n %in% estD$paleolat_bin) == FALSE) {
+          estD <- rbind.data.frame(estD, c(rep(NA, 9), n))
+        }
       }
+      # Sort rows
+      estD$paleolat_bin <- as.numeric(estD$paleolat_bin)
+      estD <- arrange(estD, paleolat_bin)
+      # Add stage label
+      estD$stage <- stages[l]
+      # Add model label
+      estD$model <- params$models[i]
+      # Add values to overall dataframe
+      interpolations <- rbind.data.frame(interpolations, estD)
     }
-    # Sort rows
-    estD$bin <- as.numeric(estD$bin)
-    estD <- arrange(estD, bin)
-    # Add stage label
-    estD$stage <- stages[l]
-    # Add model label
-    estD$model <- params$models[i]
-    # Add values to overall dataframe
-    interpolations <- rbind.data.frame(interpolations, estD)
   }
 }
+# Tidy dataframe
+interpolations <- select(interpolations, stage, paleolat_bin, model,
+                         reference_t, t, Method, SC, qD, qD.LCL, qD.UCL)
 # Save interpolated estimates and NA counts
-saveRDS(object = interpolations, file = "./data/processed/interpolations.RDS")
+saveRDS(object = interpolations,
+        file = "./data/processed/interpolations.RDS")
 saveRDS(object = count_NAs, file = "./data/processed/NA_counts.RDS")
+# Notify
+if (params$notify) {
+  beepr::beep(4)
+}
