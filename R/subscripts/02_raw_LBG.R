@@ -40,10 +40,10 @@ for (i in 1:length(params$models)) {
   column_name <- data_sym(paste0(params$models[i], "_bin"))
   # Filter genera in each spatio-temporal bin, so each row is a unique
   # genus, according to the relevant plate model spatial bins
-  genus_occs <- distinct(genus_occs, family, genus, bin_assignment,
+  one_model <- distinct(genus_occs, family, genus, bin_assignment,
                          !!column_name, .keep_all = TRUE)
   # Generate genus counts per time bin per palaeolatitude bin
-  counts <- group_by(genus_occs, bin_assignment, !!column_name) %>%
+  counts <- group_by(one_model, bin_assignment, !!column_name) %>%
     count()
   # Remove NA values
   counts <- filter(counts, !is.na(!!column_name))
