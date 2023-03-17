@@ -95,7 +95,11 @@ bins$duration_myr[vec] <- (bins$max_ma[vec] - bins$min_ma[vec])
 # Drop rows
 bins <- bins[-which(bins$interval_name %in% c("Meghalayan", "Northgrippian")), ]
 # Collapse Pleistocene equivalent bins
-vec <- which(bins$interval_name == "Chibanian")
+# Drop bins
+pleis <- c("Upper Pleistocene", "Chibanian", "Calabrian")
+bins <- bins[-which(bins$interval_name %in% pleis), ]
+# update Gelasian to be all of the Pleistocene
+vec <- which(bins$interval_name == "Gelasian")
 bins$interval_name[vec] <- "Pleistocene"
 # Update min_ma
 bins$min_ma[vec] <- bins[which(bins$interval_name == "Holocene"), "max_ma"]
@@ -103,8 +107,6 @@ bins$min_ma[vec] <- bins[which(bins$interval_name == "Holocene"), "max_ma"]
 bins$mid_ma[vec] <- (bins$min_ma[vec] + bins$max_ma[vec]) / 2
 # Update duration
 bins$duration_myr[vec] <- (bins$max_ma[vec] - bins$min_ma[vec])
-# Drop rows
-bins <- bins[-which(bins$interval_name == "Upper Pleistocene"), ]
 # Update bin numbers
 bins$bin <- 1:nrow(bins)
 # Save time bins

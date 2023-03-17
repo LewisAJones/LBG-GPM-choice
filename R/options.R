@@ -37,7 +37,7 @@ params <- list(
                     "&pres=regular",
                     "&interval=Fortunian,Holocene",
                     "&envtype=marine",
-                    "&show=genus,pres,strat,coll,coords,paleoloc,loc,class"),
+                    "&show=genus,pres,strat,coll,coords,loc,class"),
   # Should subgenera be collapsed?
   collapse_subgenera = TRUE,
   # Number of lat/lng decimal places to define stacked collections

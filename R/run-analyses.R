@@ -3,3 +3,13 @@
 # File name: run-analyses.R
 # Last updated: 2023-03-06
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
+# Run analyses ----------------------------------------------------------
+# data prep
+source("./R/subscripts/01_data_prep.R")
+rm(list = ls())
+# raw LBG
+source("./R/subscripts/02_raw_LBG.R")
+rm(list = ls())
+# SQS LBG
+source("./R/subscripts/03_SQS_LBG.R")
+rm(list = ls())
