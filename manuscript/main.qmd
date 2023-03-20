@@ -59,7 +59,7 @@ We downloaded Fortunian--Piacenzian (541--0 Ma) fossil occurrence data from the 
 
 ## Palaeogeographic reconstruction and binning
 
-To reconstruct the palaeogeographic distributions of fossil occurrences, we used localities' present-day coordinates and midpoint age from their assigned temporal bins with three Global Plate Models: PALEOMAP [@scotese2018], GOLONKA [@wright2013], and MERDITH2021 [@merdith2021]. Palaeogeographic reconstructions were generated using the GPlates Web Service (<https://gwsdoc.gplates.org>) via the palaeorotate() function in palaeoverse ver. `r palaeoverse_ver` [@jones2023]. For each Global Plate Model, fossil occurrences were binned into one of twelve equal-area latitudinal bins, using the estimated palaeolatitudes ([@tbl-bins]).
+To reconstruct the palaeogeographic distributions of fossil occurrences, we used localities' present-day coordinates and midpoint age from their assigned temporal bins with three Global Plate Models: PALEOMAP [@scotese2018], GOLONKA [@wright2013], and MERDITH2021 [@merdith2021]. Palaeogeographic reconstructions were generated using the GPlates Web Service (<https://gwsdoc.gplates.org>) via the palaeorotate() function in palaeoverse ver. `r palaeoverse_ver` [@jones2023]. For each Global Plate Model, fossil occurrences were binned into one of twelve equal-area latitudinal bins, using the estimated palaeolatitudes ([@tbl-bins]). The number of fossil occurrences which were unable to be rotated due to model incompatibility was also logged for each Global Plate Model.
 
 ```{r}
 #| label: tbl-bins
@@ -75,9 +75,11 @@ options(scipen = 0)
 kable(df)
 ```
 
-## Quantifying the latitudinal biodiveristy gradient
+## Quantifying the latitudinal biodiversity gradient
 
--   Metrics used to quantify the gradient
+Subsequent data manipulation and visualisation was carried out using the Tidyverse suite of R packages [@wickham2019]. The raw number of genera was counted per stage per palaeolatitudinal bin for each Global Plate Model. We also estimated the latitudinal biodiversity gradient using coverage-based interpolation and extrapolation of Hill numbers, in the R package iNEXT [@hsieh2016]. The rarefaction portion of this approach is equivalent to shareholder quorum subsampling [@alroy2010; @close2018]. Extrapolated values with an estimated sample size above twice that observed were discarded [@hsieh2016].
+
+- Will and Lucas to add visualisation and curve comparison
 
 # Results (600 words)
 
