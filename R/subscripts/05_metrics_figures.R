@@ -117,14 +117,54 @@ met2_sqs <- div_sqs %>%
   mutate(rank = row_number()) %>%
   ungroup() %>%
   pivot_wider(id_cols = c(stage, paleolat_bin), names_from = model, values_from = rank) %>%
-  group_by(stage, paleolat_bin) %>%
+  group_by(stage) %>%
   summarise(p_g = sum(abs(PALEOMAP - GOLONKA)),
             p_m = sum(abs(PALEOMAP - MERDITH2021)),
             g_m = sum(abs(GOLONKA - MERDITH2021)), .groups = "drop") %>%
   pivot_longer(cols = c(p_g, p_m, g_m)) %>%
-  left_join(lat_bins, by = c("paleolat_bin" = "bin")) %>%
-  left_join(time_bins, by = c("stage" = "bin"))
+  left_join(time_bins, by = c("stage" = "bin")) %>%
+  complete(stage, name)
 
+gg_met2_sqs <- ggplot(met2_sqs) +
+  geom_line(aes(x = mid_ma, y = value, color = name, group = name), linewidth = .75) +
+  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_y_continuous("Sum of Rank Order Differences") +
+  scale_colour_viridis_d(NULL, end = .9, labels = c("GOLONKA/MERDITH2021",
+                                                    "PALEOMAP/GOLONKA",
+                                                    "PALEOMAP/MERDITH2021")) +
+  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
+            bord = c("left", "right", "bottom")) +
+  theme_classic(base_size = 14) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
+ggsave("./figures/metric_2.pdf", gg_met2_sqs, width = 13, height = 4.5)
+
+met2_raw <- div_raw %>%
+  select(stage_bin, paleolat_bin, model, n_genera) %>%
+  group_by(model, stage_bin) %>%
+  arrange(-n_genera) %>%
+  mutate(rank = row_number()) %>%
+  ungroup() %>%
+  pivot_wider(id_cols = c(stage_bin, paleolat_bin), names_from = model, values_from = rank) %>%
+  group_by(stage_bin) %>%
+  summarise(p_g = sum(abs(PALEOMAP - GOLONKA)),
+            p_m = sum(abs(PALEOMAP - MERDITH2021)),
+            g_m = sum(abs(GOLONKA - MERDITH2021)), .groups = "drop") %>%
+  pivot_longer(cols = c(p_g, p_m, g_m)) %>%
+  left_join(time_bins, by = c("stage_bin" = "bin")) %>%
+  complete(stage_bin, name)
+
+gg_met2_raw <- ggplot(met2_raw) +
+  geom_line(aes(x = mid_ma, y = value, color = name, group = name), linewidth = .75) +
+  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_y_continuous("Sum of Rank Order Differences") +
+  scale_colour_viridis_d(NULL, end = .9, labels = c("GOLONKA/MERDITH2021",
+                                                    "PALEOMAP/GOLONKA",
+                                                    "PALEOMAP/MERDITH2021")) +
+  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
+            bord = c("left", "right", "bottom")) +
+  theme_classic(base_size = 14) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
+ggsave("./figures/metric_2_raw.pdf", gg_met2_raw, width = 13, height = 4.5)
 
 # Metric #3: sum of squares -----------------------------------------
 # still need to standardize across time intervals
