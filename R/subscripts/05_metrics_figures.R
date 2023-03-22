@@ -43,15 +43,24 @@ met1_sqs <- div_sqs %>%
   left_join(lat_bins, by = c("max_bin" = "bin")) %>%
   left_join(time_bins, by = c("stage" = "bin"))
 
+met1_sqs_rects <- met1_sqs %>%
+  group_by(stage, hemi, max_ma, min_ma) %>%
+  summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop") %>%
+  filter(all_same) %>%
+  mutate(ymin = ifelse(hemi == "north", 0, -Inf),
+         ymax = ifelse(hemi == "north", Inf, 0))
+
 gg_met1_sqs <- ggplot(met1_sqs) +
+  geom_rect(data = met1_sqs_rects, aes(xmin = max_ma, xmax = min_ma,
+                                       ymin = ymin, ymax = ymax), fill = "grey90") +
   geom_line(aes(x = mid_ma, y = mid, color = model,
                 group = interaction(hemi, model)), linewidth = .75) +
   geom_hline(yintercept = 0) +
-  annotate(geom = "text", x = 538, y = c(-75, 75),
+  annotate(geom = "text", x = 538, y = c(-77, 77),
            label = c("South. Hemisphere", "North. Hemisphere"),
-           hjust = 0) +
+           hjust = 0, size = 5) +
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
-  scale_y_continuous("Mid Latitude of\nMost Diverse Bin",
+  scale_y_continuous(expression('Most Diverse Bin ('*degree*')'),
                      breaks = seq(-80, 80, 20), limits = c(-80, 80)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
@@ -70,17 +79,26 @@ met1_raw <- div_raw %>%
   left_join(lat_bins, by = c("max_bin" = "bin")) %>%
   left_join(time_bins, by = c("stage_bin" = "bin"))
 
+met1_raw_rects <- met1_raw %>%
+  group_by(stage_bin, hemi, max_ma, min_ma) %>%
+  summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop") %>%
+  filter(all_same) %>%
+  mutate(ymin = ifelse(hemi == "north", 0, -Inf),
+         ymax = ifelse(hemi == "north", Inf, 0))
+
 gg_met1_raw <- ggplot(met1_raw) +
-  #geom_line(aes(x = mid_ma, y = mid, color = model,
-  #              group = interaction(hemi, model)), linewidth = .75) +
-  geom_point(aes(x = mid_ma, y = mid, color = model, shape = model,
-                 group = interaction(hemi, model))) +
+  geom_rect(data = met1_raw_rects, aes(xmin = max_ma, xmax = min_ma,
+                                       ymin = ymin, ymax = ymax), fill = "grey90") +
+  geom_line(aes(x = mid_ma, y = mid, color = model,
+                group = interaction(hemi, model)), linewidth = .75) +
+  #geom_point(aes(x = mid_ma, y = mid, color = model, shape = model,
+  #               group = interaction(hemi, model))) +
   geom_hline(yintercept = 0) +
-  annotate(geom = "text", x = 538, y = c(-75, 75),
+  annotate(geom = "text", x = 538, y = c(-77, 77),
            label = c("South. Hemisphere", "North. Hemisphere"),
-           hjust = 0) +
+           hjust = 0, size = 5) +
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
-  scale_y_continuous("Mid Latitude of\nMost Diverse Bin",
+  scale_y_continuous(expression('Most Diverse Bin ('*degree*')'),
                      breaks = seq(-80, 80, 20), limits = c(-80, 80)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
