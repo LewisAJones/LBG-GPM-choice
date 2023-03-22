@@ -10,6 +10,7 @@ library(tidyr)
 library(ggplot2)
 library(deeptime)
 library(palaeoverse)
+library(AICcmodavg)
 source("./R/options.R")
 
 # Load data -------------------------------------------------------------
@@ -179,3 +180,45 @@ met3_sqs <- div_sqs %>%
   left_join(lat_bins, by = c("paleolat_bin" = "bin")) %>%
   left_join(time_bins, by = c("stage" = "bin"))
 
+# Metric #4: best fit model -----------------------------------------
+met4_sqs <- div_sqs %>%
+  select(stage, paleolat_bin, model, qD) %>%
+  left_join(lat_bins, by = c("paleolat_bin" = "bin")) %>%
+  group_by(stage, model, ) %>%
+  summarise(poly = which.min(sapply(1:5, function(i) {
+    tryCatch(AICc(glm(qD ~ poly(mid, i))),
+             error = function(e) NA)
+  }))) %>%
+  left_join(time_bins, by = c("stage" = "bin"))
+
+gg_met4_sqs <- ggplot(met4_sqs) +
+  geom_tile(aes(x = mid_ma, y = model, width = max_ma - min_ma, height = 1, fill = as.factor(poly))) +
+  scale_x_reverse("Time (Ma)", limits = c(541, 0)) +
+  scale_y_discrete(NULL) +
+  scale_fill_viridis_d(NULL, end = .9) +
+  coord_geo(dat = GTS2020_periods, lwd = 1,
+            bord = c("left", "right", "bottom")) +
+  theme_classic(base_size = 14) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
+ggsave("./figures/metric_4.pdf", gg_met4_sqs, width = 13, height = 4.5)
+
+met4_raw <- div_raw %>%
+  select(stage_bin, paleolat_bin, model, n_genera) %>%
+  left_join(lat_bins, by = c("paleolat_bin" = "bin")) %>%
+  group_by(stage_bin, model, ) %>%
+  summarise(poly = which.min(sapply(1:5, function(i) {
+    tryCatch(AICc(glm(n_genera ~ poly(mid, i))),
+             error = function(e) NA)
+  }))) %>%
+  left_join(time_bins, by = c("stage_bin" = "bin"))
+
+gg_met4_raw <- ggplot(met4_raw) +
+  geom_tile(aes(x = mid_ma, y = model, width = max_ma - min_ma, height = 1, fill = as.factor(poly))) +
+  scale_x_reverse("Time (Ma)", limits = c(541, 0)) +
+  scale_y_discrete(NULL) +
+  scale_fill_viridis_d(NULL, end = .9) +
+  coord_geo(dat = GTS2020_periods, lwd = 1,
+            bord = c("left", "right", "bottom")) +
+  theme_classic(base_size = 14) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
+ggsave("./figures/metric_4_raw.pdf", gg_met4_raw, width = 13, height = 4.5)
