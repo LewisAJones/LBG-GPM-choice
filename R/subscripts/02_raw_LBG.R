@@ -61,6 +61,19 @@ for (i in 1:length(params$models)) {
       }
     }
   }
+  # Filter genera in each temporal bin, so each row is a unique
+  # genus, according to the relevant plate model spatial bins
+  one_model <- distinct(one_model, family, genus, bin_assignment,
+                        .keep_all = TRUE)
+  # Generate genus counts globally per time bin, removing NAs
+  global_counts <- filter(one_model, !is.na(!!column_name)) %>%
+    group_by(bin_assignment) %>% count()
+  # Add 'global' label
+  global_counts$paleolat_bin <- NA
+  global_counts <- select(global_counts, bin_assignment, paleolat_bin, n)
+  colnames(global_counts) <- c("stage_bin", "paleolat_bin", "n_genera")
+  # Append to other table
+  counts <- rbind.data.frame(counts, global_counts)
   counts <- arrange(counts, stage_bin, paleolat_bin)
   # Add model label
   counts$model <- params$models[i]
