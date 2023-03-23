@@ -142,6 +142,7 @@ for (p in 1:length(params$models)) {
 # Tidy dataframe
 interpolations <- select(interpolations, stage, paleolat_bin, model,
                          reference_t, t, Method, SC, qD, qD.LCL, qD.UCL)
+interpolations <- arrange(interpolations, model, stage, paleolat_bin)
 # Save interpolated estimates and NA counts
 saveRDS(object = interpolations,
         file = "./data/processed/interpolations.RDS")
