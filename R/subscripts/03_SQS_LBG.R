@@ -33,7 +33,7 @@ genus_occs <- cbind.data.frame(genus_occs, occdf[, c(
   grep("p_lng_", x = colnames(occdf)),
   grep("p_lat_", x = colnames(occdf)),
   grep("_bin", x = colnames(occdf)))])
-# Create abundance strings ----------------------------------------------
+# Interpolate each spatial bin ------------------------------------------
 # Count unique genera in each spatio-temporal bin for each rotation model
 interpolations <- data.frame()
 count_NAs <- data.frame()
@@ -101,6 +101,43 @@ for (i in 1:length(params$models)){
       interpolations <- rbind.data.frame(interpolations, estD)
     }
   }
+}
+# Interpolate global values ---------------------------------------------
+for (p in 1:length(params$models)) {
+  # Specify column name using rotation model name
+  column_name <- data_sym(paste0(params$models[p], "_bin"))
+  # Generate list of frequencies by stage, starting with number of 
+  # samples, as needed by iNEXT
+  no_NA <- filter(genus_occs, !is.na(!!column_name))
+  temp_freq <- list()
+  for (q in 1:length(stages)){
+    one_stage <- filter(no_NA, bin_assignment == stages[q])
+    temp_list <- count(one_stage, genus) %>% arrange(desc(n)) %>%
+                add_row(n = length(unique(one_stage$collection_no)),
+                .before = 1) %>% select(n)
+    temp_list <- unlist(temp_list, use.names = F)
+    if(temp_list[1] < 3){temp_list <- NA}
+    if(length(temp_list) < 4){temp_list <- NA}
+    temp_freq[[q]] <- temp_list
+  }
+  # Name lists
+  names(temp_freq) <- stages
+  # Estimate D using estimateD in iNEXT
+  estD <- estimateD(temp_freq, q = 0, datatype = "incidence_freq",
+                    base = "coverage", level = params$quorum_level)
+  # Add sample size in additional column (from first value in lists)
+  estD$reference_t <- unlist(lapply(temp_freq, '[[', 1))
+  # Remove values when t is more than two times the sample size
+  estD[which(estD$t >= 2 * estD$reference_t),
+       c("qD", "qD.LCL", "qD.UCL")] <- rep(NA, 3)
+  # Add latitude bin NA label
+  estD$paleolat_bin <- NA
+  # Add stage label
+  estD$stage <- stages
+  # Add model label
+  estD$model <- params$models[p]
+  # Add values to overall dataframe
+  interpolations <- rbind.data.frame(interpolations, estD)
 }
 # Tidy dataframe
 interpolations <- select(interpolations, stage, paleolat_bin, model,
