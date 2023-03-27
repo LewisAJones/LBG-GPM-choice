@@ -4,37 +4,38 @@
 # Last updated: 2023-03-27
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
+# Libraries -------------------------------------------------------------
+library(dplyr)
 # Simulate biodiversity gradients ---------------------------------------
 # emp_div is the empirical diversity data (at a given time) we will extract the simulation parameters from
+# n: Number of data points to generate  
 # div_column_key is the key of the diversity column in the emp_div dataset
 # emp_lats is the equal-area lat bins dataframe used in the empirical diversiy assessment
 # mid_lats_key is the key of the mid latitude in equal-area lat bins dataframe
 # lat_bin_keys is the key of the latitudinal bin column in both empirical lats and diversity datasets (HAS TO BE THE SAME)
 # type is the type of gradient to simulate: "unimodal", "bimodal", "flat" or "MIXED"
 # if type="MIXED", the user has to specify the shape of the northern and southern gradients to simulate: "gaussian" or "flat"
-simulate_gaussian <- function(latitude, mean, sd){
-  return(dnorm(latitude, mean=mean, sd=sd))
-}
-
-simulate_biodiv_grad <- function(emp_data, div_column_key, emp_lats, mid_lats_key, lat_bin_keys, type, northern=NA, southern=NA) {
-  # Number of data points to generate  
-  n <- nrow(emp_lats)
-  # Sequence of latitudes used end hemisphere specification
-  latitude <- emp_lats[, c(mid_lats_key)]
-  northern_hemisphere <- emp_lats[which(latitude > 0), c(lat_bin_keys)]
-  southern_hemisphere <- emp_lats[which(latitude < 0), c(lat_bin_keys)]
-  # Initialise the species richness vector
-  species_richness <- rep(0, n)
+simulate_biodiv_grad <- function(emp_data, n, div_column_key, emp_lats, mid_lat_key, lat_bin_keys, type, northern=NA, southern=NA) {
+  # Sequence of latitudes used and hemisphere specification
+  latitude <- seq(-90, 90, length.out = n)
+  if(0 %in% latitude){ #easier to partition northern and southern hemispheres
+    latitude <- latitude[-which(latitude == 0)]
+  }  
   # Extract mean and sd from emp_data
-    ## Global scale
+  ## Global scale
   meanDIV <- mean(emp_data[, c(div_column_key)], na.rm = TRUE)
-  sdDIV <- sd(emp_data[, c(div_column_key)])
-    ## Northern hemisphere
-  meanDIV_North <- mean(emp_data[northern_bins, c(div_column_key)], na.rm = TRUE)
-  sdDIV_North <- sd(emp_data[northern_bins, c(div_column_key)])
-    ## Southern hemisphere
-  meanDIV_South <- mean(emp_data[southern_bins, c(div_column_key)], na.rm = TRUE)
-  sdDIV_South <- sd(emp_data[southern_bins, c(div_column_key)])
+  sdDIV <- sd(emp_data[, c(div_column_key)], na.rm = TRUE)
+  ## Northern hemisphere
+  northern_bins <- emp_lats[which(emp_lats[, c(mid_lat_key)] > 0), c(lat_bin_key)]
+  northern_subset <- emp_data[which(emp_data[, c(lat_bin_key)] %in% northern_bins), ]
+  meanDIV_North <- mean(northern_subset[, c(div_column_key)], na.rm = TRUE)
+  sdDIV_North <- sd(northern_subset[, c(div_column_key)], na.rm = TRUE)
+  ## Southern hemisphere
+  southern_bins <- emp_lats[which(emp_lats[, c(mid_lat_key)] < 0), c(lat_bin_key)]
+  southern_subset <- emp_data[which(emp_data[, c(lat_bin_key)] %in% southern_bins), ]
+  meanDIV_South <- mean(southern_subset[, c(div_column_key)], na.rm = TRUE)
+  sdDIV_South <- sd(southern_subset[, c(div_column_key)], na.rm = TRUE)
+  
   # Simulate a unimodal gradient using a gaussian distribution
   if (type == "unimodal") {
     species_richness <- simulate_gaussian(latitude = latitude,
@@ -44,16 +45,13 @@ simulate_biodiv_grad <- function(emp_data, div_column_key, emp_lats, mid_lats_ke
   # Simulate a bimodal gradient using a combination of two Gaussian distributions with different means and sds extracted from the data
   if (type == "bimodal") {
     ## Northern hemisphere
-    northern_bins <- which(emp_data[, c(lat_bin_keys)] %in% northern_hemisphere)
-    
-    species_richness <- simulate_gaussian(latitude = latitude[which(latitude > 0)], 
-                                          mean = meanDIV_North, 
-                                          sd = sdDIV_North)
+    species_richness <- dnorm(latitude[which(latitude > 0)],
+                              mean = meanDIV_North, 
+                              sd = sdDIV_North)
     ## Southern hemisphere
-    southern_bins <- which(emp_data[, c(lat_bin_keys)] %in% southern_hemisphere)
-    species_richness <- species_richness + simulate_gaussian(latitude[which(latitude < 0)], 
-                                                             mean = meanDIV_South, 
-                                                             sd = sdDIV_South)
+    species_richness <- species_richness + dnorm(latitude[which(latitude < 0)], 
+                                                 mean = meanDIV_South, 
+                                                 sd = sdDIV_South)
   } 
   # Simulate a flat gradient
   if (type == "flat") {
@@ -62,7 +60,23 @@ simulate_biodiv_grad <- function(emp_data, div_column_key, emp_lats, mid_lats_ke
   }
   # Dissociate both hemispheres
   if (type == "MIXED") {
-    
+    if ( (northern == "gaussian") & (southern == "flat") ){
+      ## Northern hemisphere
+      species_richness <- dnorm(latitude[which(latitude > 0)], 
+                                mean = meanDIV_North, 
+                                sd = sdDIV_North)
+      ## Southern hemisphere
+      species_richness <- species_richness + rep(meanDIV_South, n)
+    }
+    else if ( (northern == "flat") & (southern == "gaussian") ){
+      ## Northern hemisphere
+      species_richness <- rep(meanDIV_North, n)
+      ## Southern hemisphere
+      species_richness <- species_richness + dnorm(latitude[which(latitude < 0)], 
+                                                   mean = meanDIV_South, 
+                                                   sd = sdDIV_South)
+    }
+    else(stop("northern and southern arguments have to either be set to 'gaussian' or 'flat'. If set to the same value, please refer to other 'type' argument"))
   }
   # Proportional richness
   species_richness <- species_richness / sum(species_richness)
@@ -70,10 +84,34 @@ simulate_biodiv_grad <- function(emp_data, div_column_key, emp_lats, mid_lats_ke
   return(data.frame(latitude = latitude, species_richness = species_richness))
 }
 # Examples
-# Simulate gradients
-unimodal_data <- simulate_biodiv_grad(n = 1000, type = "unimodal")
-bimodal_data <- simulate_biodiv_grad(n = 1000, type = "bimodal")
-flat_data <- simulate_biodiv_grad(n = 1000, type = "flat")
+# Empirical data
+div_raw <- readRDS("./data/processed/genus_counts.RDS")
+lats <- readRDS("./data/lat_bins.RDS")
+lats <- rename(lats, paleolat_bin = "bin")
+# Simulate gradients based on the 20th time stage and PALEOMAP 
+unimodal_data <- simulate_biodiv_grad(emp_data = div_raw[which((div_raw$stage_bin == 20)&(div_raw$model == "PALEOMAP")), ],
+                                      n = 1000,
+                                      div_column_key = "n_genera",
+                                      mid_lat_key = "mid",
+                                      emp_lats = lats,
+                                      lat_bin_keys = "paleolat_bin",
+                                      type = "unimodal")
+
+bimodal_data <- simulate_biodiv_grad(emp_data = div_raw[which((div_raw$stage_bin == 20)&(div_raw$model == "PALEOMAP")), ],
+                                     n = 1000,
+                                     div_column_key = "n_genera",
+                                     mid_lat_key = "mid", 
+                                     emp_lats = lats,
+                                     lat_bin_keys = "paleolat_bin",
+                                     type = "bimodal")
+
+flat_data <- simulate_biodiv_grad(emp_data = div_raw[which((div_raw$stage_bin == 20)&(div_raw$model == "PALEOMAP")), ],
+                                  n = 1000,
+                                  div_column_key = "n_genera",
+                                  mid_lat_key = "mid",
+                                  emp_lats = lats,
+                                  lat_bin_keys = "paleolat_bin",
+                                  type = "flat")
 # Plot
 plot(unimodal_data)
 plot(bimodal_data)
