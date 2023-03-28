@@ -6,6 +6,7 @@
 
 # Libraries -------------------------------------------------------------
 library(dplyr)
+
 # Simulate biodiversity gradients ---------------------------------------
 # emp_div is the empirical diversity data (at a given time) we will extract the simulation parameters from
 # n: Number of data points to generate  
@@ -76,7 +77,7 @@ simulate_biodiv_grad <- function(emp_data, n, div_column_key, emp_lats, mid_lat_
                                                    mean = meanDIV_South, 
                                                    sd = sdDIV_South)
     }
-    else(stop("northern and southern arguments have to either be set to 'gaussian' or 'flat'. If set to the same value, please refer to other 'type' argument"))
+    else(stop("northern and southern arguments have to either be set to 'gaussian' or 'flat'. If set to the same string, please refer to other 'type' arguments"))
   }
   # Proportional richness
   species_richness <- species_richness / sum(species_richness)
