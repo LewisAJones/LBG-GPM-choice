@@ -57,17 +57,17 @@ p <- ggplot(data = div_sqs_join, aes(x = mid,
   geom_line(linewidth = 0.75, alpha = 1) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
-  facet_wrap(~interval_name, nrow = 10) +
+  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
   labs(y = "Proportional estimated genus richness",
        x = "Palaeolatitude (\u00B0)") +
   theme_bw(base_size = 16) +
   theme(legend.position = "top")
 
-#Update strip colours (work in progress doesn't seem to work well!)
+#Update strip colours
 g <- ggplot_gtable(ggplot_build(p))
 strip_t <- which(grepl('strip-t', g$layout$name))
 for (i in strip_t) {
-  g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <-
+  g$grobs[[i]]$grobs[[1]]$children[[1]]$gp$fill <-
     stages$colour[match(g$grobs[[i]]$grobs[[1]]$children[[2]]$children[[1]]$label,
                         stages$interval_name)]
 }
@@ -81,17 +81,17 @@ p <- ggplot(data = div_raw_join, aes(x = mid,
   geom_line(linewidth = 0.75, alpha = 1) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
-  facet_wrap(~interval_name, nrow = 10) +
+  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
   labs(y = "Proportional raw genus richness",
        x = "Palaeolatitude (\u00B0)") +
   theme_bw(base_size = 16) +
   theme(legend.position = "top")
 
-#Update strip colours (work in progress doesn't seem to work well!)
+#Update strip colours
 g <- ggplot_gtable(ggplot_build(p))
 strip_t <- which(grepl('strip-t', g$layout$name))
 for (i in strip_t) {
-  g$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <-
+  g$grobs[[i]]$grobs[[1]]$children[[1]]$gp$fill <-
     stages$colour[match(g$grobs[[i]]$grobs[[1]]$children[[2]]$children[[1]]$label,
                         stages$interval_name)]
 }

@@ -55,7 +55,7 @@ for (i in 1:length(params$models)) {
   counts <- as.data.frame(counts)
   for (j in 1:length(stages)) {
     one_stage <- filter(counts, stage_bin == stages[j])
-    for (k in 1:12) {
+    for (k in 1:params$lat_bin) {
       if ((k %in% one_stage$paleolat_bin) == FALSE) {
         counts <- rbind(counts, c(stages[j], k, 0))
       }

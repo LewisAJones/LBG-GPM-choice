@@ -13,3 +13,9 @@ rm(list = ls())
 # SQS LBG
 source("./R/subscripts/03_SQS_LBG.R")
 rm(list = ls())
+# diversity figures
+source("./R/subscripts/04_diversity_figures.R")
+rm(list = ls())
+# metrics figures
+source("./R/subscripts/05_metrics_figures.R")
+rm(list = ls())

@@ -59,7 +59,7 @@ for (i in 1:length(params$models)){
     # Generate list of frequencies by stage, starting with number of 
     # samples, as needed by iNEXT
     lat_freq <- list()
-    for (m in 1:12) {
+    for (m in 1:params$lat_bin) {
       one_bin <- filter(one_stage, !!column_name == m)
       lat_list <- count(one_bin, genus) %>% arrange(desc(n)) %>%
         add_row(n = length(unique(one_bin$collection_no)),
@@ -70,7 +70,7 @@ for (i in 1:length(params$models)){
       lat_freq[[m]] <- lat_list
     }
     # Name lists
-    names(lat_freq) <- seq(1, 12, 1)
+    names(lat_freq) <- 1:params$lat_bin
     # Filter out empty lists
     lat_freq <- lat_freq[!is.na(lat_freq)]
     if (length(lat_freq) > 0) {
@@ -85,7 +85,7 @@ for (i in 1:length(params$models)){
       # Add latitude bin labels
       estD$paleolat_bin <- names(lat_freq)
       # Fill in any gaps
-      for (n in 1:12) {
+      for (n in 1:params$lat_bin) {
         if ((n %in% estD$paleolat_bin) == FALSE) {
           estD <- rbind.data.frame(estD, c(rep(NA, 9), n))
         }
