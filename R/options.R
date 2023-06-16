@@ -16,7 +16,7 @@ params <- list(
   # Naming convention for palaeolatitude
   p_lat = "p_lat",
   # Number of latitudinal bins desired
-  lat_bin = 12,
+  lat_bin = 6,
   # Naming convention for temporal bin midpoint
   age = "bin_midpoint",
   # The geological rank for conducting analyses
