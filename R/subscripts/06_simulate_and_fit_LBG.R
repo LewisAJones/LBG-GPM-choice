@@ -66,18 +66,22 @@ simulate_biodiv_grad <- function(emp_data, n=1000, type, northern=NA, southern=N
   if (type == "unimodal") {
     sigma <- sigma_unimodal(data = emp_data, mu = 0)
     species_richness <- dnorm(latitude, mean = 0, sd = sigma)
+    scaling <- max(emp_data) / max(species_richness)
+    species_richness <- species_richness * scaling
   } 
   # Simulate a bimodal gradient using a combination of two Gaussian distributions with different means and sds extracted from the data
   if (type == "bimodal") {
     ## Northern hemisphere (cf. lat_bins dataframe)
     sigma_north <- sigma_bimodal(data = emp_data, loc = "NORTH")
     species_richness_north <- dnorm(latitude[which(latitude > 0)], mean = 45, sd = sigma_north)
+    scal_north <- max(emp_data[1:3]) / max(species_richness_north)
     ## Southern hemisphere
     sigma_south <- sigma_bimodal(data = emp_data, loc = "SOUTH")
     species_richness_south <- dnorm(latitude[which(latitude <= 0)], mean = -45, sd = sigma_south)
+    scal_south <- max(emp_data[4:6]) / max(species_richness_south)
     ## Combine
-    species_richness <- append(species_richness_north,
-                               species_richness_south)
+    species_richness <- append(species_richness_north * scal_north,
+                               species_richness_south * scal_south)
   } 
   # Simulate a flat gradient
   if (type == "flat") {
@@ -85,29 +89,28 @@ simulate_biodiv_grad <- function(emp_data, n=1000, type, northern=NA, southern=N
     species_richness <- rep(mean(emp_data, na.rm = TRUE), n)
   }
   # Dissociate both hemispheres
-  if (type == "MIXED") {
-    if ( (northern == "gaussian") & (southern == "flat") ){
-      ## Northern hemisphere
-      species_richness <- dnorm(latitude[which(latitude > 0)], 
-                                mean = meanDIV_North, 
-                                sd = sdDIV_North)
-      ## Southern hemisphere
-      species_richness <- species_richness + rep(meanDIV_South, n)
-    }
-    else if ( (northern == "flat") & (southern == "gaussian") ){
-      ## Northern hemisphere
-      species_richness <- rep(meanDIV_North, n)
-      ## Southern hemisphere
-      species_richness <- species_richness + dnorm(latitude[which(latitude < 0)], 
-                                                   mean = meanDIV_South, 
-                                                   sd = sdDIV_South)
-    }
-    else(stop("northern and southern arguments have to either be set to 'gaussian' or 'flat'. If set to the same string, please refer to other 'type' arguments"))
-  }
-  # Proportional richness
-  species_richness <- species_richness / sum(species_richness)
-  # Return simulated data
-  return(species_richness)
+  # if (type == "MIXED") {
+  #   if ( (northern == "gaussian") & (southern == "flat") ){
+  #     ## Northern hemisphere
+  #     species_richness <- dnorm(latitude[which(latitude > 0)], 
+  #                               mean = meanDIV_North, 
+  #                               sd = sdDIV_North)
+  #     ## Southern hemisphere
+  #     species_richness <- species_richness + rep(meanDIV_South, n)
+  #   }
+  #   else if ( (northern == "flat") & (southern == "gaussian") ){
+  #     ## Northern hemisphere
+  #     species_richness <- rep(meanDIV_North, n)
+  #     ## Southern hemisphere
+  #     species_richness <- species_richness + dnorm(latitude[which(latitude < 0)], 
+  #                                                  mean = meanDIV_South, 
+  #                                                  sd = sdDIV_South)
+  #   }
+  #   else(stop("northern and southern arguments have to either be set to 'gaussian' or 'flat'. If set to the same string, please refer to other 'type' arguments"))
+  # }
+  # # Return simulated data
+  return(data.frame(latitude = latitude,
+                    species_richness = species_richness))
 }
 
 ## Example (gradients based on the 1st time stage and PALEOMAP) ----------
@@ -120,34 +123,24 @@ div_bin <- div_raw$n_genera[which((div_raw$stage_bin == 1) &
 unimodal <- simulate_biodiv_grad(emp_data = div_bin,
                                  n = 1000,
                                  type = "unimodal")
-scaling_cst <- max(div_bin) / max(unimodal)
-unimodal <- unimodal * scaling_cst
   # BIMODAL
 bimodal <- simulate_biodiv_grad(emp_data = div_bin,
                                 n = 1000,
                                 type = "bimodal")
-scal_north <- max(div_bin[1:3]) / max(bimodal[1:(as.integer(length(bimodal))/2)])
-scal_south <- max(div_bin[4:6]) / max(bimodal[(as.integer(length(bimodal))/2+1):length(bimodal)])
-bimodal[1:(as.integer(length(bimodal))/2)] <- bimodal[1:(as.integer(length(bimodal))/2)] * scal_north
-bimodal[(as.integer(length(bimodal))/2+1):length(bimodal)] <- bimodal[(as.integer(length(bimodal))/2+1):length(bimodal)] * scal_south
   # FLAT
 flat <- simulate_biodiv_grad(emp_data = div_bin,
                              n = 1000,
                              type = "flat")
-scaling <- mean(div_bin, na.rm = TRUE) / unique(flat)
-flat <- flat * scaling
   # PLOT
-lat <- seq(from = 90, to = -90, length.out = 1000)
 lat_bins <- readRDS("./data/lat_bins.RDS")
-
 par(mfrow = c(2,2))
-plot(x = lat_bins$mid, y = div_bin, type = 'b', xlab = "", ylab = "")
+plot(x = lat_bins$mid, y = div_bin, type = 'b', xlab = "", ylab = "", xlim = c(-90, 90))
 title(main = "Actual diversity estimates", xlab = "Latitude", ylab = "Nb. genera")
-plot(x = lat, y = unimodal, type = 'b', xlab = "", ylab = "")
+plot(x = unimodal$latitude, y = unimodal$species_richness, type = 'b', xlab = "", ylab = "")
 title(main = "Simulated Unimodal", xlab = "Latitude", ylab = "Nb. genera")
-plot(x = lat, y = bimodal, type = 'b', xlab = "", ylab = "")
+plot(x = bimodal$latitude, y = bimodal$species_richness, type = 'b', xlab = "", ylab = "")
 title(main = "Simulated Bimodal", xlab = "Latitude", ylab = "Nb. genera")
-plot(x = lat, y = flat, type = 'b', xlab = "", ylab = "")
+plot(x = flat$latitude, y = flat$species_richness, type = 'b', xlab = "", ylab = "")
 title(main = "Simulated Flat", xlab = "Latitude", ylab = "Nb. genera")
 
 # Compare curves using root mean squared error (RMSE) 
@@ -156,21 +149,28 @@ title(main = "Simulated Flat", xlab = "Latitude", ylab = "Nb. genera")
 # x_col is the name of our x column
 # y_col is the name of our y column
 compare_curves <- function(empirical_data, simulated_data, x_col = "latitude", y_col = "species_richness") {
-  # Get the x and y values from the empirical data
-  x_emp <- empirical_data[[x_col]]
-  y_emp <- empirical_data[[y_col]]
-  # Interpolate the simulated data onto the x values of the empirical data
-  y_sim <- approx(simulated_data[[x_col]], simulated_data[[y_col]], xout = x_emp)$y
+  # Get the x and y values from the simulated data
+  x_sim <- simulated_data[[x_col]]
+  y_sim <- simulated_data[[y_col]]
+  # Interpolate the empirical data onto the x values of the simulated data
+  y_emp <- approx(empirical_data[[x_col]], empirical_data[[y_col]], xout = x_sim)$y
   # Calculate the root mean squared error (RMSE) between the empirical and simulated data
-  rmse <- sqrt(mean((y_emp - y_sim)^2))
+  rmse <- sqrt(mean((y_emp - y_sim)^2, na.rm = TRUE))
   # Rescale RMSE to the number of data points (this is unneccesary, it is just there
   # so we aren't dealing with tiny numbers for now)
-  rmse <- rmse * nrow(simulated_data)
+#  rmse <- rmse * nrow(simulated_data)
   # Return the RMSE value
   return(rmse)
 }
 
 # Compare the simulated data to the empirical data (here we are comparing two
 # simulated gradients but you get the idea)
-rmse <- compare_curves(unimodal_data, bimodal_data)
-rmse
+emp_data <- data.frame(latitude = lat_bins$mid,
+                       species_richness = div_bin)
+
+rmse_unimodal <- compare_curves(empirical_data = emp_data,
+                                simulated_data = unimodal)
+rmse_bimodal <- compare_curves(empirical_data = emp_data,
+                                simulated_data = bimodal)
+rmse_flat <- compare_curves(empirical_data = emp_data,
+                                simulated_data = flat)
