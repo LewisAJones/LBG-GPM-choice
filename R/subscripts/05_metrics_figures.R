@@ -184,7 +184,7 @@ met3_sqs <- div_sqs %>%
   pivot_longer(cols = c(pg_sum, pg_n, pm_sum, pm_n, gm_sum, gm_n)) %>%
   separate_wider_delim(name, "_", names = c("models", "name")) %>%
   pivot_wider(id_cols = c(stage, models)) %>%
-  mutate(avg = sqrt(sum)/n) %>%
+  mutate(avg = sum/n) %>%
   left_join(time_bins, by = c("stage" = "bin"))
 
 gg_met3_sqs <- ggplot(met3_sqs) +
