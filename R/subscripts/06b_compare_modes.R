@@ -64,11 +64,10 @@ for(mdl in params$models){
     }
   }
 }
+
 ## Save ------------------------------------------------------------------------
 saveRDS(object = mode_df,
         file = "./data/mode_counts.RDS")
-
-
 
 ## For visualisation, subset PALEOMAP in time bin 79 (Danian) ------------------
 subset <- occdf[which( (occdf$time_bin_assignment == 79) & (is.na(occdf$PALEOMAP_bin) == FALSE)),
@@ -84,3 +83,4 @@ subset$rand <- unlist(lapply(X = 1:nrow(subset),
 par(mfrow = c(1,2))
 plot(density(subset$p_lat_PALEOMAP))
 plot(density(subset$rand))
+
