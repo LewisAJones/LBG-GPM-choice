@@ -8,7 +8,10 @@
 library(multimode)
 library(stats)
 library(dplyr)
+library(ggplot2)
+library(deeptime)
 source("./R/options.R")
+time_bins <- readRDS("./data/time_bins.RDS")
 ## Load data -------------------------------------------------------------------
 occdf <- readRDS("./data/processed/pbdb_data.RDS")[, c("genus", "max_ma", "min_ma", "bin_assignment", "p_lat_PALEOMAP", "p_lat_GOLONKA", "p_lat_MERDITH2021")]
 #rename time bin column to avoid ambiguities with lat bin one
@@ -60,7 +63,7 @@ for(mdl in params$models){
       # Remove duplicates (same genera present several times within the same time bin)
       subset <- unique(subset)
       row.names(subset) <- 1:nrow(subset)
-      mode_df[which(mode_df$time_bin == t), paste0("Nmodes_", mdl)] <- mode_gathering(subset = subset, N=10)
+      mode_df[which(mode_df$time_bin == t), paste0("Nmodes_", mdl)] <- mode_gathering(subset = subset, N=50)
     }
   }
 }
@@ -68,6 +71,39 @@ for(mdl in params$models){
 ## Save ------------------------------------------------------------------------
 saveRDS(object = mode_df,
         file = "./data/mode_counts.RDS")
+
+## Informal plot ---------------------------------------------------------------
+mode_df$Nmodes_PALEOMAP[3] <- NA
+mode_df$Nmodes_MERDITH2021[3] <- NA
+#time equivalent of mode_df bins
+find_equiv <- function(bin){
+  return(time_bins$mid_ma[which(time_bins$bin == bin)])
+}
+
+plot_df <- data.frame(Time = rep(unlist(lapply(X = mode_df$time_bin, FUN = find_equiv))),
+                      N_modes = c(mode_df$Nmodes_PALEOMAP, mode_df$Nmodes_GOLONKA, mode_df$Nmodes_MERDITH2021),
+                      model = c(rep("PALEOMAP", nrow(mode_df)), rep("GOLONKA", nrow(mode_df)), rep("MERDITH2021", nrow(mode_df))))
+
+p <- ggplot(data = plot_df, aes(x = Time, y = N_modes, group = model, colour = model)) +
+  geom_step(linewidth = 1) +
+  scale_x_reverse() +
+  scale_y_continuous(limits = c(0.75,3.25), breaks = 1:3) +
+  scale_color_manual(values = c("#fe9929", "#dd3497", "#3690c0")) +
+  theme(axis.title.x = element_text(size = 14),
+        axis.title.y = element_text(size = 14),
+        axis.text = element_text(size = 12),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        panel.background = element_blank(),
+        panel.border = element_rect(colour = "black", fill = NA, linewidth = 0.5)) +
+  deeptime::coord_geo(dat = "periods")
+  #Save
+ggsave(plot = p,
+       filename = "./figures/mode_number_draft.png",
+       height = 200,
+       width = 300,
+       units = "mm",
+       dpi = 600)
 
 ## For visualisation, subset PALEOMAP in time bin 79 (Danian) ------------------
 subset <- occdf[which( (occdf$time_bin_assignment == 79) & (is.na(occdf$PALEOMAP_bin) == FALSE)),
