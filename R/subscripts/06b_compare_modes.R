@@ -113,10 +113,27 @@ row.names(subset) <- 1:nrow(subset)
 idx <- row.names(unique(subset[, c("genus", "PALEOMAP_bin")]))
 idx <- unlist(lapply(X = idx, FUN = as.numeric))
 subset <- subset[idx,]
-  # Add the random number and plot
-subset$rand <- unlist(lapply(X = 1:nrow(subset),
+  # Add the random number
+subset$rand <- unlist(lapply(X = subset$PALEOMAP_bin,
                              FUN = assign_rand))
-par(mfrow = c(1,2))
-plot(density(subset$p_lat_PALEOMAP))
-plot(density(subset$rand))
+  #diversity data
+div <- readRDS("./data/processed/genus_counts.RDS")
+div_bin <- div$n_genera[which((div$stage_bin == 79) & 
+                                (div$model == "PALEOMAP") & 
+                                (is.na(div$paleolat_bin) == FALSE))]
+
+bwRT_bin <- stats::bw.nrd0(subset$PALEOMAP_bin)
+nmodes_bin <- multimode::nmodes(data = subset$PALEOMAP_bin, bw = bwRT_bin)
+
+mdl = "PALEOMAP"
+nmodes_rand <- mode_gathering(subset = subset, N = 20)
+
+bwRT_lat <- stats::bw.nrd0(subset$p_lat_PALEOMAP)
+nmodes_lat <- multimode::nmodes(data = subset$p_lat_PALEOMAP, bw = bwRT_lat)
+
+par(mfrow = c(2,2))
+plot(density(subset$PALEOMAP_bin), main = paste0("Without smoothing (", nmodes_bin, " modes)"), xlab = "Lat. bin")
+plot(density(subset$rand), main = paste0("After smoothing (", nmodes_rand, " modes)"), xlab = "Lat. bin")
+plot(density(subset$p_lat_PALEOMAP), main = paste0("Without latitudinal binning (", nmodes_lat, " modes)"), xlab = "Latitude (°)")
+plot(x = 1:6 , y = div_bin, type = 'b', main = "Actual diversity estimate", xlab = "Lat. bin", ylab = "Genus count")
 
