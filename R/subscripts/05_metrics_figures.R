@@ -136,7 +136,6 @@ met2_sqs <- div_sqs %>%
   pivot_longer(cols = c(p_g, p_m, g_m)) %>%
   complete(stage = time_bins$bin, name) %>%
   left_join(time_bins, by = c("stage" = "bin"))
-  
 
 gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = value, color = name, group = name)) +
   geom_point(aes(shape = name), size = 1.5, position = position_dodge(width = 2)) +
@@ -204,6 +203,13 @@ ggsave("./figures/metric_2_raw_reg.pdf",
          geom_smooth(aes(x = mid_ma, y = value, color = name, group = name),
                      method = "lm"),
        width = 13, height = 4.5)
+
+# Combine #1 and #2 -------------------------------------------------
+ggsave("./figures/metrics_1_2_sqs.pdf",
+       ggarrange2(gg_met1_sqs, gg_met2_sqs, ncol = 1), width = 10, height = 8)
+
+ggsave("./figures/metrics_1_2_raw.pdf",
+       ggarrange2(gg_met1_raw, gg_met2_raw, ncol = 1), width = 10, height = 8)
 
 # Metric #3: sum of squares -----------------------------------------
 met3_sqs <- div_sqs %>%
