@@ -132,13 +132,14 @@ gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
-  scale_fill_viridis_c("Proportional estimated genus richness", limits = c(0, 1),
+  scale_fill_viridis_c("Norm. est. genus richness", limits = c(0, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 20) +
-  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5)) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             legend.title = element_text(margin = margin(0, 15, 0, 0))) +
   facet_wrap(~model, ncol = 1)
 ggsave("./figures/heatmap_SQS.pdf", gg_heatmap_sqs, width = 13, height = 13.5)
 
@@ -154,12 +155,13 @@ gg_heatmap_raw <- ggplot(data = div_raw_join) +
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
-  scale_fill_viridis_c("Proportional raw genus richness", limits = c(0, 1),
+  scale_fill_viridis_c("Norm. raw genus richness", limits = c(0, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 20) +
-  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5)) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             legend.title = element_text(margin = margin(0, 15, 0, 0))) +
   facet_wrap(~model, ncol = 1)
 ggsave("./figures/heatmap_raw.pdf", gg_heatmap_raw, width = 13, height = 13.5)

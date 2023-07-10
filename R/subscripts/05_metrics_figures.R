@@ -54,28 +54,26 @@ met1_sqs_rects <- met1_sqs %>%
   mutate(ymin = ifelse(hemi == "north", 3.5, -Inf),
          ymax = ifelse(hemi == "north", Inf, 3.5))
 
-gg_met1_sqs <- ggplot(met1_sqs) +
-  geom_rect(data = met1_sqs_rects, aes(xmin = max_ma, xmax = min_ma,
-                                       ymin = ymin, ymax = ymax), fill = "grey90") +
-  geom_point(aes(x = mid_ma, y = factor(mid), color = model, shape = model), size = 1.5) +
-  geom_line(aes(x = mid_ma, y = factor(mid), color = model,
-                group = interaction(hemi, model)), linewidth = .75) +
+gg_met1_sqs <- ggplot(met1_sqs, aes(x = mid_ma, y = as.numeric(factor(mid)), color = model)) +
+  geom_rect(data = met1_sqs_rects, inherit.aes = FALSE,
+            aes(xmin = max_ma, xmax = min_ma, ymin = ymin, ymax = ymax), fill = "grey90") +
+  geom_point(size = 1.5, position = position_dodge(width = 2)) +
+  geom_line(aes(group = interaction(hemi, model)), linewidth = .75,
+            position = position_dodge(width = 2)) +
   geom_hline(yintercept = 3.5) +
   annotate(geom = "text", x = 538, y = c(0.6, 6.4),
            label = c("S. Hemisphere", "N. Hemisphere"),
            hjust = 0, size = 5) +
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
-  scale_y_discrete("Most Diverse Bin",
-                   limits = factor(sort(lat_bins$mid)),
-                   labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
-                   expand = expansion(add = .75)) +
+  scale_y_continuous("Most Diverse Bin", breaks = 1:6,
+                     labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+                     expand = expansion(add = .75)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  scale_shape_discrete(NULL) +
-  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
+  coord_geo(expand = TRUE, ylim = c(1, 6), dat = GTS2020_periods, lwd = 1,
             bord = c("left", "right", "bottom")) +
-  theme_classic(base_size = 14) +
+  theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_1.pdf", gg_met1_sqs, width = 13, height = 4.5)
+ggsave("./figures/metric_1.pdf", gg_met1_sqs, width = 13, height = 6)
 
 met1_raw <- div_raw %>%
   filter(!is.na(paleolat_bin)) %>%
@@ -95,121 +93,117 @@ met1_raw_rects <- met1_raw %>%
   mutate(ymin = ifelse(hemi == "north", 3.5, -Inf),
          ymax = ifelse(hemi == "north", Inf, 3.5))
 
-gg_met1_raw <- ggplot(met1_raw) +
-  geom_rect(data = met1_raw_rects, aes(xmin = max_ma, xmax = min_ma,
-                                       ymin = ymin, ymax = ymax), fill = "grey90") +
-  geom_point(aes(x = mid_ma, y = factor(mid), color = model, shape = model), size = 1.5) +
-  geom_line(aes(x = mid_ma, y = factor(mid), color = model,
-                group = interaction(hemi, model)), linewidth = .75) +
+gg_met1_raw <- ggplot(met1_raw, aes(x = mid_ma, y = as.numeric(factor(mid)), color = model)) +
+  geom_rect(data = met1_raw_rects, inherit.aes = FALSE,
+            aes(xmin = max_ma, xmax = min_ma, ymin = ymin, ymax = ymax), fill = "grey90") +
+  geom_point(size = 1.5, position = position_dodge(width = 2)) +
+  geom_line(aes(group = interaction(hemi, model)), linewidth = .75,
+            position = position_dodge(width = 2)) +
   geom_hline(yintercept = 3.5) +
   annotate(geom = "text", x = 538, y = c(0.6, 6.4),
            label = c("S. Hemisphere", "N. Hemisphere"),
            hjust = 0, size = 5) +
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
-  scale_y_discrete("Most Diverse Bin",
-                   limits = factor(sort(lat_bins$mid)),
-                   labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
-                   expand = expansion(add = .75)) +
+  scale_y_continuous("Most Diverse Bin", breaks = 1:6,
+                     labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+                     expand = expansion(add = .75)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  scale_shape_discrete(NULL) +
-  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
+  coord_geo(expand = TRUE, ylim = c(1, 6), dat = GTS2020_periods, lwd = 1,
             bord = c("left", "right", "bottom")) +
-  theme_classic(base_size = 14) +
+  theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_1_raw.pdf", gg_met1_raw, width = 13, height = 4.5)
+ggsave("./figures/metric_1_raw.pdf", gg_met1_raw, width = 13, height = 6)
 
 # Metric #2: rank order diffs ---------------------------------------
 met2_sqs <- div_sqs %>%
   filter(!is.na(paleolat_bin), !is.na(qD)) %>%
   select(stage, paleolat_bin, model, qD) %>%
-  group_by(model, stage) %>%
-  filter(n() > 1) %>%
-  arrange(-qD) %>%
-  mutate(rank = row_number()) %>%
-  ungroup() %>%
-  pivot_wider(id_cols = c(stage, paleolat_bin), names_from = model, values_from = rank) %>%
-  group_by(stage) %>%
-  summarise(p_g = mean(abs(PALEOMAP - GOLONKA), na.rm = TRUE),
-            p_m = mean(abs(PALEOMAP - MERDITH2021), na.rm = TRUE),
-            g_m = mean(abs(GOLONKA - MERDITH2021), na.rm = TRUE),
-            .groups = "drop") %>%
-  pivot_longer(cols = c(p_g, p_m, g_m)) %>%
-  complete(stage = time_bins$bin, name) %>%
+  inner_join(., ., by = c("stage" = "stage", "paleolat_bin" = "paleolat_bin"),
+             relationship = "many-to-many") %>%
+  filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
+           (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
+           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+  group_by(stage, model.x, model.y) %>%
+  arrange(-qD.x) %>%
+  mutate(rank.x = row_number()) %>%
+  arrange(-qD.y) %>%
+  mutate(rank.y = row_number()) %>%
+  summarise(avg = mean(abs(rank.x - rank.y)), n_bins = n(), .groups = "drop") %>%
+  filter(n_bins > 1) %>%
+  mutate(avg_norm = avg / c(0, 1, 4/3, 2, 2.4, 3)[n_bins]) %>%
+  complete(stage = time_bins$bin, model.x, model.y) %>%
+  filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
+           (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
+           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+  mutate(models = paste(model.x, model.y, sep = "/")) %>%
   left_join(time_bins, by = c("stage" = "bin"))
 
-gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = value, color = name, group = name)) +
-  geom_point(aes(shape = name), size = 1.5, position = position_dodge(width = 2)) +
+gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = avg_norm, color = models, group = models)) +
+  geom_point(size = 1.5, position = position_dodge(width = 2)) +
   geom_line(linewidth = .75, position = position_dodge(width = 2)) +
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
-  scale_y_continuous("Average Rank Order Difference", limits = c(0,3)) +
-  scale_colour_viridis_d(NULL, end = .9, labels = c("GOLONKA/MERDITH2021",
-                                                    "PALEOMAP/GOLONKA",
-                                                    "PALEOMAP/MERDITH2021")) +
-  scale_shape_discrete(NULL, labels = c("GOLONKA/MERDITH2021",
-                                        "PALEOMAP/GOLONKA",
-                                        "PALEOMAP/MERDITH2021")) +
+  scale_y_continuous("Norm. Avg. Rank Order Diff.", limits = c(0, 1)) +
+  scale_colour_viridis_d(NULL, end = .9) +
   coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
             bord = c("left", "right", "bottom")) +
-  theme_classic(base_size = 14) +
+  theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_2.pdf", gg_met2_sqs, width = 13, height = 4.5)
+ggsave("./figures/metric_2.pdf", gg_met2_sqs, width = 13, height = 6)
 
 met2_sqs %>%
-  nest_by(name) %>%
-  mutate(mod = list(lm(value ~ mid_ma, data = data))) %>% 
+  nest_by(models) %>%
+  mutate(mod = list(lm(avg_norm ~ mid_ma, data = data))) %>% 
   summarize(glance(mod))
 
 ggsave("./figures/metric_2_reg.pdf",
-       gg_met2_sqs +
-         geom_smooth(aes(x = mid_ma, y = value, color = name, group = name),
-                     method = "lm"),
-       width = 13, height = 4.5)
+       gg_met2_sqs + geom_smooth(method = "lm"),
+       width = 13, height = 6)
 
 met2_raw <- div_raw %>%
-  filter(!is.na(paleolat_bin)) %>%
+  filter(!is.na(paleolat_bin), !is.na(n_genera), n_genera > 0) %>%
   select(stage_bin, paleolat_bin, model, n_genera) %>%
-  group_by(model, stage_bin) %>%
-  arrange(-n_genera) %>%
-  mutate(rank = row_number()) %>%
-  ungroup() %>%
-  pivot_wider(id_cols = c(stage_bin, paleolat_bin), names_from = model, values_from = rank) %>%
-  group_by(stage_bin) %>%
-  summarise(p_g = mean(abs(PALEOMAP - GOLONKA)),
-            p_m = mean(abs(PALEOMAP - MERDITH2021)),
-            g_m = mean(abs(GOLONKA - MERDITH2021)), .groups = "drop") %>%
-  pivot_longer(cols = c(p_g, p_m, g_m)) %>%
-  left_join(time_bins, by = c("stage_bin" = "bin")) %>%
-  complete(stage_bin, name)
+  inner_join(., ., by = c("stage_bin" = "stage_bin", "paleolat_bin" = "paleolat_bin"),
+             relationship = "many-to-many") %>%
+  filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
+           (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
+           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+  group_by(stage_bin, model.x, model.y) %>%
+  arrange(-n_genera.x) %>%
+  mutate(rank.x = row_number()) %>%
+  arrange(-n_genera.y) %>%
+  mutate(rank.y = row_number()) %>%
+  summarise(avg = mean(abs(rank.x - rank.y)), n_bins = n(), .groups = "drop") %>%
+  filter(n_bins > 1) %>%
+  mutate(avg_norm = avg / c(0, 1, 4/3, 2, 2.4, 3)[n_bins]) %>%
+  complete(stage_bin = time_bins$bin, model.x, model.y) %>%
+  filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
+           (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
+           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+  mutate(models = paste(model.x, model.y, sep = "/")) %>%
+  left_join(time_bins, by = c("stage_bin" = "bin"))
 
-gg_met2_raw <- ggplot(met2_sqs, aes(x = mid_ma, y = value, color = name, group = name)) +
-  geom_point(aes(shape = name), size = 1.5, position = position_dodge(width = 2)) +
+gg_met2_raw <- ggplot(met2_raw, aes(x = mid_ma, y = avg_norm, color = models, group = models)) +
+  geom_point(size = 1.5, position = position_dodge(width = 2)) +
   geom_line(linewidth = .75, position = position_dodge(width = 2)) +
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
-  scale_y_continuous("Mean Rank Order Difference") +
-  scale_colour_viridis_d(NULL, end = .9, labels = c("GOLONKA/MERDITH2021",
-                                                    "PALEOMAP/GOLONKA",
-                                                    "PALEOMAP/MERDITH2021")) +
-  scale_shape_discrete(NULL, labels = c("GOLONKA/MERDITH2021",
-                                        "PALEOMAP/GOLONKA",
-                                        "PALEOMAP/MERDITH2021")) +
+  scale_y_continuous("Norm. Avg. Rank Order Diff.", limits = c(0, 1)) +
+  scale_colour_viridis_d(NULL, end = .9) +
   coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
             bord = c("left", "right", "bottom")) +
-  theme_classic(base_size = 14) +
+  theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_2_raw.pdf", gg_met2_raw, width = 13, height = 4.5)
+ggsave("./figures/metric_2_raw.pdf", gg_met2_raw, width = 13, height = 6)
 
 ggsave("./figures/metric_2_raw_reg.pdf",
-       gg_met2_raw +
-         geom_smooth(aes(x = mid_ma, y = value, color = name, group = name),
-                     method = "lm"),
-       width = 13, height = 4.5)
+       gg_met2_raw + geom_smooth(method = "lm"),
+       width = 13, height = 6)
 
 # Combine #1 and #2 -------------------------------------------------
 ggsave("./figures/metrics_1_2_sqs.pdf",
-       ggarrange2(gg_met1_sqs, gg_met2_sqs, ncol = 1), width = 10, height = 8)
+       ggarrange2(gg_met1_sqs, gg_met2_sqs, ncol = 1, draw = FALSE), width = 13, height = 12)
 
 ggsave("./figures/metrics_1_2_raw.pdf",
-       ggarrange2(gg_met1_raw, gg_met2_raw, ncol = 1), width = 10, height = 8)
+       ggarrange2(gg_met1_raw, gg_met2_raw, ncol = 1, draw = FALSE), width = 13, height = 12)
 
 # Metric #3: sum of squares -----------------------------------------
 met3_sqs <- div_sqs %>%
