@@ -8,6 +8,7 @@
 library(grid)
 library(ggplot2)
 library(dplyr)
+library(tidyr)
 library(palaeoverse)
 
 # Data ------------------------------------------------------------------
@@ -71,15 +72,16 @@ div_sqs_join <- div_sqs %>%
 p <- ggplot(data = div_sqs_join, aes(x = mid,
                                      y = qD_norm1,
                                      colour = model)) +
-  geom_point(aes(shape = model), size = 1.5) +
-  geom_line(linewidth = 0.75, alpha = 1) +
+  geom_point(aes(shape = Method), size = 1.5, position = position_dodge(width = 2)) +
+  geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
-  scale_shape_discrete(NULL) +
+  scale_shape_discrete(NULL, limits = c("Extrapolation", "Rarefaction")) +
+  scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
-  labs(y = "Proportional estimated genus richness",
+  labs(y = "Normalized estimated genus richness",
        x = "Palaeolatitude (\u00B0)") +
-  theme_bw(base_size = 16) +
+  theme_bw(base_size = 18) +
   theme(legend.position = "top")
 
 #Update strip colours
@@ -91,21 +93,21 @@ for (i in strip_t) {
                         stages$interval_name)]
 }
 
-ggsave("./figures/LBGs_sqs.pdf", g, width = 15, height = 15)
+ggsave("./figures/LBGs_sqs.pdf", g, width = 16, height = 16)
 
 # raw plot
 p <- ggplot(data = div_raw_join, aes(x = mid,
                                      y = n_genera_norm1,
                                      colour = model)) +
-  geom_point(aes(shape = model), size = 1.5) +
-  geom_line(linewidth = 0.75, alpha = 1) +
+  geom_point(size = 1.5, position = position_dodge(width = 2)) +
+  geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
-  scale_shape_discrete(NULL) +
+  scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
-  labs(y = "Proportional raw genus richness",
+  labs(y = "Normalized raw genus richness",
        x = "Palaeolatitude (\u00B0)") +
-  theme_bw(base_size = 16) +
+  theme_bw(base_size = 18) +
   theme(legend.position = "top")
 
 #Update strip colours
@@ -117,7 +119,7 @@ for (i in strip_t) {
                         stages$interval_name)]
 }
 
-ggsave("./figures/LBGs_raw.pdf", g, width = 15, height = 15)
+ggsave("./figures/LBGs_raw.pdf", g, width = 16, height = 16)
 
 # Heatmap --------------------------------------------------------
 # sqs plot
