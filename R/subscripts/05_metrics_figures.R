@@ -335,3 +335,40 @@ ggsave("./figures/metric_4_raw.pdf", gg_met4_raw, width = 13, height = 4.5)
 #   theme_classic(base_size = 14) +
 #   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
 # ggsave("./figures/metric_4b.pdf", gg_met4b_sqs, width = 13, height = 4.5)
+
+
+## Sampling through time metric ---------------------------------
+  #Load data
+occdf <- readRDS("./data/processed/pbdb_data.RDS")
+colldf <- occdf %>% select(collection_no, bin_assignment)
+colldf <- unique(colldf)
+row.names(colldf) <- 1:nrow(colldf)
+  #Evaluate number of collection through time
+n_col <- unlist(lapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
+                       FUN = function(x){
+                         idx <- which(colldf$bin_assignment == x)
+                         return(length(idx))
+                       }))
+
+nb_coll.df <- data.frame(time_bin = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
+                         number_of_collections = n_col)
+nb_coll.df$mid_time <- unlist(lapply(X = nb_coll.df$time_bin,
+                                     FUN = function(x){
+                                       return(time_bins$mid_ma[which(time_bins$bin == x)])
+                                     }))
+
+col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collections)) +
+  scale_x_reverse(limits = c(542, -0.7),
+                  breaks = c(0, 100, 200, 300, 400, 500),
+                  labels = c(0, 100, 200, 300, 400, 500)) +
+  scale_y_continuous(limits = c(0, 4100),
+                     breaks = c(0, 1000, 2000, 3000, 4000),
+                     labels = c(0, 1000, 2000, 3000, 4000)) +
+  geom_point(size = 2, colour = "blue") +
+  geom_line(linewidth = 1, colour = "blue") +
+  labs(x = "Time (Ma)",
+       y = "Number of collections") +
+  theme_will(axis.title.x = element_text(size = 14),
+             axis.title.y = element_text(size = 14)) +
+  coord_geo(lwd = 1)
+ggsave("./figures/Number_of_collections.pdf", col_plot, width = 13, height = 6)
