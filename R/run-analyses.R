@@ -19,3 +19,5 @@ rm(list = ls())
 # metrics figures
 source("./R/subscripts/05_metrics_figures.R")
 rm(list = ls())
+# average GDD
+source("./R/subscripts/07_Average_GDD.R")
