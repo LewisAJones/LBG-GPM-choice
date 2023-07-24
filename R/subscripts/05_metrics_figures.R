@@ -73,7 +73,7 @@ gg_met1_sqs <- ggplot(met1_sqs, aes(x = mid_ma, y = as.numeric(factor(mid)), col
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_1.pdf", gg_met1_sqs, width = 13, height = 6)
+ggsave("./figures/metric_1.png", gg_met1_sqs, width = 13, height = 6)
 
 met1_raw <- div_raw %>%
   filter(!is.na(paleolat_bin)) %>%
@@ -112,7 +112,7 @@ gg_met1_raw <- ggplot(met1_raw, aes(x = mid_ma, y = as.numeric(factor(mid)), col
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_1_raw.pdf", gg_met1_raw, width = 13, height = 6)
+ggsave("./figures/metric_1_raw.png", gg_met1_raw, width = 13, height = 6)
 
 # Metric #2: rank order diffs ---------------------------------------
 met2_sqs <- div_sqs %>%
@@ -148,14 +148,14 @@ gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = avg_norm, color = models, gr
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_2.pdf", gg_met2_sqs, width = 13, height = 6)
+ggsave("./figures/metric_2.png", gg_met2_sqs, width = 13, height = 6)
 
 met2_sqs %>%
   nest_by(models) %>%
   mutate(mod = list(lm(avg_norm ~ mid_ma, data = data))) %>% 
   summarize(glance(mod))
 
-ggsave("./figures/metric_2_reg.pdf",
+ggsave("./figures/metric_2_reg.png",
        gg_met2_sqs + geom_smooth(method = "lm"),
        width = 13, height = 6)
 
@@ -192,17 +192,17 @@ gg_met2_raw <- ggplot(met2_raw, aes(x = mid_ma, y = avg_norm, color = models, gr
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_2_raw.pdf", gg_met2_raw, width = 13, height = 6)
+ggsave("./figures/metric_2_raw.png", gg_met2_raw, width = 13, height = 6)
 
-ggsave("./figures/metric_2_raw_reg.pdf",
+ggsave("./figures/metric_2_raw_reg.png",
        gg_met2_raw + geom_smooth(method = "lm"),
        width = 13, height = 6)
 
 # Combine #1 and #2 -------------------------------------------------
-ggsave("./figures/metrics_1_2_sqs.pdf",
+ggsave("./figures/metrics_1_2_sqs.png",
        ggarrange2(gg_met1_sqs, gg_met2_sqs, ncol = 1, draw = FALSE), width = 13, height = 12)
 
-ggsave("./figures/metrics_1_2_raw.pdf",
+ggsave("./figures/metrics_1_2_raw.png",
        ggarrange2(gg_met1_raw, gg_met2_raw, ncol = 1, draw = FALSE), width = 13, height = 12)
 
 # Metric #3: sum of squares -----------------------------------------
@@ -235,7 +235,7 @@ gg_met3_sqs <- ggplot(met3_sqs) +
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 14) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_3.pdf", gg_met3_sqs, width = 13, height = 4.5)
+ggsave("./figures/metric_3.png", gg_met3_sqs, width = 13, height = 4.5)
 
 met3_raw <- div_raw %>%
   filter(!is.na(paleolat_bin)) %>%
@@ -266,7 +266,7 @@ gg_met3_raw <- ggplot(met3_raw) +
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 14) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_3_raw.pdf", gg_met3_raw, width = 13, height = 4.5)
+ggsave("./figures/metric_3_raw.png", gg_met3_raw, width = 13, height = 4.5)
 
 # Metric #4: best fit model -----------------------------------------
 met4_sqs <- div_sqs %>%
@@ -289,7 +289,7 @@ gg_met4_sqs <- ggplot(met4_sqs) +
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 14) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_4.pdf", gg_met4_sqs, width = 13, height = 4.5)
+ggsave("./figures/metric_4.png", gg_met4_sqs, width = 13, height = 4.5)
 
 met4_raw <- div_raw %>%
   filter(!is.na(paleolat_bin)) %>%
@@ -311,7 +311,7 @@ gg_met4_raw <- ggplot(met4_raw) +
             bord = c("left", "right", "bottom")) +
   theme_classic(base_size = 14) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_4_raw.pdf", gg_met4_raw, width = 13, height = 4.5)
+ggsave("./figures/metric_4_raw.png", gg_met4_raw, width = 13, height = 4.5)
 
 # Metric #4b: GAM knots -----------------------------------------
 # met4b_sqs <- div_sqs %>%
@@ -334,7 +334,7 @@ ggsave("./figures/metric_4_raw.pdf", gg_met4_raw, width = 13, height = 4.5)
 #             bord = c("left", "right", "bottom")) +
 #   theme_classic(base_size = 14) +
 #   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-# ggsave("./figures/metric_4b.pdf", gg_met4b_sqs, width = 13, height = 4.5)
+# ggsave("./figures/metric_4b.png", gg_met4b_sqs, width = 13, height = 4.5)
 
 
 ## Sampling through time metric ---------------------------------
@@ -371,4 +371,4 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14)) +
   coord_geo(lwd = 1)
-ggsave("./figures/Number_of_collections.pdf", col_plot, width = 13, height = 6)
+ggsave("./figures/Number_of_collections.png", col_plot, width = 13, height = 6)

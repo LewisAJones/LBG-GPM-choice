@@ -11,7 +11,7 @@ occdf <- readRDS("./data/processed/pbdb_data.RDS")
 colldf <- occdf %>% select(collection_no, bin_assignment, matches("GOLONKA"), matches("PALEOMAP"), matches("MERDITH2021"))
 colldf <- unique(colldf)
 row.names(colldf) <- 1:nrow(colldf)
-## Assess mean pairwise geaodesic distance per lat bin for each time bin -------
+## Assess mean pairwise geodesic distance per lat bin for each time bin -------
 geodes <- c()
 for(t in unique(sort(colldf$bin_assignment, decreasing = FALSE))){
   coll_idx <- which(colldf$bin_assignment == t)
@@ -49,9 +49,9 @@ p <- ggplot(data = plot_df, aes(x = time, y = GDD)) +
   scale_x_reverse(limits = c(542, -0.7),
                   breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(600, 3400),
-                     breaks = c(1000, 1500, 2000, 2500, 3000),
-                  labels = c(1000, 1500, 2000, 2500, 3000)) +
+  scale_y_continuous(limits = c(0, 7500),
+                     breaks = c(0, 1500, 3000, 4500, 6000, 7500),
+                  labels = c(0, 1500, 3000, 4500, 6000, 7500)) +
   geom_point(size = 2, colour = "#e7298a") +
   geom_line(linewidth = 1, colour = "#e7298a") +
   labs(x = "Time (Ma)",
@@ -59,4 +59,4 @@ p <- ggplot(data = plot_df, aes(x = time, y = GDD)) +
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14)) +
   coord_geo(lwd = 1)
-ggsave("./figures/Average_GDD.pdf", p, width = 13, height = 6)
+ggsave("./figures/Average_GDD.png", p, width = 13, height = 6)

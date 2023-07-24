@@ -100,6 +100,25 @@ As the estimated latitudinal distribution of biodiversity is closely tied to the
 
 # Results (600 words)
 
+```{r}
+#| label: fig-heatmap
+#| fig-cap: Heat maps of estimated palaeolatitudinal richness from the Fortunian (541 Ma, Cambrian) to the Holocene (0 Ma, Quaternary) for three Global Plate Models: Golonka (REF), Merdith2021 (REF), and PALEOMAP (REF). Richness estimates were generated using coverage-based rarefaction (level = 0.4) (REF) within three palaeolatitudinal bins for each hemisphere (low, middle, high). Differences between 
+
+
+
+
+#| echo: false
+knitr::include_graphics(path = "../figures/heatmap_SQS.png")
+```
+
+
+```{r}
+#| label: fig-metrics
+#| fig-cap: Graphic 
+#| echo: false
+knitr::include_graphics(path = "../figures/metrics_1_2_sqs.png")
+```
+
 -   Summary of reconstructions (could all points be reconstructed for each model?)
 -   Summary of results from metrics, do different gradients emerge?
 

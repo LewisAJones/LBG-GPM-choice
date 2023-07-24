@@ -93,7 +93,7 @@ for (i in strip_t) {
                         stages$interval_name)]
 }
 
-ggsave("./figures/LBGs_sqs.pdf", g, width = 16, height = 16)
+ggsave("./figures/LBGs_sqs.png", g, width = 16, height = 16)
 
 # raw plot
 p <- ggplot(data = div_raw_join, aes(x = mid,
@@ -119,7 +119,7 @@ for (i in strip_t) {
                         stages$interval_name)]
 }
 
-ggsave("./figures/LBGs_raw.pdf", g, width = 16, height = 16)
+ggsave("./figures/LBGs_raw.png", g, width = 16, height = 16)
 
 # Heatmap --------------------------------------------------------
 # sqs plot
@@ -143,7 +143,7 @@ gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
              legend.title = element_text(margin = margin(0, 15, 0, 0))) +
   facet_wrap(~model, ncol = 1)
-ggsave("./figures/heatmap_SQS.pdf", gg_heatmap_sqs, width = 13, height = 13.5)
+ggsave("./figures/heatmap_SQS.png", gg_heatmap_sqs, width = 13, height = 13.5)
 
 # raw plot
 gg_heatmap_raw <- ggplot(data = div_raw_join) +
@@ -166,4 +166,4 @@ gg_heatmap_raw <- ggplot(data = div_raw_join) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
              legend.title = element_text(margin = margin(0, 15, 0, 0))) +
   facet_wrap(~model, ncol = 1)
-ggsave("./figures/heatmap_raw.pdf", gg_heatmap_raw, width = 13, height = 13.5)
+ggsave("./figures/heatmap_raw.png", gg_heatmap_raw, width = 13, height = 13.5)
