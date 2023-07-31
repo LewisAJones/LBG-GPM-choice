@@ -31,16 +31,7 @@ for(t in unique(sort(colldf$bin_assignment, decreasing = FALSE))){
 }
 ## Plot ------------------------------------------------------------------------
   #Harmonise plotting setup with the rest of the plots
-theme_will <- function(...) {
-  theme(axis.ticks = element_line(color = "black", linewidth = 1),
-        axis.line = element_blank(),
-        plot.margin = unit(c(1,1,1,1), "lines"),
-        axis.text = element_text(colour = "black", size = 12),
-        panel.border = element_rect(linetype = "solid", colour = "black",
-                                    fill = NA, linewidth = 2),
-        panel.background = element_blank(),
-        ...)
-}
+source("./R/functions/theme_will.R")
   #Proper plot
 t_bins <- readRDS("./data/time_bins.RDS")
 plot_df <- data.frame(time = sort(t_bins$mid_ma[which(t_bins$bin %in% colldf$bin_assignment)], decreasing = TRUE),

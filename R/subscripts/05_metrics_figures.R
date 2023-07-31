@@ -22,15 +22,7 @@ lat_bins <- readRDS("./data/lat_bins.RDS")
 time_bins <- readRDS("./data/time_bins.RDS")
 
 # Setup common things for figures
-theme_will <- function(...) {
-  theme(axis.ticks = element_line(color = "black", linewidth = 1),
-        axis.line = element_blank(),
-        plot.margin = unit(c(1,1,1,1), "lines"),
-        axis.text = element_text(colour = "black"),
-        panel.border = element_rect(linetype = "solid", colour = "black",
-                                    fill = NA, linewidth = 2),
-        ...)
-}
+source("./R/functions/theme_will.R")
 GTS2020_periods <- time_bins(rank = "period") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
