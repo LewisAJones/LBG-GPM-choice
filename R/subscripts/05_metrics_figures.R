@@ -356,8 +356,8 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
   scale_y_continuous(limits = c(0, 4100),
                      breaks = c(0, 1000, 2000, 3000, 4000),
                      labels = c(0, 1000, 2000, 3000, 4000)) +
-  geom_point(size = 2, colour = "blue") +
-  geom_line(linewidth = 1, colour = "blue") +
+  geom_point(size = 2, colour = "#e7298a") +
+  geom_line(linewidth = 1, colour = "#e7298a") +
   labs(x = "Time (Ma)",
        y = "Number of collections") +
   theme_will(axis.title.x = element_text(size = 14),
