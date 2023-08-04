@@ -330,6 +330,7 @@ ggsave("./figures/metric_4_raw.png", gg_met4_raw, width = 13, height = 4.5)
 
 
 ## Sampling through time metric ---------------------------------
+#### 1. Overall plot
   #Load data
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
 colldf <- occdf %>% select(collection_no, bin_assignment)
@@ -364,3 +365,41 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
              axis.title.y = element_text(size = 14)) +
   coord_geo(lwd = 1)
 ggsave("./figures/Number_of_collections.png", col_plot, width = 13, height = 6)
+
+#### 2. Per-stage plot
+  #Load data
+occdf <- readRDS("./data/processed/pbdb_data.RDS")
+  #Retain features of interest and filter by collection
+tmp <- occdf %>% select(collection_no, bin_assignment, PALEOMAP_bin, GOLONKA_bin, MERDITH2021_bin)
+tmp <- unique(tmp)
+  #Create collection dataframe
+colldf <- rbind(tmp[, 1:2], tmp[, 1:2], tmp[, 1:2])
+colldf$model <- c(rep("GOLONKA", nrow(tmp)),
+                  rep("PALEOMAP", nrow(tmp)),
+                  rep("MERDITH2021", nrow(tmp)))
+colldf$plat_bin <- c(tmp$GOLONKA_bin, 
+                     tmp$PALEOMAP_bin, 
+                     tmp$MERDITH2021_bin)
+  #Assess number of collections per lat bin through time
+colldf1 <- colldf %>% 
+  group_by(model, bin_assignment, plat_bin) %>% 
+  count(plat_bin) %>% 
+  rename("occ_number" = n) %>% 
+  full_join(stages, by = c("bin_assignment" = "bin")) %>% 
+  full_join(lats, by = c("plat_bin" = "bin")) %>%
+  filter(!is.na(model)) %>%
+  filter(!is.na(plat_bin))
+  #Plot
+p <- ggplot(data = colldf1, aes(x = plat_bin,
+                                y = occ_number,
+                                colour = model)) +
+  geom_point(size = 1.5) +
+  geom_line(linewidth = 0.75, alpha = 1) +
+  scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
+  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10, scales = "free") +
+  labs(y = "Number of collections",
+       x = "Latitudinal bin") +
+  theme_bw(base_size = 18) +
+  theme(legend.position = "top")
+  #Save
+ggsave("./figures/Nb_collections_per_stage.png", p, width = 16, height = 16)
