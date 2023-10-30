@@ -10,6 +10,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(palaeoverse)
+library(deeptime)
 
 # Data ------------------------------------------------------------------
 # Load bins

@@ -385,8 +385,8 @@ colldf1 <- colldf %>%
   group_by(model, bin_assignment, plat_bin) %>% 
   count(plat_bin) %>% 
   rename("occ_number" = n) %>% 
-  full_join(stages, by = c("bin_assignment" = "bin")) %>% 
-  full_join(lats, by = c("plat_bin" = "bin")) %>%
+  full_join(time_bins, by = c("bin_assignment" = "bin")) %>% 
+  full_join(lat_bins, by = c("plat_bin" = "bin")) %>%
   filter(!is.na(model)) %>%
   filter(!is.na(plat_bin))
   #Plot
