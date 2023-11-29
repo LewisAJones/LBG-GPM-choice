@@ -411,12 +411,14 @@ colldf1 <- colldf %>%
   group_by(model, bin_assignment, plat_bin) %>% 
   count(plat_bin) %>% 
   rename("occ_number" = n) %>% 
+  ungroup() %>%
+  complete(bin_assignment = time_bins$bin, plat_bin, model) %>%
   full_join(time_bins, by = c("bin_assignment" = "bin")) %>% 
   full_join(lat_bins, by = c("plat_bin" = "bin")) %>%
   filter(!is.na(model)) %>%
   filter(!is.na(plat_bin))
   #Plot
-p <- ggplot(data = colldf1, aes(x = plat_bin,
+p <- ggplot(data = colldf1, aes(x = mid,
                                 y = occ_number,
                                 colour = model)) +
   geom_point(size = 1.5) +
@@ -424,9 +426,18 @@ p <- ggplot(data = colldf1, aes(x = plat_bin,
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)), nrow = 10, scales = "free") +
   labs(y = "Number of collections",
-       x = "Latitudinal bin") +
+       x = "Paleolatitudinal bin") +
   theme_bw(base_size = 18) +
   theme(strip.text.x = element_text(size = 10.5),
         legend.position = "top")
+
+#Update strip colours
+g <- ggplot_gtable(ggplot_build(p))
+strip_t <- which(grepl('strip-t', g$layout$name))
+for (i in strip_t) {
+  g$grobs[[i]]$grobs[[1]]$children[[1]]$gp$fill <-
+    time_bins$colour[match(g$grobs[[i]]$grobs[[1]]$children[[2]]$children[[1]]$label,
+                           time_bins$interval_name)]
+}
   #Save
-ggsave("./figures/Nb_collections_per_stage.png", p, width = 16, height = 16)
+ggsave("./figures/Nb_collections_per_stage.png", g, width = 16, height = 16)
