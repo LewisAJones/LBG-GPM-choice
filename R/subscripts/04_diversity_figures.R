@@ -142,7 +142,7 @@ gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
 ggsave("./figures/heatmap_SQS.png", gg_heatmap_sqs, width = 13, height = 13.5)
 
 # raw plot
-gg_heatmap_raw <- ggplot(data = div_raw_join) +
+gg_heatmap_raw <- ggplot(data = div_raw_join %>% mutate(n_genera_norm1 = ifelse(n_genera_norm1 == 0, NA, n_genera_norm1))) +
   geom_tile(aes(x = mid_ma, y = factor(mid),
                 width = duration_myr, height = 1, fill = n_genera_norm1)) +
   geom_hline(yintercept = 3.5) +
