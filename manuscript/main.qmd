@@ -100,7 +100,6 @@ As the estimated latitudinal distribution of biodiversity is closely tied to the
 
 # Results (600 words)
 
-<<<<<<< HEAD
 - Summary of reconstructions (could all points be reconstructed for each model?)
 - Summary of results from metrics, do different gradients emerge?
 - How much data did we lose for each model?
@@ -142,7 +141,6 @@ knitr::include_graphics(path = "../figures/metrics_1_2_sqs.png")
 
 -   Summary of reconstructions (could all points be reconstructed for each model?)
 -   Summary of results from metrics, do different gradients emerge?
->>>>>>> 12a821b45edf7f1134a787df15ad8acabeacc627
 
 # Discussion (700 words)
 
