@@ -426,7 +426,7 @@ p <- ggplot(data = colldf1, aes(x = mid,
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)), nrow = 10, scales = "free") +
   labs(y = "Number of collections",
-       x = "Paleolatitudinal bin") +
+       x = "Palaeolatitudinal bin") +
   theme_bw(base_size = 18) +
   theme(strip.text.x = element_text(size = 10.5),
         legend.position = "top")

@@ -26,6 +26,9 @@ source("./R/functions/theme_will.R")
 GTS2020_periods <- time_bins(rank = "period") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
+GTS2020_eras <- time_bins(rank = "era") %>%
+  rename(name = interval_name, max_age = max_ma, min_age = min_ma,
+         color = colour, lab_color = font)
 
 # Wrangling -------------------------------------------------------------
 # Set factor levels
@@ -72,8 +75,8 @@ p <- ggplot(data = div_sqs_join, aes(x = mid,
   scale_shape_discrete(NULL, limits = c("Extrapolation", "Rarefaction")) +
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
-  labs(y = "Normalized estimated genus richness",
-       x = "Palaeolatitude (\u00B0)") +
+  labs(y = "Normalised estimated genus richness",
+       x = "Palaeolatitudinal bin") +
   theme_bw(base_size = 18) +
   theme(legend.position = "top")
 
@@ -98,8 +101,8 @@ p <- ggplot(data = div_raw_join, aes(x = mid,
                          limits = na.exclude(unique(div_sqs_join$model))) +
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
-  labs(y = "Normalized raw genus richness",
-       x = "Palaeolatitude (\u00B0)") +
+  labs(y = "Normalised raw genus richness",
+       x = "Palaeolatitudinal bin") +
   theme_bw(base_size = 18) +
   theme(legend.position = "top")
 
@@ -123,15 +126,15 @@ gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
   annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
   annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
-  scale_y_discrete("Latitudinal Bin",
+  scale_y_discrete("Palaeolatitudinal bin",
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
   scale_fill_viridis_c("Norm. est. genus richness", limits = c(0, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
-  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
-            bord = c("left", "right", "bottom")) +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
              legend.title = element_text(margin = margin(0, 15, 0, 0))) +
@@ -146,15 +149,15 @@ gg_heatmap_raw <- ggplot(data = div_raw_join) +
   annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
   annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
-  scale_y_discrete("Latitudinal Bin",
+  scale_y_discrete("Palaeolatitudinal bin",
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
   scale_fill_viridis_c("Norm. raw genus richness", limits = c(0, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
-  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
-            bord = c("left", "right", "bottom")) +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
              legend.title = element_text(margin = margin(0, 15, 0, 0))) +
