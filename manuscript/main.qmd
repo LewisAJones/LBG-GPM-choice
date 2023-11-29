@@ -5,7 +5,7 @@ author:
   - Lewis A. Jones^1^, Bethany J. Allen^2,3^, William Gearty^4^, and Lucas Buffan^5^
   - "---"
   - "^1^Grupo de Ecoloxía Animal, Departamento de Ecoloxía e Bioloxía Animal, Universidade de Vigo, 36310 Vigo, Spain."
-  - "^2^Department of Biosystems Science and Engineering, ETH Zürich, 4058 Basel, Switzerland."
+  - "^2^Department of Biosystems Science and Engineering, ETH Zürich, 4056 Basel, Switzerland."
   - "^3^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland."
   - "^4^Division of Paleontology, American Museum of Natural History, New York, NY, 10024 USA."
   - "^5^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
@@ -83,8 +83,25 @@ Subsequent data manipulation and visualisation was carried out using the Tidyver
 
 # Results (600 words)
 
--   Summary of reconstructions (could all points be reconstructed for each model?)
--   Summary of results from metrics, do different gradients emerge?
+- Summary of reconstructions (could all points be reconstructed for each model?)
+- Summary of results from metrics, do different gradients emerge?
+- How much data did we lose for each model?
+
+Figures
+Add eras to x-axes? (Will)
+- Figure 1 - Create figure of mean latitudinal pairwise distances, comparing in degrees and km, with a 'ribbon' showing 95% confidence intervals (Lucas)
+- Figure 2 - Normalised estimated SQS genus richness - change to "palaeolatitudinal bin" (Will)
+- Figure 3 - Most diverse bin and normalised rank order for SQS
+
+- Supplement - Normalised estimated raw genus richness - spatial bins with 0 samples should be greyed out (Will)
+- LBGs plotted as curves for each temporal bin
+- Create number of collections plotted as curves for each temporal bin (Lucas)
+- Additional heat maps for each pair of models with the difference in genera estimated
+
+To write
+- Figure 2: The overall trend is the same, i.e. most diversity in southern hemisphere before the Permian, and in the northern hemisphere after the Permian, in all three models. Data absence is noticeable. Highest richness tends to be at mid latitudes, rather than low latitudes - but is this bias? Paleomap has weird high N latitudes peak in the Paleogene, why?
+- Figure 3a: Calculate number of bins for which we have matches and non-matches (currently greyed in the figure), comparison between the two hemispheres. More grey on the right - more agreement in more recent times.
+- Figure 3b: Reduced differences in the Mesozoic, why? Some of these differences reach 1, this represents the maximum amount of difference, i.e. completely opposite.
 
 # Discussion (700 words)
 
