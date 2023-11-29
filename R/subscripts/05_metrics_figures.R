@@ -26,6 +26,9 @@ source("./R/functions/theme_will.R")
 GTS2020_periods <- time_bins(rank = "period") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
+GTS2020_eras <- time_bins(rank = "era") %>%
+  rename(name = interval_name, max_age = max_ma, min_age = min_ma,
+         color = colour, lab_color = font)
 
 # Metric #1: max diversity bin  -----------------------------------------
 met1_sqs <- div_sqs %>%
@@ -34,13 +37,15 @@ met1_sqs <- div_sqs %>%
   mutate(hemi = ifelse(mid > 0, "north", "south")) %>%
   group_by(model, stage, hemi) %>%
   filter(sum(!is.na(qD)) > 0) %>%
+  # find lat bin with highest diversity
   summarise(max_bin = paleolat_bin[which.max(qD)], .groups = "drop") %>%
-  complete(model, stage, hemi) %>%
+  complete(model, stage = time_bins$bin, hemi) %>%
   left_join(lat_bins, by = c("max_bin" = "bin")) %>%
   left_join(time_bins, by = c("stage" = "bin"))
 
 met1_sqs_rects <- met1_sqs %>%
   group_by(stage, hemi, max_ma, min_ma) %>%
+  # do all models have the same bin?
   summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop") %>%
   filter(all_same) %>%
   mutate(ymin = ifelse(hemi == "north", 3.5, -Inf),
@@ -61,8 +66,8 @@ gg_met1_sqs <- ggplot(met1_sqs, aes(x = mid_ma, y = as.numeric(factor(mid)), col
                      labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                      expand = expansion(add = .75)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  coord_geo(expand = TRUE, ylim = c(1, 6), dat = GTS2020_periods, lwd = 1,
-            bord = c("left", "right", "bottom")) +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
 ggsave("./figures/metric_1.png", gg_met1_sqs, width = 13, height = 6)
@@ -73,13 +78,15 @@ met1_raw <- div_raw %>%
   mutate(hemi = ifelse(mid > 0, "north", "south")) %>%
   group_by(model, stage_bin, hemi) %>%
   filter(sum(!is.na(n_genera)) > 0) %>%
+  # find lat bin with highest diversity
   summarise(max_bin = paleolat_bin[which.max(n_genera)], .groups = "drop") %>%
-  complete(model, stage_bin, hemi) %>%
+  complete(model, stage_bin = time_bins$bin, hemi) %>%
   left_join(lat_bins, by = c("max_bin" = "bin")) %>%
   left_join(time_bins, by = c("stage_bin" = "bin"))
 
 met1_raw_rects <- met1_raw %>%
   group_by(stage_bin, hemi, max_ma, min_ma) %>%
+  # do all models have the same bin?
   summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop") %>%
   filter(all_same) %>%
   mutate(ymin = ifelse(hemi == "north", 3.5, -Inf),
@@ -100,8 +107,8 @@ gg_met1_raw <- ggplot(met1_raw, aes(x = mid_ma, y = as.numeric(factor(mid)), col
                      labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                      expand = expansion(add = .75)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  coord_geo(expand = TRUE, ylim = c(1, 6), dat = GTS2020_periods, lwd = 1,
-            bord = c("left", "right", "bottom")) +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
 ggsave("./figures/metric_1_raw.png", gg_met1_raw, width = 13, height = 6)
@@ -112,18 +119,25 @@ met2_sqs <- div_sqs %>%
   select(stage, paleolat_bin, model, qD) %>%
   inner_join(., ., by = c("stage" = "stage", "paleolat_bin" = "paleolat_bin"),
              relationship = "many-to-many") %>%
+  # remove duplicates (with reversed x and y)
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
            (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
   group_by(stage, model.x, model.y) %>%
+  # get ranks for "x" model
   arrange(-qD.x) %>%
   mutate(rank.x = row_number()) %>%
+  # get ranks for "y" model
   arrange(-qD.y) %>%
   mutate(rank.y = row_number()) %>%
+  # calculate average rank difference
   summarise(avg = mean(abs(rank.x - rank.y)), n_bins = n(), .groups = "drop") %>%
+  # remove time bins with 1 or fewer lat bins
   filter(n_bins > 1) %>%
+  # normalize to maximum possible average difference
   mutate(avg_norm = avg / c(0, 1, 4/3, 2, 2.4, 3)[n_bins]) %>%
   complete(stage = time_bins$bin, model.x, model.y) %>%
+  # remove duplicates (with reversed x and y)
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
            (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
@@ -136,8 +150,8 @@ gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = avg_norm, color = models, gr
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
   scale_y_continuous("Norm. Avg. Rank Order Diff.", limits = c(0, 1)) +
   scale_colour_viridis_d(NULL, end = .9) +
-  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
-            bord = c("left", "right", "bottom")) +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
 ggsave("./figures/metric_2.png", gg_met2_sqs, width = 13, height = 6)
@@ -156,16 +170,22 @@ met2_raw <- div_raw %>%
   select(stage_bin, paleolat_bin, model, n_genera) %>%
   inner_join(., ., by = c("stage_bin" = "stage_bin", "paleolat_bin" = "paleolat_bin"),
              relationship = "many-to-many") %>%
+  # remove duplicates (with reversed x and y)
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
            (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
   group_by(stage_bin, model.x, model.y) %>%
+  # get ranks for "x" model
   arrange(-n_genera.x) %>%
   mutate(rank.x = row_number()) %>%
+  # get ranks for "y" model
   arrange(-n_genera.y) %>%
   mutate(rank.y = row_number()) %>%
+  # calculate average rank difference
   summarise(avg = mean(abs(rank.x - rank.y)), n_bins = n(), .groups = "drop") %>%
+  # remove time bins with 1 or fewer lat bins
   filter(n_bins > 1) %>%
+  # normalize to maximum possible average difference
   mutate(avg_norm = avg / c(0, 1, 4/3, 2, 2.4, 3)[n_bins]) %>%
   complete(stage_bin = time_bins$bin, model.x, model.y) %>%
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
@@ -180,11 +200,16 @@ gg_met2_raw <- ggplot(met2_raw, aes(x = mid_ma, y = avg_norm, color = models, gr
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
   scale_y_continuous("Norm. Avg. Rank Order Diff.", limits = c(0, 1)) +
   scale_colour_viridis_d(NULL, end = .9) +
-  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
-            bord = c("left", "right", "bottom")) +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
 ggsave("./figures/metric_2_raw.png", gg_met2_raw, width = 13, height = 6)
+
+met2_raw %>%
+  nest_by(models) %>%
+  mutate(mod = list(lm(avg_norm ~ mid_ma, data = data))) %>% 
+  summarize(glance(mod))
 
 ggsave("./figures/metric_2_raw_reg.png",
        gg_met2_raw + geom_smooth(method = "lm"),
@@ -363,7 +388,8 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
        y = "Number of collections") +
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14)) +
-  coord_geo(lwd = 1)
+  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 ggsave("./figures/Number_of_collections.png", col_plot, width = 13, height = 6)
 
 #### 2. Per-stage plot
