@@ -396,10 +396,11 @@ p <- ggplot(data = colldf1, aes(x = plat_bin,
   geom_point(size = 1.5) +
   geom_line(linewidth = 0.75, alpha = 1) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10, scales = "free") +
+  facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)), nrow = 10, scales = "free") +
   labs(y = "Number of collections",
        x = "Latitudinal bin") +
   theme_bw(base_size = 18) +
-  theme(legend.position = "top")
+  theme(strip.text.x = element_text(size = 10.5),
+        legend.position = "top")
   #Save
 ggsave("./figures/Nb_collections_per_stage.png", p, width = 16, height = 16)
