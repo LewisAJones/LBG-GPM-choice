@@ -163,3 +163,89 @@ gg_heatmap_raw <- ggplot(data = div_raw_join %>% mutate(n_genera_norm1 = ifelse(
              legend.title = element_text(margin = margin(0, 15, 0, 0))) +
   facet_wrap(~model, ncol = 1)
 ggsave("./figures/heatmap_raw.png", gg_heatmap_raw, width = 13, height = 13.5)
+
+# Difference heatmaps ####
+diffs_sqs <- div_sqs %>%
+  filter(!is.na(paleolat_bin), !is.na(qD)) %>%
+  select(stage, paleolat_bin, model, qD) %>%
+  inner_join(., ., by = c("stage" = "stage", "paleolat_bin" = "paleolat_bin"),
+             relationship = "many-to-many") %>%
+  # remove duplicates (with reversed x and y)
+  filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
+           (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
+           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+  group_by(stage, paleolat_bin, model.x, model.y) %>%
+  summarise(diff = qD.x - qD.y, .groups = "drop") %>%
+  complete(stage = stages$bin, model.x, model.y) %>%
+  # remove duplicates (with reversed x and y)
+  filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
+           (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
+           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+  mutate(models = paste(model.x, model.y, sep = " - ")) %>%
+  left_join(stages, by = c("stage" = "bin")) %>%
+  left_join(lats, by = c("paleolat_bin" = "bin"))
+
+diffs_heatmap_sqs <- ggplot(data = diffs_sqs) +
+  geom_tile(aes(x = mid_ma, y = factor(mid),
+                width = duration_myr, height = 1, fill = diff)) +
+  geom_hline(yintercept = 3.5) +
+  annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
+  annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
+  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_y_discrete("Palaeolatitudinal bin",
+                   limits = factor(sort(lats$mid)),
+                   labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+                   expand = expansion(add = 1.25)) +
+  scale_fill_viridis_c("Norm. est. genus richness", limits = c(-30, 30),
+                       option = "plasma", end = .8, na.value = "grey80",
+                       guide = guide_colorbar(barwidth = 15)) +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
+  theme_classic(base_size = 20) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             legend.title = element_text(margin = margin(0, 15, 0, 0))) +
+  facet_wrap(~models, ncol = 1)
+ggsave("./figures/diffs_heatmap_sqs.png", diffs_heatmap_sqs, width = 13, height = 13.5)
+
+diffs_raw <- div_raw %>%
+  filter(!is.na(paleolat_bin), !is.na(n_genera), n_genera > 0) %>%
+  select(stage_bin, paleolat_bin, model, n_genera) %>%
+  inner_join(., ., by = c("stage_bin" = "stage_bin", "paleolat_bin" = "paleolat_bin"),
+             relationship = "many-to-many") %>%
+  # remove duplicates (with reversed x and y)
+  filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
+           (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
+           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+  group_by(stage_bin, paleolat_bin, model.x, model.y) %>%
+  summarise(diff = n_genera.x - n_genera.y, .groups = "drop") %>%
+  complete(stage_bin = stages$bin, model.x, model.y) %>%
+  # remove duplicates (with reversed x and y)
+  filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
+           (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
+           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+  mutate(models = paste(model.x, model.y, sep = " - ")) %>%
+  left_join(stages, by = c("stage_bin" = "bin")) %>%
+  left_join(lats, by = c("paleolat_bin" = "bin"))
+
+diffs_heatmap_raw <- ggplot(data = diffs_raw) +
+  geom_tile(aes(x = mid_ma, y = factor(mid),
+                width = duration_myr, height = 1, fill = diff)) +
+  geom_hline(yintercept = 3.5) +
+  annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
+  annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
+  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_y_discrete("Palaeolatitudinal bin",
+                   limits = factor(sort(lats$mid)),
+                   labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+                   expand = expansion(add = 1.25)) +
+  scale_fill_viridis_c("Norm. raw genus richness", limits = c(-50, 50),
+                       option = "plasma", end = .8, na.value = "grey80",
+                       guide = guide_colorbar(barwidth = 15)) +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
+  theme_classic(base_size = 20) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             legend.title = element_text(margin = margin(0, 15, 0, 0))) +
+  facet_wrap(~models, ncol = 1)
+ggsave("./figures/diffs_heatmap_raw.png", diffs_heatmap_raw, width = 13, height = 13.5)
+
