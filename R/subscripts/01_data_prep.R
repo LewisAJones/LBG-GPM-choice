@@ -1,7 +1,7 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 01_data_prep.R
-# Last updated: 2023-03-07
+# Last updated: 2023-07-31
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Load libraries --------------------------------------------------------
 library(palaeoverse)
@@ -10,7 +10,7 @@ source("./R/options.R")
 # Load custom functions
 source("./R/functions/equal_area_lat_bins.R")
 # Get data --------------------------------------------------------------
-if (params$download) {
+if (params$download || !file.exists("./data/raw/pbdb_data.RDS")) {
   # Use for fresh downloads
   library(RCurl)
   RCurl::curlSetOpt(3000)

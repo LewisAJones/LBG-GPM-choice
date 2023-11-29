@@ -8,6 +8,9 @@
 library(grid)
 library(ggplot2)
 library(dplyr)
+library(tidyr)
+library(palaeoverse)
+library(deeptime)
 
 # Data ------------------------------------------------------------------
 # Load bins
@@ -17,6 +20,12 @@ stages <- readRDS("./data/time_bins.RDS")
 # Load data
 div_sqs <- readRDS("./data/processed/interpolations.RDS")
 div_raw <- readRDS("./data/processed/genus_counts.RDS")
+
+# Setup common things for figures ---------------------------------------
+source("./R/functions/theme_will.R")
+GTS2020_periods <- time_bins(rank = "period") %>%
+  rename(name = interval_name, max_age = max_ma, min_age = min_ma,
+         color = colour, lab_color = font)
 
 # Wrangling -------------------------------------------------------------
 # Set factor levels
@@ -33,6 +42,7 @@ div_raw_join <- div_raw %>%
   mutate(n_genera_norm1 = n_genera / max(n_genera, na.rm = TRUE)) %>%
   ungroup() %>%
   mutate(n_genera_norm2 = n_genera / n_genera.global) %>%
+  complete(stage_bin = stages$bin, paleolat_bin, model) %>%
   full_join(stages, by = c("stage_bin" = "bin")) %>%
   full_join(lats, by = c("paleolat_bin" = "bin"))
 
@@ -46,21 +56,25 @@ div_sqs_join <- div_sqs %>%
   mutate(qD_norm1 = qD / max(qD, na.rm = TRUE)) %>%
   ungroup() %>%
   mutate(qD_norm2 = qD / qD.global) %>%
-  full_join(stages, by = c("stage" = "bin")) %>%
-  full_join(lats, by = c("paleolat_bin" = "bin"))
+  complete(stage = stages$bin, paleolat_bin, model) %>%
+  left_join(stages, by = c("stage" = "bin")) %>%
+  left_join(lats, by = c("paleolat_bin" = "bin"))
 
 # Plot data -------------------------------------------------------------
 # sqs plot
 p <- ggplot(data = div_sqs_join, aes(x = mid,
                                      y = qD_norm1,
                                      colour = model)) +
-  geom_line(linewidth = 0.75, alpha = 1) +
+  geom_point(aes(shape = Method), size = 1.5, position = position_dodge(width = 2)) +
+  geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
+  scale_shape_discrete(NULL, limits = c("Extrapolation", "Rarefaction")) +
+  scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
-  labs(y = "Proportional estimated genus richness",
+  labs(y = "Normalized estimated genus richness",
        x = "Palaeolatitude (\u00B0)") +
-  theme_bw(base_size = 16) +
+  theme_bw(base_size = 18) +
   theme(legend.position = "top")
 
 #Update strip colours
@@ -72,19 +86,21 @@ for (i in strip_t) {
                         stages$interval_name)]
 }
 
-ggsave("./figures/LBGs_sqs.pdf", g, width = 15, height = 15)
+ggsave("./figures/LBGs_sqs.png", g, width = 16, height = 16)
 
 # raw plot
 p <- ggplot(data = div_raw_join, aes(x = mid,
                                      y = n_genera_norm1,
                                      colour = model)) +
-  geom_line(linewidth = 0.75, alpha = 1) +
+  geom_point(size = 1.5, position = position_dodge(width = 2)) +
+  geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
+  scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
-  labs(y = "Proportional raw genus richness",
+  labs(y = "Normalized raw genus richness",
        x = "Palaeolatitude (\u00B0)") +
-  theme_bw(base_size = 16) +
+  theme_bw(base_size = 18) +
   theme(legend.position = "top")
 
 #Update strip colours
@@ -96,4 +112,51 @@ for (i in strip_t) {
                         stages$interval_name)]
 }
 
-ggsave("./figures/LBGs_raw.pdf", g, width = 15, height = 15)
+ggsave("./figures/LBGs_raw.png", g, width = 16, height = 16)
+
+# Heatmap --------------------------------------------------------
+# sqs plot
+gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
+  geom_tile(aes(x = mid_ma, y = factor(mid),
+                width = duration_myr, height = 1, fill = qD_norm1)) +
+  geom_hline(yintercept = 3.5) +
+  annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
+  annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
+  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_y_discrete("Latitudinal Bin",
+                   limits = factor(sort(lats$mid)),
+                   labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+                   expand = expansion(add = 1.25)) +
+  scale_fill_viridis_c("Norm. est. genus richness", limits = c(0, 1),
+                       option = "plasma", end = .8, na.value = "grey80",
+                       guide = guide_colorbar(barwidth = 15)) +
+  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
+            bord = c("left", "right", "bottom")) +
+  theme_classic(base_size = 20) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             legend.title = element_text(margin = margin(0, 15, 0, 0))) +
+  facet_wrap(~model, ncol = 1)
+ggsave("./figures/heatmap_SQS.png", gg_heatmap_sqs, width = 13, height = 13.5)
+
+# raw plot
+gg_heatmap_raw <- ggplot(data = div_raw_join) +
+  geom_tile(aes(x = mid_ma, y = factor(mid),
+                width = duration_myr, height = 1, fill = n_genera_norm1)) +
+  geom_hline(yintercept = 3.5) +
+  annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
+  annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
+  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_y_discrete("Latitudinal Bin",
+                   limits = factor(sort(lats$mid)),
+                   labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+                   expand = expansion(add = 1.25)) +
+  scale_fill_viridis_c("Norm. raw genus richness", limits = c(0, 1),
+                       option = "plasma", end = .8, na.value = "grey80",
+                       guide = guide_colorbar(barwidth = 15)) +
+  coord_geo(expand = TRUE, dat = GTS2020_periods, lwd = 1,
+            bord = c("left", "right", "bottom")) +
+  theme_classic(base_size = 20) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             legend.title = element_text(margin = margin(0, 15, 0, 0))) +
+  facet_wrap(~model, ncol = 1)
+ggsave("./figures/heatmap_raw.png", gg_heatmap_raw, width = 13, height = 13.5)

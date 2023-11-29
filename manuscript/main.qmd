@@ -53,13 +53,25 @@ Here, we test how much Global Plate Model choice influences the recognition of '
 
 <!-- Download data -->
 
-`r ddate <- format(file.info("../data/raw/pbdb_data.RDS")$ctime, format = "%B %d %Y")` <!-- Palaeoverse version --> `r palaeoverse_ver <- packageVersion("palaeoverse")` <!-- Analysis options --> `r source("../R/options.R")` <!-- Number of occurrences --> `r n_occ <- format(nrow(readRDS("../data/processed/pbdb_data.RDS")), big.mark = ",")` <!-- Number of collections --> `r n_coll <- format(length(unique(readRDS("../data/processed/pbdb_data.RDS")$collection_no)), big.mark = ",")`
+`r ddate <- format(file.info("../data/raw/pbdb_data.RDS")$ctime, format = "%B %d %Y")` 
+
+<!-- Palaeoverse version --> 
+`r palaeoverse_ver <- packageVersion("palaeoverse")` 
+
+<!-- Analysis options --> 
+`r source("../R/options.R")` 
+
+<!-- Number of occurrences --> 
+`r n_occ <- format(nrow(readRDS("../data/processed/pbdb_data.RDS")), big.mark = ",")` 
+
+<!-- Number of collections --> 
+`r n_coll <- format(length(unique(readRDS("../data/processed/pbdb_data.RDS")$collection_no)), big.mark = ",")`
 
 We downloaded Fortunian--Piacenzian (541--0 Ma) fossil occurrence data from the Paleobiology Database (PBDB; <https://paleobiodb.org/>) for five major marine invertebrate groups (Bivalvia, Brachiopoda, Cephalopoda, Gastropoda, Trilobita) on `r ddate`. Fossil occurrence data were downloaded using the PBDB API service and were restricted to marine environments and regular preservation (i.e. excluding form taxa and ichnotaxa). Occurrence data were subsequently binned into stratigraphic stage-level time bins following the Geological Timescale 2020 [@gradstein2020], with the exception of Holocene and Pleistocene stages which were collapsed into their equivalent Epoch-level bins (i.e. Holocene and Pleistocene). Temporal binning was carried out using the bin_time() function from the palaeoverse R package ver. `r palaeoverse_ver`, using the 'majority' approach [@jones2023]. Subsequently, we removed all occurrences with less than `r params$threshold`% of their age range covered by their assigned temporal bin. After data preparation, the occurrence dataset contained `r n_occ` occurrences from `r n_coll` collections.
 
 ## Palaeogeographic reconstruction and binning
 
-To reconstruct the palaeogeographic distributions of fossil occurrences, we used localities' present-day coordinates and midpoint age from their assigned temporal bins with three Global Plate Models: PALEOMAP [@scotese2018], GOLONKA [@wright2013], and MERDITH2021 [@merdith2021]. Palaeogeographic reconstructions were generated using the GPlates Web Service (<https://gwsdoc.gplates.org>) via the palaeorotate() function in palaeoverse ver. `r palaeoverse_ver` [@jones2023]. For each Global Plate Model, fossil occurrences were binned into one of twelve equal-area latitudinal bins, using the estimated palaeolatitudes ([@tbl-bins]). The number of fossil occurrences which were unable to be rotated due to model incompatibility was also logged for each Global Plate Model.
+To reconstruct the palaeogeographic distributions of fossil occurrences, we used localities' present-day coordinates and midpoint age from their assigned temporal bins with three Global Plate Models: PALEOMAP [@scotese2018], GOLONKA [@wright2013], and MERDITH2021 [@merdith2021]. Palaeogeographic reconstructions were generated using the GPlates Web Service (<https://gwsdoc.gplates.org>) via the palaeorotate() function in palaeoverse ver. `r palaeoverse_ver` [@jones2023]. For each Global Plate Model, fossil occurrences were binned into one of six equal-area latitudinal bins, using the estimated palaeolatitudes ([@tbl-bins]). These latitudinal bins broadly represent three climatic zones within each hemisphere: tropical, temperate, and polar. The number of fossil occurrences which were unable to be rotated due to model incompatibility was recorded for each Global Plate Model.
 
 ```{r}
 #| label: tbl-bins
@@ -77,12 +89,18 @@ kable(df)
 
 ## Quantifying the latitudinal biodiversity gradient
 
-Subsequent data manipulation and visualisation was carried out using the Tidyverse suite of R packages [@wickham2019]. The raw number of genera was counted per stage per palaeolatitudinal bin for each Global Plate Model. We also estimated the latitudinal biodiversity gradient using coverage-based interpolation and extrapolation of Hill numbers, in the R package iNEXT [@hsieh2016]. The rarefaction portion of this approach is equivalent to shareholder quorum subsampling [@alroy2010; @close2018]. Extrapolated values with an estimated sample size above twice that observed were discarded [@hsieh2016].
+<!-- iNEXT version --> 
+`r iNEXT_ver <- packageVersion("iNEXT")` 
 
-- Will and Lucas to add visualisation and curve comparison
+Subsequent data manipulation and visualisation were carried out using the Tidyverse suite of R packages [@wickham2019]. The raw number of genera were counted per stage per palaeolatitudinal bin for each Global Plate Model. We also estimated the latitudinal biodiversity gradient using coverage-based interpolation and extrapolation of Hill numbers with a coverage level of 0.4, in the R package iNEXT ver. `r iNEXT_ver` [@hsieh2016]. The rarefaction portion of this approach is equivalent to shareholder quorum subsampling [@alroy2010; @close2018]. Extrapolated values with an estimated sample size more than double that of the observed sample size were discarded [@hsieh2016]. 
+
+We compared estimated latitudinal biodiversity gradients using two approaches. Firstly, for each stage, we computed the palaeolatitudinal bin with maximum estimated richness for each Global Plate Model. Subsequently, we calculated the number of stages in which estimated gradients agree, as well as the number of bins with a tropical, temperate, and polar peak in diversity. Secondly, we calculated the mean pairwise rank order difference between Global Plate Models. That is, for each stage and Global Plate Model, the latitudinal bins were put in rank order and the differences between models were computed and the mean calculated. The former of these metrics tests whether models agree on where peak diversity is concentrated in each Global Plate Model. The latter, tests for differences in the estimated ordered distribution of diversity (e.g. tropical-to-temperate-to-polar, temperate-tropical-polar, etc.). 
+
+As the estimated latitudinal distribution of biodiversity is closely tied to the distribution of fossil collections (REFs), we also computed the number of collections in each latitudinal bin and stratigraphic stage for each Global Plate Model. Furthermore, we calculated the mean geodesic distance between the reconstructed palaeocoordinates for each fossil collection to test whether reconstructions of the latitudinal biodiversity gradient are more sensitive to plate rotation model choice with increasing age of rotation.
 
 # Results (600 words)
 
+<<<<<<< HEAD
 - Summary of reconstructions (could all points be reconstructed for each model?)
 - Summary of results from metrics, do different gradients emerge?
 - How much data did we lose for each model?
@@ -102,6 +120,29 @@ To write
 - Figure 2: The overall trend is the same, i.e. most diversity in southern hemisphere before the Permian, and in the northern hemisphere after the Permian, in all three models. Data absence is noticeable. Highest richness tends to be at mid latitudes, rather than low latitudes - but is this bias? Paleomap has weird high N latitudes peak in the Paleogene, why?
 - Figure 3a: Calculate number of bins for which we have matches and non-matches (currently greyed in the figure), comparison between the two hemispheres. More grey on the right - more agreement in more recent times.
 - Figure 3b: Reduced differences in the Mesozoic, why? Some of these differences reach 1, this represents the maximum amount of difference, i.e. completely opposite.
+=======
+```{r}
+#| label: fig-heatmap
+#| fig-cap: Heat maps of estimated palaeolatitudinal richness from the Fortunian (541 Ma, Cambrian) to the Holocene (0 Ma, Quaternary) for three Global Plate Models: Golonka (REF), Merdith2021 (REF), and PALEOMAP (REF). Richness estimates were generated using coverage-based rarefaction (level = 0.4) (REF) within three palaeolatitudinal bins for each hemisphere (low, middle, high). Differences between 
+
+
+
+
+#| echo: false
+knitr::include_graphics(path = "../figures/heatmap_SQS.png")
+```
+
+
+```{r}
+#| label: fig-metrics
+#| fig-cap: Graphic 
+#| echo: false
+knitr::include_graphics(path = "../figures/metrics_1_2_sqs.png")
+```
+
+-   Summary of reconstructions (could all points be reconstructed for each model?)
+-   Summary of results from metrics, do different gradients emerge?
+>>>>>>> 12a821b45edf7f1134a787df15ad8acabeacc627
 
 # Discussion (700 words)
 
@@ -113,9 +154,15 @@ To write
 
 # Data accessibility
 
+The data generated in this study have been included within the paper, its supplementary material, and dedicated GitHub repository [](XXX).
+
 # Authors' contributions
 
+L.A.J conceived the project. All authors contributed to the development of the project. All authors contributed to the writing of the manuscript. All authors contributed to the data analyses of the manuscript. W.G. produced the figures. 
+
 # Funding
+
+The contributions of L.A.J. were supported by a Juan de la Cierva-formación 2021 fellowship (FJC2021-046695-I / MCIN / AEI / 10.13039 / 501100011033) from the European Union “NextGenerationEU”/PRTR. L.A.J. also received funding from the European Research Council under the European Union's Horizon 2020 research and innovation program (grant agreement 947921; MAPAS project). The contributions of B.J.A. were supported by.... The contributions of W.G. were supported by the Lerner-Gray Postdoctoral Research Fellowship from the Richard Gilder Graduate School at the American Museum of Natural History. The contributions of L.B. were supported by.... 
 
 # Acknowledgements
 
