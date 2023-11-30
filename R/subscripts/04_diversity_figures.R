@@ -72,7 +72,7 @@ p <- ggplot(data = div_sqs_join, aes(x = mid,
   geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
-  scale_shape_discrete(NULL, limits = c("Extrapolation", "Rarefaction")) +
+  scale_shape_discrete(NULL, limits = c("Extrapolation", "Rarefaction", "Observed")) +
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
   labs(y = "Normalised estimated genus richness",
