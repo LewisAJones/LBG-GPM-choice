@@ -4,7 +4,7 @@
 # Last updated: 2023-03-07
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
-# Load libraries --------------------------------------------------------
+# Load libraries ---------------------------------------------------------------
 library(ggplot2)
 library(ggpubr)
 library(deeptime)
@@ -13,62 +13,65 @@ library(dplyr)
 library(Rmisc)
 source("./R/functions/theme_will.R")
 
-# Load data -------------------------------------------------------------
+# Load data --------------------------------------------------------------------
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
 colldf <- occdf %>% select(collection_no, bin_assignment, bin_midpoint, matches("GOLONKA"), matches("PALEOMAP"), matches("MERDITH2021"))
 colldf <- unique(colldf)
 row.names(colldf) <- 1:nrow(colldf)
-##### LAT SD #####
-# Calculate palaeolatitudinal sd ----------------------------------------
+############################ LAT PAIRWISE DIFFERENCE ###########################
+# Lat mean pairwise difference per row -----------------------------------------
 colldf1 <- colldf
-colldf1$sd <- apply(X = colldf1[, c("p_lat_GOLONKA", "p_lat_MERDITH2021", "p_lat_PALEOMAP")],
-                   MARGIN = 1,
-                   FUN = sd) 
-# Function to jointly assess mean, 5% and 95% ---------------------------
-medCi <- function(midpoint, Which=c("mean", "5%", "95%")){
-  stdev <- colldf1$sd[which(colldf$bin_midpoint == midpoint)]
-  stdev <- stdev[-which(is.na(stdev))]
-  ci <- CI(stdev)
-  if(Which == "mean"){
-    return(ci[2])
-  }
-  else if(Which == "5%"){
-    return(ci[3])
-  }
-  else if(Which == "95%"){
-    return(ci[1])
-  }
+colldf1$mean_pair_lat_diff <- unlist(lapply(X = 1:nrow(colldf1),
+                                            FUN = function(x){
+                                              lat_diffGxP <- abs(colldf1$p_lat_GOLONKA[x] - colldf1$p_lat_PALEOMAP[x])
+                                              lat_diffMxP <- abs(colldf1$p_lat_MERDITH2021[x] - colldf1$p_lat_PALEOMAP[x])
+                                              lat_diffMxG <- abs(colldf1$p_lat_MERDITH2021[x] - colldf1$p_lat_GOLONKA[x])
+                                              return(mean(c(lat_diffGxP, lat_diffMxG, lat_diffMxP)))
+                                            }))
+colldf1 <- colldf1 %>% filter(!is.na(mean_pair_lat_diff)) #remove NAs
+# Assign 5%, median and 95% quantiles ------------------------------------------
+assign_quantiles <- function(time_midpoint, level){
+  pairwise_lat_vec <- colldf1$mean_pair_lat_diff[which(colldf1$bin_midpoint == time_midpoint)]
+  return(quantile(pairwise_lat_vec, probs = level, na.rm = TRUE))
 }
-# Summary per bin -------------------------------------------------------
-summ <- data.frame(bin_midpoint = unique(colldf1$bin_midpoint))
-summ$mean <- unlist(lapply(X = summ$bin_midpoint, FUN = medCi, Which = "mean"))
-summ$lower <- unlist(lapply(X = summ$bin_midpoint, FUN = medCi, Which = "5%"))
-summ$upper <- unlist(lapply(X = summ$bin_midpoint, FUN = medCi, Which = "95%"))
-summ <- summ %>% filter(is.na(mean) == FALSE)
-# Plot data -------------------------------------------------------------
-p1 <- ggplot(data = summ, aes(x = bin_midpoint, y = mean)) +
+
+med <- unlist(lapply(X = unique(colldf1$bin_midpoint),
+                     FUN = assign_quantiles,
+                     level = 0.5))
+low <- unlist(lapply(X = unique(colldf1$bin_midpoint),
+                     FUN = assign_quantiles,
+                     level = 0.05))
+up <- unlist(lapply(X = unique(colldf1$bin_midpoint),
+                    FUN = assign_quantiles,
+                    level = 0.95))
+# Wrap up in a table and plot --------------------------------------------------
+plot_df <- data.frame(bin_midpoint = unique(colldf1$bin_midpoint),
+                      med = med,
+                      lower = low,
+                      upper = up)
+p1 <- ggplot(data = plot_df, aes(x = bin_midpoint, y = med)) +
   scale_x_reverse(limits = c(542, -0.7),
                   breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, 20),
-                     breaks = seq(0, 20, 5),
-                     labels = seq(0, 20, 5)) +
+  scale_y_continuous(limits = c(0, max(plot_df$upper)),
+                     breaks = seq(0, 40, 5),
+                     labels = seq(0, 40, 5)) +
   geom_point(size = 2, colour = "#e7298a") +
   geom_line(linewidth = 1, colour = "#e7298a") +
-  geom_ribbon(aes(ymin = lower, ymax = upper), 
+  geom_ribbon(aes(ymin = low, ymax = upper), 
               fill = "#e7298a",
               alpha = 0.2) +
   labs(x = "Time (Ma)",
-       y = "Mean palaeolatitudinal standard deviation (º)") +
+       y = "Mean Pairwise Palaeolatitudinal Difference (º)") +
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14),
              aspect.ratio = 0.5) +
   coord_geo(lwd = 1)
 
-#### MEAN PAIRWISE GEODESIC DISTANCE ####
+###################### MEAN PAIRWISE GEODESIC DISTANCE #########################
 rm(colldf1)
 # GDD function ----------------------------------------------------------
-GDD <- function(x, Which=c("mean", "5%", "95%")) {
+GDD <- function(x) {
   gol <- as.numeric(colldf[x, c("p_lng_GOLONKA", "p_lat_GOLONKA")])
   pal <- as.numeric(colldf[x, c("p_lng_PALEOMAP", "p_lat_PALEOMAP")])
   mer <- as.numeric(colldf[x, c("p_lng_MERDITH2021", "p_lat_MERDITH2021")])
@@ -87,15 +90,14 @@ upper <- c()
 for(t in unique(sort(colldf$bin_assignment, decreasing = FALSE))){
   coll_idx <- which(colldf$bin_assignment == t)
   #Vector of the mean pairwise geodesic distances per occurrence 
-  gd_dist <- unlist(lapply(coll_idx, FUN=GDD, Which="mean"))
-  gd_dist <- gd_dist[which(is.na(gd_dist) == FALSE)] #otherwise hampers CI function
-  ci <- CI(gd_dist)
-  #Mean
-  geodes <- c(geodes, ci[2])
+  gd_dist <- unlist(lapply(coll_idx, FUN=GDD))
+  gd_dist <- gd_dist[which(is.na(gd_dist) == FALSE)]
+  #Median
+  geodes <- c(geodes, quantile(gd_dist, probs = 0.5))
   #5%
-  lower <- c(lower, ci[3])
+  lower <- c(lower, quantile(gd_dist, probs = 0.05))
   #95%
-  upper <- c(upper, ci[1])
+  upper <- c(upper, quantile(gd_dist, probs = 0.95))
 }
 ## Plot ------------------------------------------------------------------------
 #Proper plot
@@ -122,8 +124,7 @@ p2 <- ggplot(data = plot_df, aes(x = time, y = GDD)) +
              axis.title.y = element_text(size = 14)) +
   coord_geo(lwd = 1)
 
-
-#### Assemble the two plots ####
+########################## Assemble the two plots ##############################
 p <- ggarrange(p1, p2, ncol = 1, nrow = 2, labels = c("(a)", "(b)"))
 # Save plot
 ggsave(filename = "./figures/Lat_sd_and_GDD.png",
