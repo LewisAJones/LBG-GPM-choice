@@ -354,8 +354,8 @@ ggsave("./figures/metric_4_raw.png", gg_met4_raw, width = 13, height = 4.5)
 # ggsave("./figures/metric_4b.png", gg_met4b_sqs, width = 13, height = 4.5)
 
 
-## Sampling through time metric ---------------------------------
-#### 1. Overall plot
+# Sampling through time metric ---------------------------------
+## 1. Overall plot -------------------------------------
   #Load data
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
 colldf <- occdf %>% select(collection_no, bin_assignment)
@@ -392,7 +392,7 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 ggsave("./figures/Number_of_collections.png", col_plot, width = 13, height = 6)
 
-#### 2. Per-stage plot
+## 2. Per-stage plot ---------------------------
   #Load data
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
   #Retain features of interest and filter by collection
@@ -421,14 +421,14 @@ colldf1 <- colldf %>%
 p <- ggplot(data = colldf1, aes(x = mid,
                                 y = occ_number,
                                 colour = model)) +
-  geom_point(size = 1.5) +
-  geom_line(linewidth = 0.75, alpha = 1) +
+  geom_point(size = 1.5, position = position_dodge(width = 2)) +
+  geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)), nrow = 10, scales = "free") +
+  facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)), ncol = 9, scales = "free") +
   labs(y = "Number of collections",
        x = "Palaeolatitudinal bin") +
   theme_bw(base_size = 18) +
-  theme(strip.text.x = element_text(size = 10.5),
+  theme(strip.text.x = element_text(size = 14),
         legend.position = "top")
 
 #Update strip colours
@@ -440,4 +440,4 @@ for (i in strip_t) {
                            time_bins$interval_name)]
 }
   #Save
-ggsave("./figures/Nb_collections_per_stage.png", g, width = 16, height = 16)
+ggsave("./figures/Nb_collections_per_stage.png", g, width = 18, height = 22)
