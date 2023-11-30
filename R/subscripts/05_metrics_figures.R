@@ -6,6 +6,7 @@
 
 # Load libraries --------------------------------------------------------
 library(dplyr)
+library(grid)
 library(tidyr)
 library(ggplot2)
 library(broom)
@@ -44,6 +45,7 @@ met1_sqs <- div_sqs %>%
   left_join(time_bins, by = c("stage" = "bin"))
 
 met1_sqs_rects <- met1_sqs %>%
+  filter(!is.na(max_bin)) %>%
   group_by(stage, hemi, max_ma, min_ma) %>%
   # do all models have the same bin?
   summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop") %>%
@@ -85,6 +87,7 @@ met1_raw <- div_raw %>%
   left_join(time_bins, by = c("stage_bin" = "bin"))
 
 met1_raw_rects <- met1_raw %>%
+  filter(!is.na(max_bin)) %>%
   group_by(stage_bin, hemi, max_ma, min_ma) %>%
   # do all models have the same bin?
   summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop") %>%
