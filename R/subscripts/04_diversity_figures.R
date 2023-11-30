@@ -130,7 +130,7 @@ gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
-  scale_fill_viridis_c("Norm. est. genus richness", limits = c(0, 1),
+  scale_fill_viridis_c("Normalised estimated genus richness", limits = c(0, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
@@ -153,7 +153,7 @@ gg_heatmap_raw <- ggplot(data = div_raw_join %>% mutate(n_genera_norm1 = ifelse(
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
-  scale_fill_viridis_c("Norm. raw genus richness", limits = c(0, 1),
+  scale_fill_viridis_c("Normalised raw genus richness", limits = c(0, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
@@ -199,7 +199,7 @@ diffs_heatmap_sqs <- ggplot(data = diffs_sqs) +
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
-  scale_fill_viridis_c("Norm. est. genus richness", limits = c(-1, 1),
+  scale_fill_viridis_c("Difference in normalised estimated genus richness", limits = c(-1, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
@@ -244,7 +244,7 @@ diffs_heatmap_raw <- ggplot(data = diffs_raw) +
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
-  scale_fill_viridis_c("Norm. raw genus richness", limits = c(-1, 1),
+  scale_fill_viridis_c("Difference in normalised raw genus richness", limits = c(-1, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
