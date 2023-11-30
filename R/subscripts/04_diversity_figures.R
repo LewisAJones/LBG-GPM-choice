@@ -168,6 +168,9 @@ ggsave("./figures/heatmap_raw.png", gg_heatmap_raw, width = 13, height = 13.5)
 diffs_sqs <- div_sqs %>%
   filter(!is.na(paleolat_bin), !is.na(qD)) %>%
   select(stage, paleolat_bin, model, qD) %>%
+  group_by(model, stage) %>%
+  mutate(qD_norm = qD / max(qD, na.rm = TRUE)) %>%
+  ungroup() %>%
   inner_join(., ., by = c("stage" = "stage", "paleolat_bin" = "paleolat_bin"),
              relationship = "many-to-many") %>%
   # remove duplicates (with reversed x and y)
@@ -175,7 +178,7 @@ diffs_sqs <- div_sqs %>%
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
            (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
   group_by(stage, paleolat_bin, model.x, model.y) %>%
-  summarise(diff = qD.x - qD.y, .groups = "drop") %>%
+  summarise(diff = qD_norm.x - qD_norm.y, .groups = "drop") %>%
   complete(stage = stages$bin, model.x, model.y) %>%
   # remove duplicates (with reversed x and y)
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
@@ -196,7 +199,7 @@ diffs_heatmap_sqs <- ggplot(data = diffs_sqs) +
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
-  scale_fill_viridis_c("Norm. est. genus richness", limits = c(-30, 30),
+  scale_fill_viridis_c("Norm. est. genus richness", limits = c(-1, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
@@ -210,6 +213,9 @@ ggsave("./figures/diffs_heatmap_sqs.png", diffs_heatmap_sqs, width = 13, height 
 diffs_raw <- div_raw %>%
   filter(!is.na(paleolat_bin), !is.na(n_genera), n_genera > 0) %>%
   select(stage_bin, paleolat_bin, model, n_genera) %>%
+  group_by(model, stage_bin) %>%
+  mutate(n_genera_norm = n_genera / max(n_genera, na.rm = TRUE)) %>%
+  ungroup() %>%
   inner_join(., ., by = c("stage_bin" = "stage_bin", "paleolat_bin" = "paleolat_bin"),
              relationship = "many-to-many") %>%
   # remove duplicates (with reversed x and y)
@@ -217,7 +223,7 @@ diffs_raw <- div_raw %>%
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
            (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
   group_by(stage_bin, paleolat_bin, model.x, model.y) %>%
-  summarise(diff = n_genera.x - n_genera.y, .groups = "drop") %>%
+  summarise(diff = n_genera_norm.x - n_genera_norm.y, .groups = "drop") %>%
   complete(stage_bin = stages$bin, model.x, model.y) %>%
   # remove duplicates (with reversed x and y)
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
@@ -238,7 +244,7 @@ diffs_heatmap_raw <- ggplot(data = diffs_raw) +
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                    expand = expansion(add = 1.25)) +
-  scale_fill_viridis_c("Norm. raw genus richness", limits = c(-50, 50),
+  scale_fill_viridis_c("Norm. raw genus richness", limits = c(-1, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
