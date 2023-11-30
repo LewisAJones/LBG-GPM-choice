@@ -74,7 +74,7 @@ p <- ggplot(data = div_sqs_join, aes(x = mid,
                          limits = na.exclude(unique(div_sqs_join$model))) +
   scale_shape_discrete(NULL, limits = c("Extrapolation", "Rarefaction", "Observed")) +
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
-  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
+  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), ncol = 9) +
   labs(y = "Normalised estimated genus richness",
        x = "Palaeolatitudinal bin") +
   theme_bw(base_size = 18) +
@@ -89,7 +89,7 @@ for (i in strip_t) {
                         stages$interval_name)]
 }
 
-ggsave("./figures/LBGs_sqs.png", g, width = 16, height = 16)
+ggsave("./figures/LBGs_sqs.png", g, width = 14.4, height = 17.6)
 
 # raw plot
 p <- ggplot(data = div_raw_join, aes(x = mid,
@@ -100,7 +100,7 @@ p <- ggplot(data = div_raw_join, aes(x = mid,
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
-  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), nrow = 10) +
+  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), ncol = 9) +
   labs(y = "Normalised raw genus richness",
        x = "Palaeolatitudinal bin") +
   theme_bw(base_size = 18) +
@@ -115,7 +115,7 @@ for (i in strip_t) {
                         stages$interval_name)]
 }
 
-ggsave("./figures/LBGs_raw.png", g, width = 16, height = 16)
+ggsave("./figures/LBGs_raw.png", g, width = 14.4, height = 17.6)
 
 # Heatmap --------------------------------------------------------
 # sqs plot
