@@ -217,10 +217,14 @@ ggsave("./figures/metric_2_raw_reg.png",
 
 # Combine #1 and #2 -------------------------------------------------
 ggsave("./figures/metrics_1_2_sqs.png",
-       ggarrange2(gg_met1_sqs, gg_met2_sqs, ncol = 1, draw = FALSE), width = 13, height = 12)
+       ggarrange2(gg_met1_sqs, gg_met2_sqs, ncol = 1, draw = FALSE,
+                  labels = c("(a)", "(b)"), label.args = list(gp = gpar(font = 2, cex = 2))),
+       width = 13, height = 12)
 
 ggsave("./figures/metrics_1_2_raw.png",
-       ggarrange2(gg_met1_raw, gg_met2_raw, ncol = 1, draw = FALSE), width = 13, height = 12)
+       ggarrange2(gg_met1_raw, gg_met2_raw, ncol = 1, draw = FALSE,
+                  labels = c("(a)", "(b)"), label.args = list(gp = gpar(font = 2, cex = 2))),
+       width = 13, height = 12)
 
 # Metric #3: sum of squares -----------------------------------------
 met3_sqs <- div_sqs %>%
