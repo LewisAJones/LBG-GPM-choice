@@ -1,8 +1,8 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 04_lat_diff_and_GDD_figure.R
-# Aim: This script generates the Figure 1, that is, the average pairwise 
-#      latitudinal difference and geodesic distance through time.
+# Aim: Plot the average pairwise latitudinal difference and geodesic
+#      distance through time.
 # Last updated: 2023-12-01
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 

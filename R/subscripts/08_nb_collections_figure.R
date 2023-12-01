@@ -1,8 +1,8 @@
 # Header -----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 06_nb_collections_figure.R
-# Aim: Plot number of collections throug time and binned in the different 
-#      palaeolat bins per stages (Fig.S5).
+# Aim: Plot number of collections through time and binned in the different 
+#      palaeolat bins per stage (Fig.S5).
 # Last updated: 2023-03-21
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 

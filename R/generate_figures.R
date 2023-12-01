@@ -1,6 +1,6 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
-# File name: genrate-figures.R
+# File name: generate-figures.R
 # Aim: Generate figures
 # Last updated: 2023-12-01
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
