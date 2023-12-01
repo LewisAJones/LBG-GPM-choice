@@ -47,10 +47,10 @@ med <- sapply(X = unique(colldf1$bin_midpoint),
               level = 0.5)
 low <- sapply(X = unique(colldf1$bin_midpoint),
               FUN = assign_quantiles,
-              level = 0.05)
+              level = 0.025)
 up <- sapply(X = unique(colldf1$bin_midpoint),
              FUN = assign_quantiles,
-             level = 0.95)
+             level = 0.975)
 
 # Wrap up in a table and plot --------------------------------------------------
 plot_df <- data.frame(bin_midpoint = unique(colldf1$bin_midpoint),
@@ -103,9 +103,9 @@ for(t in unique(sort(colldf$bin_assignment, decreasing = FALSE))){
   #Median
   geodes <- c(geodes, quantile(gd_dist, probs = 0.5))
   #5%
-  lower <- c(lower, quantile(gd_dist, probs = 0.05))
+  lower <- c(lower, quantile(gd_dist, probs = 0.025))
   #95%
-  upper <- c(upper, quantile(gd_dist, probs = 0.95))
+  upper <- c(upper, quantile(gd_dist, probs = 0.975))
 }
 ## Plot ------------------------------------------------------------------------
 #Proper plot
