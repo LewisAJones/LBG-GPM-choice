@@ -6,11 +6,13 @@
 # Last updated: 2023-03-21
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
-## Load libraries -------------------------------------------------------
+# Load libraries -------------------------------------------------------
 library(dplyr)
+library(tidyr)
 library(ggplot2)
+library(palaeoverse)
 library(deeptime)
-## 1. Overall plot ------------------------------------------------------
+# 1. Overall plot ------------------------------------------------------
 #Plotting accessories
 source("./R/functions/theme_will.R")
 GTS2020_periods <- time_bins(rank = "period") %>%
@@ -57,38 +59,43 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 ggsave("./figures/Number_of_collections.png", col_plot, width = 13, height = 6)
 
-## 2. Per-stage plot -------------------------------------------------
-rm(colldf)
+# 2. Collections/myr through time -----------------------------------
+
+
+# 3. Per-stage plot -------------------------------------------------
 #Retain features of interest and filter by collection
 tmp <- occdf %>% select(collection_no, bin_assignment, PALEOMAP_bin, GOLONKA_bin, MERDITH2021_bin)
 tmp <- unique(tmp)
 #Create collection dataframe
-colldf <- rbind(tmp[, 1:2], tmp[, 1:2], tmp[, 1:2])
-colldf$model <- c(rep("GOLONKA", nrow(tmp)),
+colldf2 <- rbind(tmp[, 1:2], tmp[, 1:2], tmp[, 1:2])
+colldf2$model <- c(rep("GOLONKA", nrow(tmp)),
                   rep("PALEOMAP", nrow(tmp)),
                   rep("MERDITH2021", nrow(tmp)))
-colldf$plat_bin <- c(tmp$GOLONKA_bin, 
-                     tmp$PALEOMAP_bin, 
-                     tmp$MERDITH2021_bin)
+colldf2$plat_bin <- c(tmp$GOLONKA_bin, 
+                      tmp$PALEOMAP_bin, 
+                      tmp$MERDITH2021_bin)
 #Assess number of collections per lat bin through time
-colldf1 <- colldf %>% 
+colldf2 <- colldf2 %>% 
   group_by(model, bin_assignment, plat_bin) %>% 
   count(plat_bin) %>% 
   rename("occ_number" = n) %>% 
   ungroup() %>%
-  complete(bin_assignment = time_bins$bin, plat_bin, model) %>%
+  complete(bin_assignment = time_bins$bin, plat_bin = lat_bins$bin, model, fill = list(occ_number = 0)) %>%
   full_join(time_bins, by = c("bin_assignment" = "bin")) %>% 
   full_join(lat_bins, by = c("plat_bin" = "bin")) %>%
   filter(!is.na(model)) %>%
   filter(!is.na(plat_bin))
 #Plot
-p <- ggplot(data = colldf1, aes(x = mid,
+p <- ggplot(data = colldf2, aes(x = mid,
                                 y = occ_number,
                                 colour = model)) +
   geom_point(size = 1.5, position = position_dodge(width = 2)) +
+  # hack for the y-axis limits for the empty time bins
+  geom_point(data = data.frame(x = 0, y = 4), aes(x = x, y = y), color = "transparent") +
   geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)), ncol = 9, scales = "free") +
+  coord_cartesian(ylim = c(0, NA)) +
   labs(y = "Number of collections",
        x = "Palaeolatitudinal bin") +
   theme_bw(base_size = 18) +
