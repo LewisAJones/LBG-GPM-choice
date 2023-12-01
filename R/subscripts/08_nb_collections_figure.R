@@ -11,7 +11,17 @@ library(dplyr)
 library(ggplot2)
 library(deeptime)
 ## 1. Overall plot ------------------------------------------------------
+#Plotting accessories
+source("./R/functions/theme_will.R")
+GTS2020_periods <- time_bins(rank = "period") %>%
+  rename(name = interval_name, max_age = max_ma, min_age = min_ma,
+         color = colour, lab_color = font)
+GTS2020_eras <- time_bins(rank = "era") %>%
+  rename(name = interval_name, max_age = max_ma, min_age = min_ma,
+         color = colour, lab_color = font)
 #Load data
+time_bins <- readRDS("./data/time_bins.RDS")
+lat_bins <- readRDS("./data/lat_bins.RDS")
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
 colldf <- occdf %>% select(collection_no, bin_assignment)
 colldf <- unique(colldf)
@@ -48,8 +58,7 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
 ggsave("./figures/Number_of_collections.png", col_plot, width = 13, height = 6)
 
 ## 2. Per-stage plot -------------------------------------------------
-#Load data
-occdf <- readRDS("./data/processed/pbdb_data.RDS")
+rm(colldf)
 #Retain features of interest and filter by collection
 tmp <- occdf %>% select(collection_no, bin_assignment, PALEOMAP_bin, GOLONKA_bin, MERDITH2021_bin)
 tmp <- unique(tmp)

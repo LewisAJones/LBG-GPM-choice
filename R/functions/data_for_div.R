@@ -1,8 +1,8 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 06_Diversity_and_Difference_heatmaps.R
-# Aim: Data processing for 05_Diversity_figure.R and 
-#      06_Diversity_and_Difference_heatmaps.R.
+# Aim: Data processing for 05_Diversity_figure.R and
+#      06_Diversity_and_Difference_heatmaps.R
 # Last updated: 2023-12-01
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
