@@ -40,7 +40,7 @@ colldf1$mean_pair_lat_diff <- sapply(X = 1:nrow(colldf1),
                                        lat_diffGxP <- abs(colldf1$p_lat_GOLONKA[x] - colldf1$p_lat_PALEOMAP[x])
                                        lat_diffMxP <- abs(colldf1$p_lat_MERDITH2021[x] - colldf1$p_lat_PALEOMAP[x])
                                        lat_diffMxG <- abs(colldf1$p_lat_MERDITH2021[x] - colldf1$p_lat_GOLONKA[x])
-                                       return(mean(c(lat_diffGxP, lat_diffMxG, lat_diffMxP)))
+                                       return(median(c(lat_diffGxP, lat_diffMxG, lat_diffMxP), na.rm = TRUE))
                                      })
 colldf1 <- colldf1 %>% filter(!is.na(mean_pair_lat_diff)) #remove NAs
 # Assign 5%, median and 95% quantiles ------------------------------------------
@@ -54,10 +54,10 @@ med <- sapply(X = unique(colldf1$bin_midpoint),
               level = 0.5)
 low <- sapply(X = unique(colldf1$bin_midpoint),
               FUN = assign_quantiles,
-              level = 0.025)
+              level = 0.05)
 up <- sapply(X = unique(colldf1$bin_midpoint),
              FUN = assign_quantiles,
-             level = 0.975)
+             level = 0.95)
 
 # Wrap up in a table and plot --------------------------------------------------
 plot_df <- data.frame(bin_midpoint = unique(colldf1$bin_midpoint),
@@ -110,9 +110,9 @@ for(t in unique(sort(colldf$bin_assignment, decreasing = FALSE))){
   #Median
   geodes <- c(geodes, quantile(gd_dist, probs = 0.5))
   #5%
-  lower <- c(lower, quantile(gd_dist, probs = 0.025))
+  lower <- c(lower, quantile(gd_dist, probs = 0.05))
   #95%
-  upper <- c(upper, quantile(gd_dist, probs = 0.975))
+  upper <- c(upper, quantile(gd_dist, probs = 0.95))
 }
 ## Plot ------------------------------------------------------------------------
 #Proper plot
