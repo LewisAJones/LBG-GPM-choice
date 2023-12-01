@@ -1,6 +1,8 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 03_SQS_LBG.R
+# Aim: Estimate diversity through time according to each GPM with a coverage-based
+#      extrapolation/rarefaction subsampling (SQS) algorithm.
 # Last updated: 2023-03-13
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Load libraries --------------------------------------------------------

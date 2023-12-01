@@ -1,7 +1,8 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
-# File name: 04_diversity_figures.R
-# Last updated: 2023-03-21
+# File name: 05_Diversity_figures.R
+# Aim: Plot stage-level diversity in our palaeolatitudinal bins (Fig. 2 and S1)
+# Last updated: 2023-12-01
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
 # Load libraries --------------------------------------------------------

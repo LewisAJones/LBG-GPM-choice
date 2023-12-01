@@ -1,6 +1,7 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 01_data_prep.R
+# Aim: Prepare data.
 # Last updated: 2023-07-31
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Load libraries --------------------------------------------------------

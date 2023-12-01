@@ -1,7 +1,9 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
-# File name: 07_lat_sd_and_mean_pairwise_GDD.R
-# Last updated: 2023-03-07
+# File name: 04_lat_diff_and_GDD_figure.R
+# Aim: This script generates the Figure 1, that is, the average pairwise 
+#      latitudinal difference and geodesic distance through time.
+# Last updated: 2023-12-01
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
 # Load libraries ---------------------------------------------------------------
@@ -22,7 +24,12 @@ GTS2020_eras <- time_bins(rank = "era") %>%
 
 # Load data --------------------------------------------------------------------
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
-colldf <- occdf %>% select(collection_no, bin_assignment, bin_midpoint, matches("GOLONKA"), matches("PALEOMAP"), matches("MERDITH2021"))
+colldf <- occdf %>% select(collection_no, 
+                           bin_assignment,
+                           bin_midpoint, 
+                           matches("GOLONKA"),
+                           matches("PALEOMAP"), 
+                           matches("MERDITH2021"))
 colldf <- unique(colldf)
 row.names(colldf) <- 1:nrow(colldf)
 ############################ LAT PAIRWISE DIFFERENCE ###########################

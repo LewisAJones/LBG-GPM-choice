@@ -1,6 +1,7 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 02_raw_LBG.R
+# Aim: Estimate diversity through time using each GPM with raw counts.
 # Last updated: 2023-03-13
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Load libraries --------------------------------------------------------
