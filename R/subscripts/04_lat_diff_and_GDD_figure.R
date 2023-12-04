@@ -82,6 +82,8 @@ p1 <- ggplot(data = plot_df, aes(x = bin_midpoint, y = med)) +
   theme_will() +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+# Save datafile
+saveRDS(object = plot_df, "./results/plat_diff.RDS")
 
 ###################### MEAN PAIRWISE GEODESIC DISTANCE #########################
 rm(colldf1)
@@ -140,6 +142,7 @@ p2 <- ggplot(data = plot_df2, aes(x = time, y = GDD)) +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 
+saveRDS(object = plot_df2, "./results/geodes_diff.RDS")
 ########################## Assemble the two plots ##############################
 gg <- ggarrange2(p1, p2, ncol = 1, nrow = 2, labels = c("(a)", "(b)"),
                  label.args = list(gp = gpar(font = 2, cex = 2)), draw = FALSE)
