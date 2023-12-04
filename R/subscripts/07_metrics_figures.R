@@ -51,7 +51,14 @@ met1_sqs_rects <- met1_sqs %>%
   filter(!is.na(max_bin)) %>%
   group_by(stage, hemi, max_ma, min_ma) %>%
   # do all models have the same bin?
-  summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop") %>%
+  summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop")
+
+met1_sqs_rects %>%
+  mutate(era = cut(max_ma, c(GTS2020_eras$max_age[1], GTS2020_eras$min_age), rev(GTS2020_eras$name))) %>%
+  group_by(era, hemi, all_same) %>%
+  count()
+
+met1_sqs_rects <- met1_sqs_rects %>%
   filter(all_same) %>%
   mutate(ymin = ifelse(hemi == "north", 3.5, -Inf),
          ymax = ifelse(hemi == "north", Inf, 3.5))
@@ -93,7 +100,14 @@ met1_raw_rects <- met1_raw %>%
   filter(!is.na(max_bin)) %>%
   group_by(stage_bin, hemi, max_ma, min_ma) %>%
   # do all models have the same bin?
-  summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop") %>%
+  summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop")
+
+met1_raw_rects %>%
+  mutate(era = cut(max_ma, c(GTS2020_eras$max_age[1], GTS2020_eras$min_age), rev(GTS2020_eras$name))) %>%
+  group_by(era, hemi, all_same) %>%
+  count()
+
+met1_raw_rects <- met1_raw_rects %>%
   filter(all_same) %>%
   mutate(ymin = ifelse(hemi == "north", 3.5, -Inf),
          ymax = ifelse(hemi == "north", Inf, 3.5))
