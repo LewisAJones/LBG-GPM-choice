@@ -51,7 +51,7 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
                      labels = c(0, 1000, 2000, 3000, 4000)) +
   geom_point(size = 2, colour = "#e7298a") +
   geom_line(linewidth = 1, colour = "#e7298a") +
-  labs(x = NULL,
+  labs(x = "Time (Ma)",
        y = "Number of collections") +
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14)) +
