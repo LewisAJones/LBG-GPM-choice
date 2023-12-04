@@ -10,6 +10,7 @@
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(cowplot)
 library(palaeoverse)
 library(deeptime)
 # 1. Overall plot ------------------------------------------------------
@@ -25,22 +26,21 @@ GTS2020_eras <- time_bins(rank = "era") %>%
 time_bins <- readRDS("./data/time_bins.RDS")
 lat_bins <- readRDS("./data/lat_bins.RDS")
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
-colldf <- occdf %>% select(collection_no, bin_assignment)
-colldf <- unique(colldf)
-row.names(colldf) <- 1:nrow(colldf)
-#Evaluate number of collection through time
+colldf <- occdf %>% 
+  select(collection_no, bin_assignment, matches("p_lat"), bin_midpoint) %>% 
+  group_by(collection_no, bin_assignment, p_lat_PALEOMAP, p_lat_GOLONKA, p_lat_MERDITH2021, bin_midpoint) %>% 
+  #subset based on unique values of collection number
+  distinct(collection_no)
+
+#Total number of collection through time
 n_col <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
                 FUN = function(x){
                   idx <- which(colldf$bin_assignment == x)
                   return(length(idx))
                   })
 
-nb_coll.df <- data.frame(time_bin = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
+nb_coll.df <- data.frame(mid_time = unique(sort(colldf$bin_midpoint, decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
                          number_of_collections = n_col)
-nb_coll.df$mid_time <- sapply(X = nb_coll.df$time_bin,
-                              FUN = function(x){
-                                return(time_bins$mid_ma[which(time_bins$bin == x)])
-                                })
 
 col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collections)) +
   scale_x_reverse(limits = c(542, -0.7),
@@ -51,18 +51,58 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
                      labels = c(0, 1000, 2000, 3000, 4000)) +
   geom_point(size = 2, colour = "#e7298a") +
   geom_line(linewidth = 1, colour = "#e7298a") +
-  labs(x = "Time (Ma)",
+  labs(x = NULL,
        y = "Number of collections") +
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14)) +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+# save
 ggsave("./figures/Number_of_collections.png", col_plot, width = 13, height = 6)
 
-# 2. Collections/myr through time -----------------------------------
+# 2. Total number of collection available for each model ------------
+avail_mdl <- function(bin, model){
+  idx <- which(colldf$bin_assignment == bin)
+  nas <- which(is.na(colldf[idx, paste0("p_lat_", model)]))
+  return((length(idx)-length(nas)))
+}
+coll_av.df <- data.frame(mid_time = rep(unique(sort(colldf$bin_midpoint, decreasing = FALSE)), 3),
+                         model = c(rep("GOLONKA", length(unique(colldf$bin_assignment))),
+                                   rep("MERDITH2021", length(unique(colldf$bin_assignment))),
+                                   rep("PALEOMAP", length(unique(colldf$bin_assignment)))),
+                         coll_av = c( sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
+                                             FUN = avail_mdl,
+                                             model = "GOLONKA"),
+                                      sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
+                                             FUN = avail_mdl,
+                                             model = "MERDITH2021"),
+                                      sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
+                                             FUN = avail_mdl,
+                                             model = "PALEOMAP")))
+col_av_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av, colour = model)) +
+  scale_x_reverse(limits = c(542, -0.7),
+                  breaks = c(0, 100, 200, 300, 400, 500),
+                  labels = c(0, 100, 200, 300, 400, 500)) +
+  scale_y_continuous(limits = c(0, 4100),
+                     breaks = c(0, 1000, 2000, 3000, 4000),
+                     labels = c(0, 1000, 2000, 3000, 4000)) +
+  scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
+  geom_point(size = 1.5, position = position_dodge(width = 2)) +
+  geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
+  labs(x = "Time (Ma)",
+       y = "Number of available collections") +
+  theme_will(axis.title.x = element_text(size = 14),
+             axis.title.y = element_text(size = 14),
+             legend.position = "top") +
+  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+# save
+ggsave("./figures/Number_of_collections_per_model.png", col_av_plot, width = 13, height = 6)
+
+# 3. Collections/myr through time -----------------------------------
 
 
-# 3. Per-stage plot -------------------------------------------------
+# 4. Per-stage plot -------------------------------------------------
 #Retain features of interest and filter by collection
 tmp <- occdf %>% select(collection_no, bin_assignment, PALEOMAP_bin, GOLONKA_bin, MERDITH2021_bin)
 tmp <- unique(tmp)
