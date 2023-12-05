@@ -147,7 +147,7 @@ plot_all <- ggplot(data = plot_df, aes(x = bin_midpoint, y = n)) +
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 #save with total stage-level bins
 p <- ggarrange(col_plot, plot_all, nrow = 2, 
-               labels = c("(a)", "(b)"), font.label = list(size = 12))
+               labels = c("(a)", "(b)"), font.label = list(size = 20))
 ggsave("./figures/Number_of_collections_total.png", p, width = 13, height = 12)
 
 ## plot => available collections per GPM
@@ -188,7 +188,7 @@ col_av_plot1 <- ggplot(data = coll_av.df1, aes(x = mid_time, y = coll_av, colour
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 #save
 p1 <- ggarrange(col_av_plot, col_av_plot1, nrow = 2, 
-                labels = c("(a)", "(b)"), font.label = list(size = 12))
+                labels = c("(a)", "(b)"), font.label = list(size = 20))
 ggsave("./figures/Number_of_collections_per_model.png", p1, width = 13, height = 12)
 # 4. Per-stage plot -------------------------------------------------
 #Retain features of interest and filter by collection
