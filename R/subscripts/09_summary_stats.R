@@ -43,13 +43,13 @@ nrow(anisian) - sum(is.na(anisian$MERDITH2021_bin))
 # Palaeogeographic differences per period
 ## plat
 plat <- readRDS("./results/plat_diff.RDS")
-plat <- plat[order(plat$bin_midpoint), ]
-cenozoic <- subset(plat, bin_midpoint < 66)
-mesozoic <- subset(plat, bin_midpoint <= 251.9020 & bin_midpoint > 66)
-palaeozoic <- subset(plat, bin_midpoint > 251.9020)
-mean(cenozoic$med)
-mean(mesozoic$med)
-mean(palaeozoic$med)
+plat <- plat[order(plat$time), ]
+cenozoic <- subset(plat, time < 66)
+mesozoic <- subset(plat, time <= 251.9020 & time > 66)
+palaeozoic <- subset(plat, time > 251.9020)
+mean(cenozoic$med_latD)
+mean(mesozoic$med_latD)
+mean(palaeozoic$med_latD)
 ## geodes
 geodes <- readRDS("./results/geodes_diff.RDS")
 geodes <- geodes[order(geodes$time), ]

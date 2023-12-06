@@ -13,7 +13,7 @@ rm(list = ls())
 source("./R/subscripts/05_Diversity_figures.R")
 rm(list = ls())
 
-# Figure 3,4,S2,S3: Diversity and pairwise differences heatmaps
+# Figure 3, 4, S2, S3: Diversity and pairwise differences heatmaps
 source("./R/subscripts/06_Diversity_and_Difference_heatmaps.R")
 rm(list = ls())
 

@@ -23,7 +23,8 @@ GTS2020_eras <- time_bins(rank = "era") %>%
          color = colour, lab_color = font)
 
 # Load data --------------------------------------------------------------------
-occdf <- readRDS("./data/processed/pbdb_data.RDS")
+t_bins <- readRDS("./data/time_bins.RDS") #time bins
+occdf <- readRDS("./data/processed/pbdb_data.RDS") #occurrence data
 colldf <- occdf %>% select(collection_no, 
                            bin_assignment,
                            bin_midpoint, 
@@ -32,66 +33,11 @@ colldf <- occdf %>% select(collection_no,
                            matches("MERDITH2021"))
 colldf <- unique(colldf)
 row.names(colldf) <- 1:nrow(colldf)
-############################ LAT PAIRWISE DIFFERENCE ###########################
-# Lat mean pairwise difference per row -----------------------------------------
-colldf1 <- colldf
-colldf1$mean_pair_lat_diff <- sapply(X = 1:nrow(colldf1),
-                                     FUN = function(x){
-                                       lat_diffGxP <- abs(colldf1$p_lat_GOLONKA[x] - colldf1$p_lat_PALEOMAP[x])
-                                       lat_diffMxP <- abs(colldf1$p_lat_MERDITH2021[x] - colldf1$p_lat_PALEOMAP[x])
-                                       lat_diffMxG <- abs(colldf1$p_lat_MERDITH2021[x] - colldf1$p_lat_GOLONKA[x])
-                                       return(median(c(lat_diffGxP, lat_diffMxG, lat_diffMxP), na.rm = TRUE))
-                                     })
-colldf1 <- colldf1 %>% filter(!is.na(mean_pair_lat_diff)) #remove NAs
-# Assign 5%, median and 95% quantiles ------------------------------------------
-assign_quantiles <- function(time_midpoint, level){
-  pairwise_lat_vec <- colldf1$mean_pair_lat_diff[which(colldf1$bin_midpoint == time_midpoint)]
-  return(quantile(pairwise_lat_vec, probs = level, na.rm = TRUE))
-}
-
-med <- sapply(X = unique(colldf1$bin_midpoint),
-              FUN = assign_quantiles,
-              level = 0.5)
-low <- sapply(X = unique(colldf1$bin_midpoint),
-              FUN = assign_quantiles,
-              level = 0.05)
-up <- sapply(X = unique(colldf1$bin_midpoint),
-             FUN = assign_quantiles,
-             level = 0.95)
-
-# Wrap up in a table and plot --------------------------------------------------
-plot_df <- data.frame(bin_midpoint = unique(colldf1$bin_midpoint),
-                      med = med,
-                      lower = low,
-                      upper = up)
-p1 <- ggplot(data = plot_df, aes(x = bin_midpoint, y = med)) +
-  scale_x_reverse(limits = c(542, 0),
-                  breaks = c(0, 100, 200, 300, 400, 500),
-                  labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, NA),
-                     breaks = seq(0, 40, 5),
-                     labels = seq(0, 40, 5)) +
-  geom_point(size = 2, colour = "#e7298a") +
-  geom_line(linewidth = 1, colour = "#e7298a") +
-  geom_ribbon(aes(ymin = low, ymax = upper), 
-              fill = "#e7298a",
-              alpha = 0.2) +
-  labs(x = "Time (Ma)",
-       y = "Palaeolatitudinal difference (º)") +
-  theme_classic(base_size = 20) +
-  theme_will() +
-  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
-# Save datafile
-saveRDS(object = plot_df, "./results/plat_diff.RDS")
-
-###################### MEAN PAIRWISE GEODESIC DISTANCE #########################
-rm(colldf1)
 # GDD function ----------------------------------------------------------
-GDD <- function(x) {
-  gol <- as.numeric(colldf[x, c("p_lng_GOLONKA", "p_lat_GOLONKA")])
-  pal <- as.numeric(colldf[x, c("p_lng_PALEOMAP", "p_lat_PALEOMAP")])
-  mer <- as.numeric(colldf[x, c("p_lng_MERDITH2021", "p_lat_MERDITH2021")])
+GDD <- function(x, ds) { #ds is the collection dataset
+  gol <- as.numeric(ds[x, c("p_lng_GOLONKA", "p_lat_GOLONKA")])
+  pal <- as.numeric(ds[x, c("p_lng_PALEOMAP", "p_lat_PALEOMAP")])
+  mer <- as.numeric(ds[x, c("p_lng_MERDITH2021", "p_lat_MERDITH2021")])
   tmp <-  matrix(c(gol, pal, mer),
                  ncol = 2,
                  byrow = TRUE)
@@ -100,14 +46,19 @@ GDD <- function(x) {
   dist_mat <- as.matrix(dist_mat)
   return(mean(dist_mat, na.rm = TRUE) / 10**3)
 }
-# Assess mean pairwise geodesic distance per lat bin for each time bin --
+######################### PAIRWISE LATITUDINAL DISTANCE ########################
+message("CALCULATING PAIRWISE LATITUDINAL DISTANCE...")
+# Set palaeolongitudes as 0 ----------------------------------------------------
+colldf1 <- colldf
+colldf1[, c("p_lng_GOLONKA", "p_lng_MERDITH2021", "p_lng_PALEOMAP")] <- 0
+# Assess pairwise latitudinal distance per collections each time bin -----------
 geodes <- c()
 lower <- c()
 upper <- c()
-for(t in unique(sort(colldf$bin_assignment, decreasing = FALSE))){
-  coll_idx <- which(colldf$bin_assignment == t)
+for(t in unique(sort(colldf1$bin_assignment, decreasing = FALSE))){
+  coll_idx <- which(colldf1$bin_assignment == t)
   #Vector of the mean pairwise geodesic distances per occurrence 
-  gd_dist <- unlist(lapply(coll_idx, FUN=GDD))
+  gd_dist <- sapply(coll_idx, FUN=GDD, ds=colldf1)
   gd_dist <- gd_dist[which(is.na(gd_dist) == FALSE)]
   #Median
   geodes <- c(geodes, quantile(gd_dist, probs = 0.5))
@@ -116,9 +67,55 @@ for(t in unique(sort(colldf$bin_assignment, decreasing = FALSE))){
   #95%
   upper <- c(upper, quantile(gd_dist, probs = 0.95))
 }
-## Plot ------------------------------------------------------------------------
+# Plot ------------------------------------------------------------------------
 #Proper plot
-t_bins <- readRDS("./data/time_bins.RDS")
+plot_df <- data.frame(time = sort(t_bins$mid_ma[which(t_bins$bin %in% colldf1$bin_assignment)], decreasing = TRUE),
+                      med_latD = geodes,
+                      lower = lower,
+                      upper = upper)
+p1 <- ggplot(data = plot_df, aes(x = time, y = GDD)) +
+  scale_x_reverse(limits = c(542, 0),
+                  breaks = c(0, 100, 200, 300, 400, 500),
+                  labels = c(0, 100, 200, 300, 400, 500)) +
+  scale_y_continuous(limits = c(0, NA),
+                     breaks = c(0, 1500, 3000, 4500, 6000, 7500),
+                     labels = c(0, 1500, 3000, 4500, 6000, 7500)) +
+  geom_point(size = 2, colour = "#e7298a") +
+  geom_line(linewidth = 1, colour = "#e7298a") +
+  geom_ribbon(aes(ymin = lower, ymax = upper), 
+              fill = "#e7298a",
+              alpha = 0.2) +
+  labs(x = "Time (Ma)",
+       y = "Palaeolatitudinal distance (km)") +
+  theme_classic(base_size = 20) +
+  theme_will() +
+  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+# Save datafile
+saveRDS(object = plot_df, "./results/plat_diff.RDS")
+message("DONE.")
+
+###################### MEAN PAIRWISE GEODESIC DISTANCE #########################
+rm(colldf1, geodes, lower, upper)
+message("CALCULATING PAIRWISE GEODESIC DISTANCE...")
+# Assess mean pairwise geodesic distance per lat bin for each time bin ---------
+geodes <- c()
+lower <- c()
+upper <- c()
+for(t in unique(sort(colldf$bin_assignment, decreasing = FALSE))){
+  coll_idx <- which(colldf$bin_assignment == t)
+  #Vector of the mean pairwise geodesic distances per occurrence 
+  gd_dist <- sapply(coll_idx, FUN=GDD, ds=colldf)
+  gd_dist <- gd_dist[which(is.na(gd_dist) == FALSE)]
+  #Median
+  geodes <- c(geodes, quantile(gd_dist, probs = 0.5))
+  #5%
+  lower <- c(lower, quantile(gd_dist, probs = 0.05))
+  #95%
+  upper <- c(upper, quantile(gd_dist, probs = 0.95))
+}
+# Plot -------------------------------------------------------------------------
+#Proper plot
 plot_df2 <- data.frame(time = sort(t_bins$mid_ma[which(t_bins$bin %in% colldf$bin_assignment)], decreasing = TRUE),
                       GDD = geodes,
                       lower = lower,
@@ -143,6 +140,8 @@ p2 <- ggplot(data = plot_df2, aes(x = time, y = GDD)) +
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 
 saveRDS(object = plot_df2, "./results/geodes_diff.RDS")
+message("DONE.")
+
 ########################## Assemble the two plots ##############################
 gg <- ggarrange2(p1, p2, ncol = 1, nrow = 2, labels = c("(a)", "(b)"),
                  label.args = list(gp = gpar(font = 2, cex = 2)), draw = FALSE)
