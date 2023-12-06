@@ -41,7 +41,7 @@ n_col <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
 nb_coll.df <- data.frame(mid_time = unique(sort(colldf$bin_midpoint, decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
                          number_of_collections = n_col)
 #assess number of available collections per GPM relative to the stage length
-nb_coll.df$stage_duration <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = FALSE)),
+nb_coll.df$stage_duration <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
                                     FUN = function(x){
                                       return(time_bins$duration_myr[which(time_bins$bin == x)])
                                     })
@@ -68,9 +68,9 @@ col_pm_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = coll_per_My)) +
   scale_x_reverse(limits = c(542, -0.7),
                   breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, NA),
-                     breaks = c(0, 1000, 2000),
-                     labels = c(0, 1000, 2000)) +
+  scale_y_continuous(limits = c(0, 900),
+                     breaks = c(0, 200, 400, 600, 800),
+                     labels = c(0, 200, 400, 600, 800)) +
   geom_point(size = 2, colour = "#e7298a") +
   geom_line(linewidth = 1, colour = "#e7298a") +
   labs(x = "Time (Ma)",
@@ -121,7 +121,7 @@ col_av_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av, colour =
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 #assess number of available collections per GPM relative to the stage length
-coll_av.df$stage_duration <- sapply(X = rep(unique(sort(colldf$bin_assignment, decreasing = FALSE)), 3),
+coll_av.df$stage_duration <- sapply(X = rep(unique(sort(colldf$bin_assignment, decreasing = TRUE)), 3),
                                     FUN = function(x){
                                       return(time_bins$duration_myr[which(time_bins$bin == x)])
                                     })
@@ -131,9 +131,9 @@ col_av_pm_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av_pm, co
   scale_x_reverse(limits = c(542, -0.7),
                   breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, NA),
-                     breaks = c(0, 1000, 2000),
-                     labels = c(0, 1000, 2000)) +
+  scale_y_continuous(limits = c(0, 900),
+                     breaks = c(0, 200, 400, 600, 800),
+                     labels = c(0, 200, 400, 600, 800)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   geom_point(size = 1.5, position = position_dodge(width = 2)) +
   geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
