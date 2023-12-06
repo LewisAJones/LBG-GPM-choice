@@ -48,11 +48,9 @@ nb_coll.df$stage_duration <- sapply(X = unique(sort(colldf$bin_assignment, decre
 nb_coll.df$coll_per_My <- nb_coll.df$number_of_collections / nb_coll.df$stage_duration
 
 col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collections)) +
-  scale_x_reverse(limits = c(542, -0.7),
-                  breaks = c(0, 100, 200, 300, 400, 500),
+  scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, 4100),
-                     breaks = c(0, 1000, 2000, 3000, 4000),
+  scale_y_continuous(breaks = c(0, 1000, 2000, 3000, 4000),
                      labels = c(0, 1000, 2000, 3000, 4000)) +
   geom_point(size = 2, colour = "#e7298a") +
   geom_line(linewidth = 1, colour = "#e7298a") +
@@ -62,14 +60,13 @@ col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collection
              axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14)) +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
+            xlim = c(542, 0), ylim = c(0, 4100))
 #collections/Myr
 col_pm_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = coll_per_My)) +
-  scale_x_reverse(limits = c(542, -0.7),
-                  breaks = c(0, 100, 200, 300, 400, 500),
+  scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, 900),
-                     breaks = c(0, 200, 400, 600, 800),
+  scale_y_continuous(breaks = c(0, 200, 400, 600, 800),
                      labels = c(0, 200, 400, 600, 800)) +
   geom_point(size = 2, colour = "#e7298a") +
   geom_line(linewidth = 1, colour = "#e7298a") +
@@ -78,7 +75,8 @@ col_pm_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = coll_per_My)) +
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14)) +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
+            xlim = c(542, 0), ylim = c(0, 900))
 #save
 p <- ggarrange(col_plot, col_pm_plot, nrow = 2, labels = c("(a)", "(b)"), font.label = list(size = 20))
 ggsave("./figures/Number_of_collections_total.png", p, width = 13, height = 12)
@@ -104,11 +102,9 @@ coll_av.df <- data.frame(mid_time = rep(unique(sort(colldf$bin_midpoint, decreas
                                              model = "PALEOMAP")))
 #plot
 col_av_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av, colour = model)) +
-  scale_x_reverse(limits = c(542, -0.7),
-                  breaks = c(0, 100, 200, 300, 400, 500),
+  scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, 4100),
-                     breaks = c(0, 1000, 2000, 3000, 4000),
+  scale_y_continuous(breaks = c(0, 1000, 2000, 3000, 4000),
                      labels = c(0, 1000, 2000, 3000, 4000)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   geom_point(size = 1.5, position = position_dodge(width = 2)) +
@@ -119,7 +115,8 @@ col_av_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av, colour =
              axis.title.y = element_text(size = 14),
              legend.position = "top") +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
+            xlim = c(542, 0), ylim = c(0, 4100))
 #assess number of available collections per GPM relative to the stage length
 coll_av.df$stage_duration <- sapply(X = rep(unique(sort(colldf$bin_assignment, decreasing = TRUE)), 3),
                                     FUN = function(x){
@@ -128,11 +125,9 @@ coll_av.df$stage_duration <- sapply(X = rep(unique(sort(colldf$bin_assignment, d
 coll_av.df$coll_av_pm <- coll_av.df$coll_av / coll_av.df$stage_duration
 #plot
 col_av_pm_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av_pm, colour = model)) +
-  scale_x_reverse(limits = c(542, -0.7),
-                  breaks = c(0, 100, 200, 300, 400, 500),
+  scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, 900),
-                     breaks = c(0, 200, 400, 600, 800),
+  scale_y_continuous(breaks = c(0, 200, 400, 600, 800),
                      labels = c(0, 200, 400, 600, 800)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   geom_point(size = 1.5, position = position_dodge(width = 2)) +
@@ -143,7 +138,8 @@ col_av_pm_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av_pm, co
              axis.title.y = element_text(size = 14),
              legend.position = "top") +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
+            xlim = c(542, 0), ylim = c(0, 900))
 #save
 p <- ggarrange(col_av_plot, col_av_pm_plot, nrow = 2, labels = c("(a)", "(b)"), font.label = list(size = 20))
 ggsave("./figures/Number_of_collections_per_model.png", p, width = 13, height = 12)
