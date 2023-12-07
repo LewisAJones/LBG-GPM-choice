@@ -146,5 +146,5 @@ message("DONE.")
 gg <- ggarrange2(p1, p2, ncol = 1, nrow = 2, labels = c("(a)", "(b)"),
                  label.args = list(gp = gpar(font = 2, cex = 2)), draw = FALSE)
 # Save plot
-ggsave(filename = "./figures/Lat_sd_and_GDD.png", gg,
+ggsave(filename = "./figures/Lat_dist_and_GDD.png", gg,
        width = 13, height = 12)
