@@ -98,7 +98,35 @@ We compared estimated latitudinal biodiversity gradients using two approaches. F
 
 As the estimated latitudinal distribution of biodiversity is closely tied to the distribution of fossil collections (REFs), we also computed the number of collections in each latitudinal bin and stratigraphic stage for each Global Plate Model. Furthermore, we calculated the mean geodesic distance between the reconstructed palaeocoordinates for each fossil collection to test whether reconstructions of the latitudinal biodiversity gradient are more sensitive to plate rotation model choice with increasing age of rotation.
 
-# Results (600 words)
+# Results
+
+## Palaeogeographic reconstructions
+
+Palaeogeographic reconstruction of fossil collections using different Global Plate Models (GPMs) reveals that the number of collections available for allocation to palaeolatitudinal bins–collections which palaeocoordinates could be reconstructed for–is dependent on GPM choice (Fig. XXX). While in most geological stages, the number of collections available for allocation to palaeolatitudinal bins is similar, it varies considerably for others (Fig. XXX). For example, of the 464 fossil collections in the Tortonian (Cenozoic), palaeocoordinates could be generated for 463 (~100%) fossil collections when using the PALEOMAP GPM, but only 250 (~54%) when using the GOLONKA and MERDITH2021 models. Conversely, of the 2503 fossil collections available for the Anisian (Triassic), palaeocoordinates were generated for 2442 (~98%) and 2376 (~95%) fossil collections using GOLONKA and MERDITH2021, yet only 2030 (~81%) of collections were reconstructed using PALEOMAP. This, along with spatial discrepancies in palaeogeographic reconstructions between GPMs, resulted in the number of samples allocated to each palaeolatitudinal bin (low, medium, high latitudes) varing with GPM (Fig. XXX). Of the 93 geological stages, the number of palaeolatitudinal bins containing enough samples (i.e. fossil collections) for estimating genus richness varies between Global Plate Models by two bins for 10 geological stages (~11%), one bin for 41 stages (~44%), and zero bins for 42 bins (~45%) (Fig. XXX).
+
+Analysis of the average pairwise geodesic distance and average pairwise palaeolatitudinal difference between palaeogeographically reconstructed fossil collections indicate, on average, an increasing difference between GPMs with age of reconstruction (Fig. XXX). Specifically, average latitudinal differences between models are XXX km and XXX for the Cenozoic, XXX km and XXX for the Mesozoic, and XXX km and XXX for the Palaeozoic. However, while there is a general increasing difference between the palaeogeographic reconstruction of fossil collections with age of reconstruction, there are intervals of low palaeogeographic differences, for example in the Permian (Fig. XXX).
+
+```{r}
+#| label: fig-spatial
+#| echo: false
+#| fig-cap: "Phanerozoic trends in the spatial discrepancies between palaeogeographic reconstructions of fossil collections for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. (a) Average (median; 5th and 95th percentiles) pairwise palaeolatitudinal distance between palaeogeographic reconstructions for fossil collections. (b) Average (median; 5th and 95th percentiles) pairwise geodesic distance between palaeogeographic reconstructions for fossil collections. In both panels, the ribbon depicts the 2.5th and 97.5th percentiles of the data. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 1.0.1 (Gearty, 2023)."
+knitr::include_graphics(path = "../figures/Lat_dist_and_GDD.png")
+```
+
+The shapes of the reconstructed latitudinal biodiversity gradients for each geological stage are mostly consistent between Global Plate Models (Fig. 2; Fig. XXX). For all three Global Plate Models, we observe the same overall trend in LBGs over geological time, namely that the peak in diversity tended to lie in the Southern Hemisphere prior to the Permian, but shifted to the Northern Hemisphere after the Permian, in all three models (Figure 3). Throughout the Phanerozoic, peak diversity tended to appear at mid-latitudes (Fig. 3; Fig. XXX). However, during some intervals, we see considerable variation in the shape of the LBG between Global Plate Models. For example, during the Guzhangian, Tremadocian, Sakmarian, Artinskian, Ladinian, and Lutetian (Fig. 2, Fig. 3).... Notably, this is not restricted to older intervals, with  PALEOMAP reconstructions suggesting biodiversity peaked at high northern latitudes during several stages of the Paleogene (Aquitanian, Burdigalian, Langhian, Tortonian and Messinian), while GOLONKA and MERDITH2021 suggest a tropical peak in biodiversity.
+
+```{r}
+#| label: fig-gradients
+#| echo: false
+#| fig-cap: "Phanerozoic stage-level reconstructions of the latitudinal biodiversity gradient for five major marine invertebrate groups (Bivalvia, Brachiopoda, Cephalopoda, Gastropoda, and Trilobita). Each individual plot depicts the estimated normalised genus richness within each palaeolatitudinal bin for three Global Plate Models (GPMs): GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Genus richness was estimated for each stage, palaeolatitudinal bin, and GPM using the iNEXT R package ver. 3.0.0 ([@hsieh2016]) with a coverage level (otherwise known as a quorum level) of 0.4. Genus richness was normalised for each stage and GPM by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins."
+knitr::include_graphics(path = "../figures/LBGs_sqs.png")
+```
+
+We quantified the differences between diversity estimates obtained using the three Global Plate Models by evaluating the extent to which the models agreed on which palaeolatitudinal bin contained the most diversity in each hemisphere. Our results show that the extent to which peaks in reconstructed palaeolatitudinal diversity were consistent between models was variable through time, with only 50% of stages in the Paleozoic, 68% in the Mesozoic, and 57% in the Cenozoic showing agreement between all three models (Fig. 5a). Notably, this also differed between the two hemispheres, with 65% in the Northern Hemisphere and 50% in the Southern Hemisphere in agreement throughout the Phanerozoic. The models were largely consistent in the number of stages for which estimated diversity was determined to be at high, mid or low latitudes (GOLONKA: XXX% high, XXX% mid, XXX% low; MERDITH2021: XXX% high, XXX% mid, XXX% low; PALEOMAP: XXX% high, XXX% mid, XXX% low). We also compared the shape of the LBGs by calculating the normalised average rank order difference of palaeolatitudinal bins between each pair of models. Overall, during the Mesozoic, there was more agreement between the models on the rank order of richness in palaeolatitudinal bins; no pair of models disagreed by more than 0.6 (Fig. 5b). However, during the Palaeozoic and Cenozoic, in some cases, pairs of models wholly disagreed on the rank order of diversity in palaeolatitudinal bins (normalised rank order difference of 1). This was less common when calculated using the raw data rather than the iNEXT diversity estimates (Fig. XXX), likely due to the higher number of spatial bins containing enough data to be analysed.
+
+
+
+
 
 - Summary of reconstructions (could all points be reconstructed for each model?)
 - Summary of results from metrics, do different gradients emerge?
@@ -120,24 +148,7 @@ To write
 - Figure 3a: Calculate number of bins for which we have matches and non-matches (currently greyed in the figure), comparison between the two hemispheres. More grey on the right - more agreement in more recent times.
 - Figure 3b: Reduced differences in the Mesozoic, why? Some of these differences reach 1, this represents the maximum amount of difference, i.e. completely opposite.
 =======
-```{r}
-#| label: fig-heatmap
-#| fig-cap: Heat maps of estimated palaeolatitudinal richness from the Fortunian (541 Ma, Cambrian) to the Holocene (0 Ma, Quaternary) for three Global Plate Models: Golonka (REF), Merdith2021 (REF), and PALEOMAP (REF). Richness estimates were generated using coverage-based rarefaction (level = 0.4) (REF) within three palaeolatitudinal bins for each hemisphere (low, middle, high). Differences between 
 
-
-
-
-#| echo: false
-knitr::include_graphics(path = "../figures/heatmap_SQS.png")
-```
-
-
-```{r}
-#| label: fig-metrics
-#| fig-cap: Graphic 
-#| echo: false
-knitr::include_graphics(path = "../figures/metrics_1_2_sqs.png")
-```
 
 -   Summary of reconstructions (could all points be reconstructed for each model?)
 -   Summary of results from metrics, do different gradients emerge?
