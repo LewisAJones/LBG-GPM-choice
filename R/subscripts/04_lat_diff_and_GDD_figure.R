@@ -137,7 +137,7 @@ p2 <- ggplot(data = plot_df, aes(x = time, y = med_latD)) +
               fill = "#e34a33",
               alpha = 0.2) +
   labs(x = "Time (Ma)",
-       y = "Palaeolatitudinal Great Circle Distance (km)") +
+       y = "Palaeolat. Great Circle Dist. (km)") +
   theme_classic(base_size = 20) +
   theme_will() +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
