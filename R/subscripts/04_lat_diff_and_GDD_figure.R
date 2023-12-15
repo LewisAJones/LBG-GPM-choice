@@ -35,18 +35,19 @@ colldf <- unique(colldf)
 row.names(colldf) <- 1:nrow(colldf)
 
 ################### PAIRWISE LATITUDINAL DIFFERENCE (degrees) ##################
-# Create mean pairwise lat. diff. for each occurrence --------------------------
-colldf$mean_pair_lat_diff <- sapply(X = 1:nrow(colldf),
+# Create median pairwise lat. diff. for each occurrence --------------------------
+colldf$median_pair_lat_diff <- sapply(X = 1:nrow(colldf),
                                      FUN = function(x){
                                        lat_diffGxP <- abs(colldf$p_lat_GOLONKA[x] - colldf$p_lat_PALEOMAP[x])
                                        lat_diffMxP <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_PALEOMAP[x])
                                        lat_diffMxG <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_GOLONKA[x])
                                        return(median(c(lat_diffGxP, lat_diffMxG, lat_diffMxP), na.rm = TRUE))
                                      })
-colldf <- colldf %>% filter(!is.na(mean_pair_lat_diff)) #remove NAs
+colldf <- colldf %>% filter(!is.na(median_pair_lat_diff)) #remove NAs
+saveRDS(colldf, "./results/coll_plat_diff.RDS")
 # Assign 5%, median and 95% quantiles ------------------------------------------
 assign_quantiles <- function(time_midpoint, level){
-  pairwise_lat_vec <- colldf$mean_pair_lat_diff[which(colldf$bin_midpoint == time_midpoint)]
+  pairwise_lat_vec <- colldf$median_pair_lat_diff[which(colldf$bin_midpoint == time_midpoint)]
   return(quantile(pairwise_lat_vec, probs = level, na.rm = TRUE))
 }
 med <- sapply(X = unique(colldf$bin_midpoint),

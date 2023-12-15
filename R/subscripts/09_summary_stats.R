@@ -42,23 +42,43 @@ nrow(anisian) - sum(is.na(anisian$MERDITH2021_bin))
 
 # Palaeogeographic differences per period
 ## plat
-plat <- readRDS("./results/plat_diff.RDS")
-plat <- plat[order(plat$time), ]
-cenozoic <- subset(plat, time < 66)
-mesozoic <- subset(plat, time <= 251.9020 & time > 66)
-palaeozoic <- subset(plat, time > 251.9020)
+plat <- readRDS("./results/plat_diff_degrees.RDS")
+plat <- plat[order(plat$bin_midpoint), ]
+cenozoic <- subset(plat, bin_midpoint < 66)
+mesozoic <- subset(plat, bin_midpoint <= 251.9020 & bin_midpoint > 66)
+palaeozoic <- subset(plat, bin_midpoint > 251.9020)
+mean(cenozoic$med)
+mean(mesozoic$med)
+mean(palaeozoic$med)
+## gcd
+gcd <- readRDS("./results/plat_diff.RDS")
+gcd <- gcd[order(gcd$time), ]
+cenozoic <- subset(gcd, gcd$time < 66)
+mesozoic <- subset(gcd, gcd$time <= 251.9020 & gcd$time > 66)
+palaeozoic <- subset(gcd, gcd$time > 251.9020)
 mean(cenozoic$med_latD)
 mean(mesozoic$med_latD)
 mean(palaeozoic$med_latD)
-## geodes
-geodes <- readRDS("./results/geodes_diff.RDS")
-geodes <- geodes[order(geodes$time), ]
-cenozoic <- subset(geodes, geodes$time < 66)
-mesozoic <- subset(geodes, geodes$time <= 251.9020 & geodes$time > 66)
-palaeozoic <- subset(geodes, geodes$time > 251.9020)
-mean(cenozoic$GDD)
-mean(mesozoic$GDD)
-mean(palaeozoic$GDD)
+# How many fossil collections more than 25º palaeolatitudinal difference 
+plat <- readRDS("./results/coll_plat_diff.RDS")
+plat <- plat[order(plat$bin_midpoint), ]
+jurassic <- subset(plat, bin_midpoint <= 201.3000 & bin_midpoint > 145.0000)
+triassic <- subset(plat, bin_midpoint <= 251.9020 & bin_midpoint > 201.3000)
+permian <- subset(plat, bin_midpoint <= 298.9000 & bin_midpoint > 251.9020)
+carboniferous <- subset(plat, bin_midpoint <= 358.9000 & bin_midpoint > 298.9000)
+devonian <- subset(plat, bin_midpoint <= 419.2000 & bin_midpoint > 358.9000)
+silurian <- subset(plat, bin_midpoint <= 443.8000 & bin_midpoint > 419.2000)
+ordovician <- subset(plat, bin_midpoint <= 485.4000 & bin_midpoint > 443.8000)
+cambrian <- subset(plat, bin_midpoint > 485.4000)
+val <- 25
+length(which(jurassic$median_pair_lat_diff > val))
+length(which(triassic$median_pair_lat_diff > val))
+length(which(permian$median_pair_lat_diff > val))
+length(which(carboniferous$median_pair_lat_diff > val))
+length(which(devonian$median_pair_lat_diff > val))
+length(which(silurian$median_pair_lat_diff > val))
+length(which(ordovician$median_pair_lat_diff > val))
+length(which(cambrian$median_pair_lat_diff > val))
 
 # Latitudinal biodiversity gradient reconstructions ---------------------
 
