@@ -39,29 +39,29 @@ n_col <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
                   return(length(idx))
                   })
 nb_coll.df <- data.frame(mid_time = unique(sort(colldf$bin_midpoint, decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
-                         number_of_collections = n_col)
-#assess number of available collections per GPM relative to the stage length
-nb_coll.df$stage_duration <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
-                                    FUN = function(x){
-                                      return(time_bins$duration_myr[which(time_bins$bin == x)])
-                                    })
-nb_coll.df$coll_per_My <- nb_coll.df$number_of_collections / nb_coll.df$stage_duration
-
+                         number_of_collections = n_col, group = rep("Number of collections", length(n_col)))
+#Number of available collections per GPM relative to the stage length
+stage_duration <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
+                         FUN = function(x){
+                         return(time_bins$duration_myr[which(time_bins$bin == x)])
+                         })
+coll_per_My <- nb_coll.df$number_of_collections / stage_duration
+#Total dataframe
+DF <- rbind.data.frame(nb_coll.df,
+                       data.frame(mid_time = unique(sort(colldf$bin_midpoint, decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
+                                  number_of_collections = coll_per_My, group = rep("Number of collections per My", length(n_col))))
+#Plot
 col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collections)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(breaks = c(0, 1000, 2000, 3000, 4000),
-                     labels = c(0, 1000, 2000, 3000, 4000)) +
-  geom_point(size = 2, colour = "#e7298a") +
-  geom_line(linewidth = 1, colour = "#e7298a") +
+  geom_point(size = 2, aes(colour = group)) +
+  geom_line(linewidth = 1, aes(colour = group)) +
   labs(x = "Time (Ma)",
-       y = "Number of collections") +
-  theme_will(plot.title = element_text(size = 18, hjust = .5),
-             axis.title.x = element_text(size = 14),
-             axis.title.y = element_text(size = 14)) +
-  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
-            xlim = c(542, 0), ylim = c(0, 4100))
+       y = NULL) +
+  theme_classic(base_size = 20) +
+  theme_will(legend.position = "none") +
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
 #collections/Myr
 col_pm_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = coll_per_My)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
@@ -81,7 +81,7 @@ col_pm_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = coll_per_My)) +
 p <- ggarrange(col_plot, col_pm_plot, nrow = 2, labels = c("(a)", "(b)"), font.label = list(size = 20))
 ggsave("./figures/Number_of_collections_total.png", p, width = 13, height = 12)
 
-# 2. Total number of collection available for each model ------------
+# 2. Total number of collection available for each model -----------------------
 avail_mdl <- function(bin, model, ds=colldf){
   idx <- which(ds$bin_assignment == bin)
   nas <- which(is.na(ds[idx, paste0("p_lat_", model)]))
