@@ -46,22 +46,24 @@ stage_duration <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRU
                          return(time_bins$duration_myr[which(time_bins$bin == x)])
                          })
 coll_per_My <- nb_coll.df$number_of_collections / stage_duration
+coll_per_My[1] <- 900 #restrict nb collections per million years of the Holocene for plotting issues
 #Total dataframe
 DF <- rbind.data.frame(nb_coll.df,
                        data.frame(mid_time = unique(sort(colldf$bin_midpoint, decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
                                   number_of_collections = coll_per_My, group = rep("Number of collections per My", length(n_col))))
 #Plot
-col_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = number_of_collections)) +
+col_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_collections)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  geom_point(size = 2, aes(colour = group)) +
-  geom_line(linewidth = 1, aes(colour = group)) +
+  geom_point(size = 2, colour = "#e7298a") +
+  geom_line(linewidth = 1, colour = "#e7298a") +
   labs(x = "Time (Ma)",
        y = NULL) +
+  coord_geo(list("bottom", "bottom"), expand = FALSE, dat = list(GTS2020_eras, GTS2020_periods),
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "none") +
-  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+  facet_wrap(~group, ncol = 1, scales = "free_y")
 #collections/Myr
 col_pm_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = coll_per_My)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
