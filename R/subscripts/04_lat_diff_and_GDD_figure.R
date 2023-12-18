@@ -37,12 +37,12 @@ row.names(colldf) <- 1:nrow(colldf)
 ################### PAIRWISE LATITUDINAL DIFFERENCE (degrees) ##################
 # Create median pairwise lat. diff. for each occurrence --------------------------
 colldf$median_pair_lat_diff <- sapply(X = 1:nrow(colldf),
-                                     FUN = function(x){
-                                       lat_diffGxP <- abs(colldf$p_lat_GOLONKA[x] - colldf$p_lat_PALEOMAP[x])
-                                       lat_diffMxP <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_PALEOMAP[x])
-                                       lat_diffMxG <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_GOLONKA[x])
-                                       return(median(c(lat_diffGxP, lat_diffMxG, lat_diffMxP), na.rm = TRUE))
-                                     })
+                                      FUN = function(x){
+                                        lat_diffGxP <- abs(colldf$p_lat_GOLONKA[x] - colldf$p_lat_PALEOMAP[x])
+                                        lat_diffMxP <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_PALEOMAP[x])
+                                        lat_diffMxG <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_GOLONKA[x])
+                                        return(median(c(lat_diffGxP, lat_diffMxG, lat_diffMxP), na.rm = TRUE))
+                                      })
 colldf <- colldf %>% filter(!is.na(median_pair_lat_diff)) #remove NAs
 saveRDS(colldf, "./results/coll_plat_diff.RDS")
 # Assign 5%, median and 95% quantiles ------------------------------------------
@@ -60,33 +60,16 @@ up <- sapply(X = unique(colldf$bin_midpoint),
              FUN = assign_quantiles,
              level = 0.95)
 # Wrap up in a table and plot --------------------------------------------------
-plot_df <- data.frame(bin_midpoint = unique(colldf$bin_midpoint),
+plot_df <- data.frame(time = unique(colldf$bin_midpoint),
                       med = med,
                       lower = low,
-                      upper = up)
-p1 <- ggplot(data = plot_df, aes(x = bin_midpoint, y = med)) +
-  scale_x_reverse(limits = c(542, 0),
-                  breaks = c(0, 100, 200, 300, 400, 500),
-                  labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, NA),
-                     breaks = seq(0, 40, 5),
-                     labels = seq(0, 40, 5)) +
-  geom_point(size = 2, colour = "#e7298a") +
-  geom_line(linewidth = 1, colour = "#e7298a") +
-  geom_ribbon(aes(ymin = low, ymax = upper),
-              fill = "#e7298a",
-              alpha = 0.2) +
-  labs(x = "Time (Ma)",
-       y = "Palaeolatitudinal difference (º)") +
-  theme_classic(base_size = 20) +
-  theme_will() +
-  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
+                      upper = up,
+                      metric = rep("Palaeolatitudinal Difference (°)", length(med)))
 # Save datafile
 saveRDS(object = plot_df, "./results/plat_diff_degrees.RDS")
 
 ####################### PAIRWISE LATITUDINAL DISTANCE (km) #####################
-message("CALCULATING PAIRWISE LATITUDINAL DISTANCE...")
+cat("CALCULATING PAIRWISE LATITUDINAL DISTANCE...\n")
 # GDD (GeoDesic Distance) function ---------------------------------------------
 GDD <- function(x, ds) { #ds is the collection dataset
   gol <- as.numeric(ds[x, c("p_lng_GOLONKA", "p_lat_GOLONKA")])
@@ -103,7 +86,7 @@ GDD <- function(x, ds) { #ds is the collection dataset
 # Set palaeolongitudes as 0 ----------------------------------------------------
 colldf1 <- colldf
 colldf1[, c("p_lng_GOLONKA", "p_lng_MERDITH2021", "p_lng_PALEOMAP")] <- 0
-# Assess pairwise latitudinal distance per collections each time bin -----------
+# Assess pairwise latitudinal distance per collections for each time bin -------
 geodes <- c()
 lower <- c()
 upper <- c()
@@ -119,37 +102,36 @@ for(t in unique(sort(colldf1$bin_assignment, decreasing = FALSE))){
   #95%
   upper <- c(upper, quantile(gd_dist, probs = 0.95))
 }
-# Plot ------------------------------------------------------------------------
-#Proper plot
-plot_df <- data.frame(time = sort(t_bins$mid_ma[which(t_bins$bin %in% colldf1$bin_assignment)], decreasing = TRUE),
-                      med_latD = geodes,
-                      lower = lower,
-                      upper = upper)
-p2 <- ggplot(data = plot_df, aes(x = time, y = med_latD)) +
+# Proper plot dataframe
+plot_df1 <- data.frame(time = sort(t_bins$mid_ma[which(t_bins$bin %in% colldf1$bin_assignment)], decreasing = TRUE),
+                       med = geodes,
+                       lower = lower,
+                       upper = upper,
+                       metric = rep("Palaeolat. Great Circle Distance (km)", length(geodes)))
+# Save datafile
+saveRDS(object = plot_df1, "./results/plat_diff_km.RDS")
+cat("DONE.\n")
+
+# Plot the two -----------------------------------------------------------------
+DF <- rbind.data.frame(plot_df, plot_df1)
+
+p <- ggplot(data = DF, aes(x = time, y = med)) +
   scale_x_reverse(limits = c(542, 0),
                   breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(limits = c(0, NA),
-                     breaks = c(0, 1500, 3000),
-                     labels = c(0, 1500, 3000)) +
-  geom_point(size = 2, colour = "#e34a33") +
-  geom_line(linewidth = 1, colour = "#e34a33") +
-  geom_ribbon(aes(ymin = lower, ymax = upper), 
-              fill = "#e34a33",
+  geom_point(size = 2) +
+  geom_line(linewidth = 1) +
+  geom_ribbon(aes(ymin = lower, ymax = upper),
               alpha = 0.2) +
   labs(x = "Time (Ma)",
-       y = "Palaeolat. Great Circle Dist. (km)") +
-  theme_classic(base_size = 20) +
-  theme_will() +
+       y = NULL) +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE))
-# Save datafile
-saveRDS(object = plot_df, "./results/plat_diff.RDS")
-message("DONE.")
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
+  theme_classic(base_size = 20) +
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             legend.title = element_text(margin = margin(0, 15, 0, 0))) +
+  facet_wrap(~metric, ncol = 1, scales = "free")
 
-########################## Assemble the two plots ##############################
-gg <- ggarrange2(p1, p2, ncol = 1, nrow = 2, labels = c("(a)", "(b)"),
-                 label.args = list(gp = gpar(font = 2, cex = 2)), draw = FALSE)
 # Save plot
-ggsave(filename = "./figures/Lat_diff_and_GDD.png", gg,
+ggsave(filename = "./figures/Lat_diff_and_GDD.png", p,
        width = 13, height = 12)
