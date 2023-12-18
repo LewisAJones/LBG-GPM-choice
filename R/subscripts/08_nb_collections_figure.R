@@ -64,24 +64,8 @@ col_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_collections)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "none") +
   facet_wrap(~group, ncol = 1, scales = "free_y")
-#collections/Myr
-col_pm_plot <- ggplot(data = nb_coll.df, aes(x = mid_time, y = coll_per_My)) +
-  scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
-                  labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(breaks = c(0, 200, 400, 600, 800),
-                     labels = c(0, 200, 400, 600, 800)) +
-  geom_point(size = 2, colour = "#e7298a") +
-  geom_line(linewidth = 1, colour = "#e7298a") +
-  labs(x = "Time (Ma)",
-       y = "Nb. collections per My") +
-  theme_will(axis.title.x = element_text(size = 14),
-             axis.title.y = element_text(size = 14)) +
-  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
-            xlim = c(542, 0), ylim = c(0, 900))
 #save
-p <- ggarrange(col_plot, col_pm_plot, nrow = 2, labels = c("(a)", "(b)"), font.label = list(size = 20))
-ggsave("./figures/Number_of_collections_total.png", p, width = 13, height = 12)
+ggsave("./figures/Number_of_collections_total.png", col_plot, width = 13, height = 12)
 
 # 2. Total number of collection available for each model -----------------------
 avail_mdl <- function(bin, model, ds=colldf){
