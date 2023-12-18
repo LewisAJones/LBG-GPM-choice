@@ -119,18 +119,20 @@ p <- ggplot(data = DF, aes(x = time, y = med)) +
   scale_x_reverse(limits = c(542, 0),
                   breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  geom_point(size = 2) +
-  geom_line(linewidth = 1) +
-  geom_ribbon(aes(ymin = lower, ymax = upper),
+  geom_point(size = 2, aes(color = metric)) +
+  geom_line(linewidth = 1, aes(color = metric)) +
+  geom_ribbon(aes(ymin = lower, ymax = upper, fill = metric),
               alpha = 0.2) +
+  scale_fill_manual(values = c("#e34a33", "#e7298a")) +
+  scale_color_manual(values = c("#e34a33", "#e7298a")) +
   labs(x = "Time (Ma)",
-       y = NULL) +
+       y = NULL,
+       fill = NULL) +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
-  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
-             legend.title = element_text(margin = margin(0, 15, 0, 0))) +
-  facet_wrap(~metric, ncol = 1, scales = "free")
+  theme_will(legend.position = "none") +
+  facet_wrap(~metric, ncol = 1, scales = "free_y")
 
 # Save plot
 ggsave(filename = "./figures/Lat_diff_and_GDD.png", p,
