@@ -95,7 +95,7 @@ coll_av.df2$coll_av[which(coll_av.df2$bin_assignment == 97 &
                             coll_av.df2$group == "PER_My")] <- 900
   #Customise group label
 coll_av.df2$group <- factor(coll_av.df2$group, levels = c("TOTAL", "PER_My"),
-                  labels = c("Total number of available collcections","Number of available collections per Million years")
+                  labels = c("Total number of available collections","Number of available collections per Million years")
 )
 
 #plot
