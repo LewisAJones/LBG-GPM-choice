@@ -2,13 +2,13 @@
 title: "Supplementary Material: Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient"
 author:
   - "---"
-  - Lewis A. Jones^1^, Bethany J. Allen^2,3^, William Gearty^4^, and Lucas Buffan^4^
+  - Lewis A. Jones^1^,  William Gearty^2^, Lucas Buffan^3^, and Bethany J. Allen^4,5^
   - "---"
   - "^1^Grupo de Ecoloxía Animal, Departamento de Ecoloxía e Bioloxía Animal, Universidade de Vigo, 36310 Vigo, Spain."
-  - "^2^Department of Biosystems Science and Engineering, ETH Zürich, 4058 Basel, Switzerland."
-  - "^3^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland."
-  - "^4^Smithsonian National Museum of Natural History, Department of Paleobiology, Washington, DC, 20560, USA"
-  - "^5^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
+  - "^2^Smithsonian National Museum of Natural History, Department of Paleobiology, Washington, DC, 20560, USA"
+  - "^3^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
+  - "^4^Department of Biosystems Science and Engineering, ETH Zürich, 4058 Basel, Switzerland."
+  - "^5^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland."
   - "---"
   - "**Corresponding author:** LewisAlan.Jones@uvigo.es"
 format:
@@ -27,31 +27,87 @@ format:
       - heightrounded
 bibliography: references.bib
 csl: biology-letters.csl
+crossref: 
+  fig-title: "Figure S"
+  tbl-title: "Table S"
 ---
 
-# Supplementary Text
-## Additional details about the Global Plate Models we chose for this study, from a palaeobiological perspective
+```{r, setup, include=FALSE}
+knitr::opts_chunk$set(out.width = "95%")
+```
 
-<<<<<<< Updated upstream
-## Additional details about the Global Plate Models we chose for this study, from a palaeobiological perspective
+# Supplementary tables
 
-Here, we test the sensitivity of deep-time Latitudinal Biodiversity Gradient reconstructions to the use of different Global Plate Models (GPMs).
+```{r}
+#| label: tbl-bins
+#| tbl-cap: "Equal-area latitudinal bins used in this study. Bins are generated assumming a regular spheroid Earth model with a mean radius of ~6,371 km."
+#| tbl-colwidths: [100, 100, 100, 100, 100, 100]
+#| echo: false
+library(knitr)
+df <- readRDS("../data/lat_bins.RDS")
+df$area <- signif(x = df$area, digits = 3)
+df$area_prop <- round(df$area_prop, 3)
+colnames(df) <- c("Bin", "Maximum", "Midpoint", "Minimum", "Area (m^2^)", "Proportion of Area")
+options(scipen = 0)
+kable(df)
+```
 
-GPMs use the Euler Rotation Theorem to reconstruct the motion of tectonic plates on a sphere-like structure---the Earth. Based on a compilation of geological data (see [@seton2023] for an extensive review), a GPM divides tectonic plates into smaller sub-units that will move independently. It therefore takes two main inputs: (1) a set of tectonic elements and (2) a tree-like structured framework in which these elements moved throughout geological times relatively to a fixed anchor, called reference frame [@seton2023; @verard2019; @ross1988]. Two classes of GPMs exist. On the one hand, 'Continental drift' models aim at reconstructing the motion of present-day continental areas--discontinuous subset of rigid plates--as if they were 'floating' on the mantle [e.g. @wright2013; @scotese2018]. On the other hand 'full-plate' model describe in detail how plate borders have evolved through geological times [e.g. @gurnis2012; @seton2012], therefore tackling the issue from a more mechanistic perspective. Latest models of the latter class also allow for plate deformation while moving [e.g. @gurnis2018; @muller2019].
-=======
-Here, we test the sensitivity of deep-time Latitudinal Biodiversity Gradient reconstructions to the use of different Global Plate Models (GPMs).
 
-GPMs use the Euler Rotation Theorem to reconstruct the motion of tectonic plates on a sphere-like structure–-the Earth. Based on a compilation of geological data (see [@seton2023] for an extensive review), a GPM divides tectonic plates into smaller sub-units that will move independently. It therefore takes two main inputs: (1) a set of tectonic elements and (2) a tree-like structured framework in which these elements moved throughout geological times relatively to a fixed anchor, called reference frame [@seton2023; @verard_plate_2019; @ross_hierarchical_1988]. Two classes of GPMs exist. On the one hand, ‘Continental drift’ models aim at reconstructing the motion of present-day continental areas--discontinuous subset of rigid plates--as if they were 'floating' on the mantle [e.g. @wright2013; @scotese2018]. On the other hand ‘full-plates’ model describe in detail how plate borders have evolved through geological times [e.g. @gurnis_plate_2012; @seton2012], therefore tackling the issue from a more mechanistic perspective. Latest models of the latter class also allow for plate deformation while moving [e.g. @gurnis2018global; @muller2019global].
+# Supplementary figures
 
-Many of the GPMs released so far are freely available via open-source platforms, such as GPlates [@boyden2011next]. However, in the face of such an easy access, it becomes important for users to bear in mind that GPMs have been developed for a variety of purposes, and are not necessarily showing the same thing altogether. In particular, models using a mantle reference frame  [e.g. @muller2019global; @young2019global] are constraining tectonic plate motion to the mantle. While perfectly suited to study the plate-mantle system, anchoring plate motion to the mantle removes additional factors responsible for plate motion (such as the rotation of the Earth) [@seton2023]. The palaeocoordinate estimates they produce are therefore naturally biased. Hence, models using a mantle reference frame should not be used to get palaeocoordinates, which is most of the time why these models are used in palaeobiology. Rather, people interested in actual palaeocoorinate estimates should favour the use of models using a palaeomagnetic reference frame
->>>>>>> Stashed changes
+```{r}
+#| label: fig-coll-lat
+#| echo: false
+#| fig-cap: "Number of fossil collections per palaeolatitudinal bin within each Phanerozoic stage that could be palaeogeographically reconstructed using three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Differences in the number of collections within each palaeolatitudinal bin reflects differences between Global Plate Models in their palaeogeographic reconstruction (including spatial coverage)."
+knitr::include_graphics(path = "../figures/Nb_collections_per_stage.png")
+```
 
-Many of the GPMs released so far are freely available via open-source platforms, such as GPlates [@boyden2011]. However, in the face of such an easy access, it becomes important for users to bear in mind that GPMs have been developed for a variety of purposes, and are not necessarily showing the same thing altogether. In particular, models using a mantle reference frame [e.g. @muller2019; @young2019] are constraining tectonic plate motion to the mantle. While perfectly suited to study the plate-mantle system, anchoring plate motion to the mantle removes additional factors responsible for plate motion (such as the rotation of the Earth) [@seton2023]. The palaeocoordinate estimates they produce are therefore naturally biased. Hence, models using a mantle reference frame should not be used to get palaeocoordinates, which is most of the time why these models are used in palaeobiology. Rather, people interested in actual palaeocoorinate estimates should favour the use of models using a palaeomagnetic reference frame, as palaeomagnetic data provide actual constraints for palaeolatitude [@seton2023]. This said, one should notice that this does not apply to palaeolongitude, which is harder to constrain, especially in deep time [@verard2019; @seton2023].
 
-For our study, we therefore chose three GPMs using a palaeomagnetic reference frame, either among the most widely used in palaeobiology (PALEOMAP [@scotese2018] and GOLONKA [@wright2013]) or among the cutting-edge of the field (MERDITH2021 [@merdith2021]). The GOLONKA model comes from an earlier version of PALEOMAP. While the GOLONKA spans the entire Phanerozoic, the latest version of PALEOMAP (that we are using here) goes up to 750 Ma. As for it, the MERDITH2021 provides reconstructions for the last 1000 Ma. It comes from the combination of models spanning the Neoproterozoic [@merdith2017], the beginning of the Phanerozoic until Early Devonian [@domeier2016; @domeier2019] and the last 410 Ma [@young2019].
+```{r}
+#| label: fig-gradients-raw
+#| echo: false
+#| fig-cap: "Phanerozoic stage-level reconstructions of the latitudinal biodiversity gradient for five major marine invertebrate groups (Bivalvia, Brachiopoda, Cephalopoda, Gastropoda, and Trilobita). Each individual plot depicts the raw normalised genus richness within each palaeolatitudinal bin for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Raw genus richness was normalised for each stage and Global Plate Model by dividing the genus counts within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins."
+knitr::include_graphics(path = "../figures/LBGs_raw.png")
+```
+
+
+```{r}
+#| label: fig-heat-raw
+#| echo: false
+#| fig-cap: "Phanerozoic heatmaps of raw genus counts for five major marine invertebrate groups (Bivalvia, Brachiopoda, Cephalopoda, Gastropoda, and Trilobita). Each individual panel depicts the normalised genus richness for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Heatmaps depict the normalised raw genus counts within palaeolatitudinal bins (low, middle, and high) within the Northern and Southern Hemisphere. Genus richness was normalised for each stage and Global Plate Model by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. Grey tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates."
+knitr::include_graphics(path = "../figures/heatmap_raw.png")
+```
+
+
+```{r}
+#| label: fig-heatdiff-raw
+#| echo: false
+#| fig-cap: "Phanerozoic heatmaps of the pairwise difference in normalised raw genus richness for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Difference between the normalised raw genus richness within palaeolatitudinal bins for the GOLONKA and MERDITH2021 model (top panel). Difference between the normalised raw genus richness within palaeolatitudinal bins for the PALEOMAP and GOLONKA model (middle panel). Difference between the normalised raw genus richness within palaeolatitudinal bins for the PALEOMAP and MERDITH2021 model (bottom panel). Genus richness was computed for each stage, palaeolatitudinal bin, and model using raw counts. Genus richness was normalised for each stage and Global Plate Model by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. White tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates or where estimates are not available for both GPMs being compared."
+knitr::include_graphics(path = "../figures/diffs_heatmap_raw.png")
+```
+
+
+```{r}
+#| label: fig-heatdiff-sqs
+#| echo: false
+#| fig-cap: "Phanerozoic heatmaps of the pairwise difference in normalised estimated (coverage-based rarefaction) genus richness for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Difference between the normalised estimated genus richness within palaeolatitudinal bins for the GOLONKA and MERDITH2021 model (top panel). Difference between the normalised estimated genus richness within palaeolatitudinal bins for the PALEOMAP and GOLONKA model (middle panel). Difference between the normalised estimated genus richness within palaeolatitudinal bins for the PALEOMAP and MERDITH2021 model (bottom panel). Genus richness was estimated for each stage, palaeolatitudinal bin, and model using coverage-based rarefaction using the iNEXT R package ver. 3.0.0 [@hsieh2016] with a coverage level (otherwise known as a quorum level) of 0.4. Estimated genus richness was normalised for each stage and Global Plate Model by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. White tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates or where estimates are not available for both GPMs being compared."
+knitr::include_graphics(path = "../figures/diffs_heatmap_sqs.png")
+```
+
+
+```{r}
+#| label: fig-maxlat-raw
+#| echo: false
+#| fig-cap: "Phanerozoic plot of the palaeolatitudinal bin (low, middle, high) with the greatest raw genus counts within the Northern Hemisphere and Southern Hemisphere for each Global Plate Model: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Grey shading highlights intervals in which the palaeolatitudinal bin with the greatest genus richness is in agreement across the three GPMs. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 1.0.1 [@deeptime]."
+knitr::include_graphics(path = "../figures/metric_1_raw.png")
+```
+
+
+```{r}
+#| label: fig-rank-raw
+#| echo: false
+#| fig-cap: "Phanerozoic plot of the normalised average rank order pairwise difference between latitudinal biodiversity gradients (raw genus richness) for each Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Average rank order differences are normalised by maximum possible average difference given the number of ranks available. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 1.0.1 [@deeptime]."
+knitr::include_graphics(path = "../figures/metric_2_raw.png")
+```
 
 # References
-
-# Supplementary Tables
-
-# Supplementary Figures
