@@ -67,65 +67,45 @@ col_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_collections)) +
 #save
 ggsave("./figures/Number_of_collections_total.png", col_plot, width = 13, height = 12)
 
-# 2. Total number of collection available for each model -----------------------
-avail_mdl <- function(bin, model, ds=colldf){
-  idx <- which(ds$bin_assignment == bin)
-  nas <- which(is.na(ds[idx, paste0("p_lat_", model)]))
-  return((length(idx)-length(nas)))
-}
-coll_av.df <- data.frame(mid_time = rep(unique(sort(colldf$bin_midpoint, decreasing = FALSE)), 3),
-                         model = c(rep("GOLONKA", length(unique(colldf$bin_assignment))),
-                                   rep("MERDITH2021", length(unique(colldf$bin_assignment))),
-                                   rep("PALEOMAP", length(unique(colldf$bin_assignment)))),
-                         coll_av = c( sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
-                                             FUN = avail_mdl,
-                                             model = "GOLONKA"),
-                                      sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
-                                             FUN = avail_mdl,
-                                             model = "MERDITH2021"),
-                                      sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
-                                             FUN = avail_mdl,
-                                             model = "PALEOMAP")))
-#plot
-col_av_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av, colour = model)) +
-  scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
-                  labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(breaks = c(0, 1000, 2000, 3000, 4000),
-                     labels = c(0, 1000, 2000, 3000, 4000)) +
-  scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  geom_point(size = 1.5, position = position_dodge(width = 2)) +
-  geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
-  labs(x = "Time (Ma)",
-       y = "Number of available collections") +
-  theme_will(axis.title.x = element_text(size = 14),
-             axis.title.y = element_text(size = 14),
-             legend.position = "top") +
-  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
-            xlim = c(542, 0), ylim = c(0, 4100))
+# 2. Total number of collections available for each model ----------------------
+coll_av.df <- colldf %>%
+  #pivot across the three palaeolat values
+  pivot_longer(starts_with("p_lat_"), names_to = "model", names_prefix = "p_lat_") %>%
+  group_by(bin_assignment, bin_midpoint, model) %>%
+  #sum the number of available collections per time bins
+  summarise(coll_av = sum(!is.na(value))) %>% 
+  mutate(group = rep("TOTAL", 3))
+
+
 #assess number of available collections per GPM relative to the stage length
-coll_av.df$stage_duration <- sapply(X = rep(unique(sort(colldf$bin_assignment, decreasing = TRUE)), 3),
-                                    FUN = function(x){
-                                      return(time_bins$duration_myr[which(time_bins$bin == x)])
-                                    })
-coll_av.df$coll_av_pm <- coll_av.df$coll_av / coll_av.df$stage_duration
+coll_av.df2 <- coll_av.df %>% 
+  mutate(group = rep("PER_My", 3))
+
+stage_duration <- function(bin){
+  return(time_bins$duration_myr[which(time_bins$bin == bin)])
+}
+coll_av.df2$duration <- sapply(X = coll_av.df2$bin_assignment, FUN = stage_duration)
+
+coll_av.df2 <- coll_av.df2 %>% 
+  mutate(coll_av = coll_av / duration) %>%
+  select(-duration) %>% 
+  bind_rows(coll_av.df)
+
 #plot
-col_av_pm_plot <- ggplot(data = coll_av.df, aes(x = mid_time, y = coll_av_pm, colour = model)) +
+ggplot(data = coll_av.df2, aes(x = bin_midpoint, y = coll_av, colour = model)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
-  scale_y_continuous(breaks = c(0, 200, 400, 600, 800),
-                     labels = c(0, 200, 400, 600, 800)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   geom_point(size = 1.5, position = position_dodge(width = 2)) +
   geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   labs(x = "Time (Ma)",
-       y = "Nb. available collections per Myr") +
+       y = NULL) +
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14),
              legend.position = "top") +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
-            xlim = c(542, 0), ylim = c(0, 900))
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
+  facet_wrap(~group, ncol = 1, scales = "free_y")
 #save
 p <- ggarrange(col_av_plot, col_av_pm_plot, nrow = 2, labels = c("(a)", "(b)"), font.label = list(size = 20))
 ggsave("./figures/Number_of_collections_per_model.png", p, width = 13, height = 12)
