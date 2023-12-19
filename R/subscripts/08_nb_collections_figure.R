@@ -90,9 +90,16 @@ coll_av.df2 <- coll_av.df2 %>%
   mutate(coll_av = coll_av / duration) %>%
   select(-duration) %>% 
   bind_rows(coll_av.df)
+  #restrict holocene for plotting issues
+coll_av.df2$coll_av[which(coll_av.df2$bin_assignment == 97 & 
+                            coll_av.df2$group == "PER_My")] <- 900
+  #Customise group label
+coll_av.df2$group <- factor(coll_av.df2$group, levels = c("TOTAL", "PER_My"),
+                  labels = c("Total number of available collcections","Number of available collections per Million years")
+)
 
 #plot
-ggplot(data = coll_av.df2, aes(x = bin_midpoint, y = coll_av, colour = model)) +
+coll_av_plot <- ggplot(data = coll_av.df2, aes(x = bin_midpoint, y = coll_av, colour = model)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
@@ -100,6 +107,7 @@ ggplot(data = coll_av.df2, aes(x = bin_midpoint, y = coll_av, colour = model)) +
   geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   labs(x = "Time (Ma)",
        y = NULL) +
+  theme_classic(base_size = 20) +
   theme_will(axis.title.x = element_text(size = 14),
              axis.title.y = element_text(size = 14),
              legend.position = "top") +
@@ -107,8 +115,7 @@ ggplot(data = coll_av.df2, aes(x = bin_midpoint, y = coll_av, colour = model)) +
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   facet_wrap(~group, ncol = 1, scales = "free_y")
 #save
-p <- ggarrange(col_av_plot, col_av_pm_plot, nrow = 2, labels = c("(a)", "(b)"), font.label = list(size = 20))
-ggsave("./figures/Number_of_collections_per_model.png", p, width = 13, height = 12)
+ggsave("./figures/Number_of_collections_per_model.png", coll_av_plot, width = 13, height = 12)
 
 # 4. Per-stage plot -------------------------------------------------
 #Retain features of interest and filter by collection
