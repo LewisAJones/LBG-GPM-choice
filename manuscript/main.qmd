@@ -193,7 +193,7 @@ L.A.J conceived the project. All authors contributed to the development of the p
 
 # Funding
 
-The contributions of L.A.J. were supported by a Juan de la Cierva-formación 2021 fellowship (FJC2021-046695-I/MCIN/AEI/10.13039/501100011033) from the European Union “NextGenerationEU”/PRTR. L.A.J. also received funding from the European Research Council under the European Union's Horizon 2020 research and innovation program (grant agreement 947921; MAPAS project). The contributions of B.J.A. were supported by.... The contributions of W.G. were supported by the Lerner-Gray Postdoctoral Research Fellowship from the Richard Gilder Graduate School at the American Museum of Natural History. The contributions of L.B. were supported by.... 
+The contributions of L.A.J. were supported by a Juan de la Cierva-formación 2021 fellowship (FJC2021-046695-I/MCIN/AEI/10.13039/501100011033) from the European Union “NextGenerationEU”/PRTR. L.A.J. also received funding from the European Research Council under the European Union's Horizon 2020 research and innovation program (grant agreement 947921; MAPAS project). The contributions of B.J.A. were supported by.... The contributions of W.G. were supported by the Lerner-Gray Postdoctoral Research Fellowship from the Richard Gilder Graduate School at the American Museum of Natural History. The contributions of L.B. were supported by a grant from the École Normale Supérieure de Lyon. 
 
 # Acknowledgements
 
