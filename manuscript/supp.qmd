@@ -5,7 +5,7 @@ author:
   - Lewis A. Jones^1^,  William Gearty^2^, Lucas Buffan^3,4^, and Bethany J. Allen^5,6^
   - "---"
   - "^1^Grupo de Ecoloxía Animal, Departamento de Ecoloxía e Bioloxía Animal, Universidade de Vigo, 36310 Vigo, Spain."
-  - "^2^Smithsonian National Museum of Natural History, Department of Paleobiology, Washington, DC, 20560, USA"
+  - "^2^Division of Paleontology, American Museum of Natural History, New York, NY, 10024 USA."
   - "^3^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
   - "^4^Institut des Sciences de l'Évolution, Université de Montpellier, CNRS, IRD, Place Eugène Bataillon, 34095 Montpellier cedex 05, France."
   - "^5^Department of Biosystems Science and Engineering, ETH Zürich, 4058 Basel, Switzerland."
