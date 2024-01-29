@@ -83,6 +83,7 @@ gg_met1_sqs <- ggplot(met1_sqs, aes(x = mid_ma, y = as.numeric(factor(mid)), col
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
 ggsave("./figures/metric_1.png", gg_met1_sqs, width = 13, height = 6)
+saveRDS(met1_sqs, "./results/max_lat_sqs.RDS")
 
 met1_raw <- div_raw %>%
   filter(!is.na(paleolat_bin)) %>%

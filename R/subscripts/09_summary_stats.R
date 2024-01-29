@@ -81,6 +81,17 @@ length(which(ordovician$median_pair_lat_diff > val))
 length(which(cambrian$median_pair_lat_diff > val))
 
 # Latitudinal biodiversity gradient reconstructions ---------------------
-
-
+maxlat <- readRDS("./results/max_lat_sqs.RDS")
+# Which stages are tropical peaks in diversity under any model?
+n_peak_trop <- unique(maxlat$stage[which(maxlat$mid == "9.74")])
+s_peak_trop <- unique(maxlat$stage[which(maxlat$mid == "-9.74")])
+# Which stages are temperate peaks in diversity under any model?
+n_peak_tem <- unique(maxlat$stage[which(maxlat$mid == "30.655")])
+s_peak_tem <- unique(maxlat$stage[which(maxlat$mid == "-30.655")])
+# Which stages are polar peaks in diversity under any model?
+n_peak_pol <- unique(maxlat$stage[which(maxlat$mid == "65.915")])
+s_peak_pol <- unique(maxlat$stage[which(maxlat$mid == "-65.915")])
+# How many stages match?
+sum(!is.na(match(x = n_peak_trop, table = n_peak_tem)))
+sum(!is.na(match(x = s_peak_trop, table = s_peak_tem)))
 

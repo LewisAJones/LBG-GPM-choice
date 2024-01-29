@@ -95,24 +95,28 @@ coll_av.df2$coll_av[which(coll_av.df2$bin_assignment == 97 &
                             coll_av.df2$group == "PER_My")] <- 900
   #Customise group label
 coll_av.df2$group <- factor(coll_av.df2$group, levels = c("TOTAL", "PER_My"),
-                  labels = c("Total number of available collections","Number of available collections per Million years")
+                  labels = c("Total number of available collections","Number of available collections per million years")
 )
 
 #plot
 coll_av_plot <- ggplot(data = coll_av.df2, aes(x = bin_midpoint, y = coll_av, colour = model)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
+  scale_y_continuous(limits = c(0, NA)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  geom_point(size = 1.5, position = position_dodge(width = 2)) +
-  geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
+  geom_point(size = 1.75, position = position_dodge(width = 2)) +
+  geom_line(linewidth = 1, alpha = 1, position = position_dodge(width = 2)) +
   labs(x = "Time (Ma)",
        y = NULL) +
-  theme_classic(base_size = 20) +
-  theme_will(axis.title.x = element_text(size = 14),
-             axis.title.y = element_text(size = 14),
+  theme_classic(base_size = 24) +
+  theme_will(axis.title.x = element_text(size = 20),
+             axis.title.y = element_text(size = 20),
+             axis.text.x = element_text(size = 18),
+             axis.text.y = element_text(size = 18),
              legend.position = "top") +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
+            size = 6) +
   facet_wrap(~group, ncol = 1, scales = "free_y")
 #save
 ggsave("./figures/Number_of_collections_per_model.png", coll_av_plot, width = 13, height = 12)

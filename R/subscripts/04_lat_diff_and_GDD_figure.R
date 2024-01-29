@@ -114,11 +114,14 @@ cat("DONE.\n")
 
 # Plot the two -----------------------------------------------------------------
 DF <- rbind.data.frame(plot_df, plot_df1)
+DF$metric <- factor(DF$metric, levels = c("Palaeolatitudinal Difference (°)", 
+                                          "Palaeolat. Great Circle Distance (km)"))
 
 p <- ggplot(data = DF, aes(x = time, y = med)) +
   scale_x_reverse(limits = c(542, 0),
                   breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
+  scale_y_continuous(limits = c(0, NA)) +
   geom_point(size = 2, aes(color = metric)) +
   geom_line(linewidth = 1, aes(color = metric)) +
   geom_ribbon(aes(ymin = lower, ymax = upper, fill = metric),
@@ -129,9 +132,14 @@ p <- ggplot(data = DF, aes(x = time, y = med)) +
        y = NULL,
        fill = NULL) +
   coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
-            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
-  theme_classic(base_size = 20) +
-  theme_will(legend.position = "none") +
+            lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
+            size = 6) +
+  theme_classic(base_size = 24) +
+  theme_will(axis.title.x = element_text(size = 20),
+             axis.title.y = element_text(size = 20),
+             axis.text.x = element_text(size = 18),
+             axis.text.y = element_text(size = 18),
+             legend.position = "none") +
   facet_wrap(~metric, ncol = 1, scales = "free_y")
 
 # Save plot
