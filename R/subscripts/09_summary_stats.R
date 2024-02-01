@@ -94,4 +94,35 @@ s_peak_pol <- unique(maxlat$stage[which(maxlat$mid == "-65.915")])
 # How many stages match?
 sum(!is.na(match(x = n_peak_trop, table = n_peak_tem)))
 sum(!is.na(match(x = s_peak_trop, table = s_peak_tem)))
+# Which stages have the same peak in diversity?
+df <- readRDS(file = "./data/processed/interpolations.RDS")
+n_df <- subset(df, paleolat_bin <= 3)
+s_df <- subset(df, paleolat_bin >= 4)
+df %<>% 
+  group_by(stage, model) %>%
+  summarise(n = which.max(qD)) %>%
+  group_by(stage) %>%
+  summarise(n = length(unique(n)))
+# Palaeozoic
+palaeozoic <- subset(df, stage <= 48)
+length(which(palaeozoic$n == 1)) / nrow(palaeozoic)
+# Mesozoic
+mesozoic <- subset(df, stage >= 49 & stage <= 78)
+length(which(mesozoic$n == 1)) / nrow(mesozoic)
+#Cenozoic
+cenozoic <- subset(df, stage >= 79)
+length(which(cenozoic$n == 1)) / nrow(cenozoic)
+# per hemisphere
+n_df %<>% 
+  group_by(stage, model) %>%
+  summarise(n = which.max(qD)) %>%
+  group_by(stage) %>%
+  summarise(n = length(unique(n)))
+length(which(n_df$n == 1)) / nrow(n_df)
 
+s_df %<>% 
+  group_by(stage, model) %>%
+  summarise(n = which.max(qD)) %>%
+  group_by(stage) %>%
+  summarise(n = length(unique(n)))
+length(which(s_df$n == 1)) / nrow(s_df)

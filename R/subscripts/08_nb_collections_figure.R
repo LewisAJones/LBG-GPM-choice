@@ -156,7 +156,7 @@ p <- ggplot(data = colldf2, aes(x = mid,
   facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)), ncol = 9, scales = "free") +
   coord_cartesian(ylim = c(0, NA)) +
   labs(y = "Number of collections",
-       x = "Palaeolatitudinal bin") +
+       x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
   theme(strip.text.x = element_text(size = 14),
         legend.position = "top")
@@ -170,4 +170,4 @@ for (i in strip_t) {
                            time_bins$interval_name)]
 }
 #Save
-ggsave("./figures/Nb_collections_per_stage.png", g, width = 18, height = 22)
+ggsave("./figures/Nb_collections_per_stage.png", g, width = 20, height = 22)

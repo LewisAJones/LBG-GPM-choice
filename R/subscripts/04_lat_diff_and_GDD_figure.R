@@ -107,7 +107,7 @@ plot_df1 <- data.frame(time = sort(t_bins$mid_ma[which(t_bins$bin %in% colldf1$b
                        med = geodes,
                        lower = lower,
                        upper = upper,
-                       metric = rep("Palaeolat. Great Circle Distance (km)", length(geodes)))
+                       metric = rep("Palaeolatitudinal Great Circle Distance (km)", length(geodes)))
 # Save datafile
 saveRDS(object = plot_df1, "./results/plat_diff_km.RDS")
 cat("DONE.\n")
@@ -115,7 +115,7 @@ cat("DONE.\n")
 # Plot the two -----------------------------------------------------------------
 DF <- rbind.data.frame(plot_df, plot_df1)
 DF$metric <- factor(DF$metric, levels = c("Palaeolatitudinal Difference (°)", 
-                                          "Palaeolat. Great Circle Distance (km)"))
+                                          "Palaeolatitudinal Great Circle Distance (km)"))
 
 p <- ggplot(data = DF, aes(x = time, y = med)) +
   scale_x_reverse(limits = c(542, 0),

@@ -4,7 +4,7 @@ author:
   - "---"
   - Lewis A. Jones^1^,  William Gearty^2^, Lucas Buffan^3,4^, and Bethany J. Allen^5,6^
   - "---"
-  - "^1^Grupo de Ecoloxía Animal, Departamento de Ecoloxía e Bioloxía Animal, Universidade de Vigo, 36310 Vigo, Spain."
+  - "^1^Departamento de Ecoloxía e Bioloxía Animal, Universidade de Vigo, 36310 Vigo, Spain."
   - "^2^Division of Paleontology, American Museum of Natural History, New York, NY, 10024 USA."
   - "^3^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
   - "^4^Institut des Sciences de l'Évolution, Université de Montpellier, CNRS, IRD, Place Eugène Bataillon, 34095 Montpellier cedex 05, France."
@@ -48,7 +48,7 @@ library(knitr)
 df <- readRDS("../data/lat_bins.RDS")
 df$area <- signif(x = df$area, digits = 3)
 df$area_prop <- round(df$area_prop, 3)
-colnames(df) <- c("Bin", "Maximum", "Midpoint", "Minimum", "Area (m^2^)", "Proportion of Area")
+colnames(df) <- c("Bin", "Maximum (º)", "Midpoint (º)", "Minimum (º)", "Area (m^2^)", "Proportion of Area")
 options(scipen = 0)
 kable(df)
 ```
@@ -59,7 +59,7 @@ kable(df)
 ```{r}
 #| label: fig-coll-lat
 #| echo: false
-#| fig-cap: "Number of fossil collections per palaeolatitudinal bin within each Phanerozoic stage that could be palaeogeographically reconstructed using three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Differences in the number of collections within each palaeolatitudinal bin reflects differences between Global Plate Models in their palaeogeographic reconstruction (including spatial coverage)."
+#| fig-cap: "Number of fossil collections per palaeolatitudinal bin within each Phanerozoic stage that could be palaeogeographically reconstructed using three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Differences in the number of collections within each palaeolatitudinal bin reflects differences between Global Plate Models in their palaeogeographic reconstruction."
 knitr::include_graphics(path = "../figures/Nb_collections_per_stage.png")
 ```
 
@@ -91,7 +91,7 @@ knitr::include_graphics(path = "../figures/diffs_heatmap_raw.png")
 ```{r}
 #| label: fig-heatdiff-sqs
 #| echo: false
-#| fig-cap: "Phanerozoic heatmaps of the pairwise difference in normalised estimated (coverage-based rarefaction) genus richness for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Difference between the normalised estimated genus richness within palaeolatitudinal bins for the GOLONKA and MERDITH2021 model (top panel). Difference between the normalised estimated genus richness within palaeolatitudinal bins for the PALEOMAP and GOLONKA model (middle panel). Difference between the normalised estimated genus richness within palaeolatitudinal bins for the PALEOMAP and MERDITH2021 model (bottom panel). Genus richness was estimated for each stage, palaeolatitudinal bin, and model using coverage-based rarefaction using the iNEXT R package ver. 3.0.0 [@hsieh2016] with a coverage level (otherwise known as a quorum level) of 0.4. Estimated genus richness was normalised for each stage and Global Plate Model by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. White tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates or where estimates are not available for both GPMs being compared."
+#| fig-cap: "Phanerozoic heatmaps of the pairwise difference in normalised estimated (coverage-based rarefaction) genus richness for three Global Plate Models (GPMs): GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Difference between the normalised estimated genus richness within palaeolatitudinal bins for the GOLONKA and MERDITH2021 model (top panel). Difference between the normalised estimated genus richness within palaeolatitudinal bins for the PALEOMAP and GOLONKA model (middle panel). Difference between the normalised estimated genus richness within palaeolatitudinal bins for the PALEOMAP and MERDITH2021 model (bottom panel). Genus richness was estimated for each stage, palaeolatitudinal bin, and model using coverage-based rarefaction using the iNEXT R package ver. 3.0.0 [@hsieh2016] with a coverage level (otherwise known as a quorum level) of 0.4. Estimated genus richness was normalised for each stage and GPM by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. White tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates or where estimates are not available for both GPMs being compared."
 knitr::include_graphics(path = "../figures/diffs_heatmap_sqs.png")
 ```
 

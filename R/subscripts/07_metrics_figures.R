@@ -62,6 +62,7 @@ met1_sqs_rects <- met1_sqs_rects %>%
   filter(all_same) %>%
   mutate(ymin = ifelse(hemi == "north", 3.5, -Inf),
          ymax = ifelse(hemi == "north", Inf, 3.5))
+saveRDS(met1_sqs_rects, "./results/max_lat_bin_sqs.RDS")
 
 gg_met1_sqs <- ggplot(met1_sqs, aes(x = mid_ma, y = as.numeric(factor(mid)), color = model)) +
   geom_rect(data = met1_sqs_rects, inherit.aes = FALSE,

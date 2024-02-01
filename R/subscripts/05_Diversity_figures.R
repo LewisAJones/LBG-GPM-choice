@@ -39,7 +39,7 @@ p <- ggplot(data = div_sqs_join, aes(x = mid,
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), ncol = 9) +
   labs(y = "Normalised estimated genus richness",
-       x = "Palaeolatitudinal bin") +
+       x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
   theme(legend.position = "top")
 
@@ -65,7 +65,7 @@ p <- ggplot(data = div_raw_join, aes(x = mid,
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
   facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), ncol = 9) +
   labs(y = "Normalised raw genus richness",
-       x = "Palaeolatitudinal bin") +
+       x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
   theme(legend.position = "top")
 
