@@ -22,6 +22,16 @@ if (params$download || !file.exists("./data/raw/pbdb_data.RDS")) {
   occdf <- readRDS("./data/raw/pbdb_data.RDS")
 }
 # Process data ----------------------------------------------------------
+# Collapse subgenera (remove characters from space onwards)
+if (params$collapse_subgenera == TRUE) {
+  occdf$genus <- sub(" .*", "", occdf$genus)
+}
+# Filter for unique occurrences from stacked collections
+# (those with same lat/lng, usually beds from the same section)
+occdf$lng <- round(occdf$lng, digits = params$n_decs)
+occdf$lat <- round(occdf$lat, digits = params$n_decs)
+occdf <- distinct(occdf, lat, lng, family, genus, bin_assignment,
+                  .keep_all = TRUE)
 # Bin data by collection for faster processing
 colldf <- occdf[, c("collection_no", "lng", "lat",
                     "early_interval", "late_interval",

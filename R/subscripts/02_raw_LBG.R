@@ -13,19 +13,6 @@ source("./R/options.R")
 # Get data --------------------------------------------------------------
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
 # Process data ----------------------------------------------------------
-# Collapse subgenera (remove characters from space onwards)
-if (params$collapse_subgenera == TRUE) {
-  occdf$genus <- sub(" .*", "", occdf$genus)
-}
-# Filter for unique occurrences from each collection
-occdf <- distinct(occdf, collection_no, family, genus, bin_assignment,
-                  .keep_all = TRUE)
-# Filter for unique occurrences from stacked collections
-# (those with same lat/lng, usually beds from the same section)
-occdf$lng <- round(occdf$lng, digits = params$n_decs)
-occdf$lat <- round(occdf$lat, digits = params$n_decs)
-occdf <- distinct(occdf, lat, lng, family, genus, bin_assignment,
-                  .keep_all = TRUE)
 # Streamline to necessary variables
 genus_occs <- occdf[, c("collection_no", "phylum", "family", "genus",
                         "bin_assignment")]
