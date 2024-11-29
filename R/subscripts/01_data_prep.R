@@ -8,8 +8,6 @@
 library(palaeoverse)
 # Load project options
 source("./R/options.R")
-# Load custom functions
-source("./R/functions/equal_area_lat_bins.R")
 # Get data --------------------------------------------------------------
 if (params$download || !file.exists("./data/raw/pbdb_data.RDS")) {
   # Use for fresh downloads
@@ -131,7 +129,7 @@ colldf <- palaeorotate(occdf = colldf,
                        uncertainty = FALSE,
                        round = NULL)
 # Create equal area latitudinal bins
-bins <- equal_area_lat_bins(n = params$lat_bin, by = 0.01)
+bins <- lat_bins_area(n = params$lat_bin)
 # Save bins
 saveRDS(object = bins, file = "./data/lat_bins.RDS")
 # Create empty columns
