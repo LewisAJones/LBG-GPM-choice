@@ -34,7 +34,7 @@ div_raw_join <- div_raw %>%
   mutate(n_genera_norm1 = n_genera / max(n_genera, na.rm = TRUE)) %>%
   ungroup() %>%
   mutate(n_genera_norm2 = n_genera / n_genera.global) %>%
-  complete(stage_bin = stages$bin, paleolat_bin, model) %>%
+  complete(stage_bin, paleolat_bin, model) %>%
   full_join(stages, by = c("stage_bin" = "bin")) %>%
   full_join(lats, by = c("paleolat_bin" = "bin"))
 
@@ -48,6 +48,6 @@ div_sqs_join <- div_sqs %>%
   mutate(qD_norm1 = qD / max(qD, na.rm = TRUE)) %>%
   ungroup() %>%
   mutate(qD_norm2 = qD / qD.global) %>%
-  complete(stage = stages$bin, paleolat_bin, model) %>%
+  complete(stage, paleolat_bin, model) %>%
   left_join(stages, by = c("stage" = "bin")) %>%
   left_join(lats, by = c("paleolat_bin" = "bin"))
