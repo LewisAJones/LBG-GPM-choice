@@ -5,6 +5,7 @@
 # Last updated: 2023-07-31
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Load libraries --------------------------------------------------------
+library(dplyr)
 library(palaeoverse)
 # Load project options
 source("./R/options.R")
@@ -26,12 +27,6 @@ if (params$download || !file.exists("./data/raw/pbdb_data.RDS")) {
 if (params$collapse_subgenera == TRUE) {
   occdf$genus <- sub(" .*", "", occdf$genus)
 }
-# Filter for unique occurrences from stacked collections
-# (those with same lat/lng, usually beds from the same section)
-occdf$lng <- round(occdf$lng, digits = params$n_decs)
-occdf$lat <- round(occdf$lat, digits = params$n_decs)
-occdf <- distinct(occdf, lat, lng, family, genus, bin_assignment,
-                  .keep_all = TRUE)
 # Bin data by collection for faster processing
 colldf <- occdf[, c("collection_no", "lng", "lat",
                     "early_interval", "late_interval",
@@ -162,6 +157,12 @@ occdf <- occdf[which(occdf$collection_no %in% colldf$collection_no), ]
 m <- match(x = occdf$collection_no, table = colldf$collection_no)
 # Add data
 occdf[, colnames(colldf)] <- colldf[m, colnames(colldf)]
+# Filter for unique occurrences from stacked collections
+# (those with same lat/lng, usually beds from the same section)
+occdf$lng <- round(occdf$lng, digits = params$n_decs)
+occdf$lat <- round(occdf$lat, digits = params$n_decs)
+occdf <- distinct(occdf, lat, lng, family, genus, bin_assignment,
+                  .keep_all = TRUE)
 # Save processed data
 saveRDS(object = occdf, file = "./data/processed/pbdb_data.RDS")
 # Notify
