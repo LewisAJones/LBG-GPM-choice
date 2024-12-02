@@ -26,33 +26,33 @@ GTS2020_eras <- time_bins(rank = "era") %>%
 time_bins <- readRDS("./data/time_bins.RDS")
 lat_bins <- readRDS("./data/lat_bins.RDS")
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
-colldf <- occdf %>% 
-  select(collection_no, bin_assignment, matches("p_lat"), bin_midpoint) %>% 
-  group_by(collection_no, bin_assignment, p_lat_PALEOMAP, p_lat_GOLONKA, p_lat_MERDITH2021, bin_midpoint) %>% 
-  #subset based on unique values of collection number
-  distinct(collection_no)
+pointdf <- occdf %>%
+  distinct(lat, lng, bin_assignment, .keep_all = TRUE) %>%
+  select(bin_assignment, p_lat_PALEOMAP, p_lat_GOLONKA, p_lat_MERDITH2021, bin_midpoint)
 
 #Total number of collection through time
-n_col <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
-                FUN = function(x){
-                  idx <- which(colldf$bin_assignment == x)
-                  return(length(idx))
-                  })
-nb_coll.df <- data.frame(mid_time = unique(sort(colldf$bin_midpoint, decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
-                         number_of_collections = n_col, group = rep("Number of collections", length(n_col)))
+n_points <- pointdf %>% group_by(bin_assignment) %>% count() %>%
+  arrange(desc(bin_assignment))
+nb_points.df <- data.frame(mid_time = unique(sort(pointdf$bin_midpoint,
+                                                decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
+                         number_of_points = n_points$n,
+                         group = rep("Number of points", nrow(n_points)))
 #Number of available collections per GPM relative to the stage length
-stage_duration <- sapply(X = unique(sort(colldf$bin_assignment, decreasing = TRUE)),
+stage_duration <- sapply(X = unique(sort(n_points$bin_assignment, decreasing = TRUE)),
                          FUN = function(x){
                          return(time_bins$duration_myr[which(time_bins$bin == x)])
                          })
-coll_per_My <- nb_coll.df$number_of_collections / stage_duration
-coll_per_My[1] <- 900 #restrict nb collections per million years of the Holocene for plotting issues
+points_per_My <- nb_points.df$number_of_points / stage_duration
+points_per_My[1] <- 900 #restrict nb collections per million years of the Holocene for plotting issues
 #Total dataframe
-DF <- rbind.data.frame(nb_coll.df,
-                       data.frame(mid_time = unique(sort(colldf$bin_midpoint, decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
-                                  number_of_collections = coll_per_My, group = rep("Number of collections per My", length(n_col))))
+DF <- rbind.data.frame(nb_points.df,
+                       data.frame(mid_time = unique(sort(pointdf$bin_midpoint,
+                                                         decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
+                                  number_of_points = points_per_My,
+                                  group = rep("Number of points per My",
+                                              nrow(n_points))))
 #Plot
-col_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_collections)) +
+point_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_points)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
   geom_point(size = 2, colour = "#e7298a") +
@@ -65,7 +65,7 @@ col_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_collections)) +
   theme_will(legend.position = "none") +
   facet_wrap(~group, ncol = 1, scales = "free_y")
 #save
-ggsave("./figures/Number_of_collections_total.png", col_plot, width = 13, height = 12)
+ggsave("./figures/Number_of_points_total.png", col_plot, width = 13, height = 12)
 
 # 2. Total number of collections available for each model ----------------------
 coll_av.df <- colldf %>%
