@@ -36,7 +36,7 @@ n_points <- pointdf %>% group_by(bin_assignment) %>% count() %>%
 nb_points.df <- data.frame(mid_time = unique(sort(pointdf$bin_midpoint,
                                                 decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
                          number_of_points = n_points$n,
-                         group = rep("Number of points", nrow(n_points)))
+                         group = rep("Number of localities", nrow(n_points)))
 #Number of available collections per GPM relative to the stage length
 stage_duration <- sapply(X = unique(sort(n_points$bin_assignment, decreasing = TRUE)),
                          FUN = function(x){
@@ -49,7 +49,7 @@ DF <- rbind.data.frame(nb_points.df,
                        data.frame(mid_time = unique(sort(pointdf$bin_midpoint,
                                                          decreasing = FALSE)), #increasing order as the oldest bin has the smallest bin assignment number
                                   number_of_points = points_per_My,
-                                  group = rep("Number of points per My",
+                                  group = rep("Number of localities per My",
                                               nrow(n_points))))
 #Plot
 point_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_points)) +
@@ -65,41 +65,44 @@ point_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_points)) +
   theme_will(legend.position = "none") +
   facet_wrap(~group, ncol = 1, scales = "free_y")
 #save
-ggsave("./figures/Number_of_points_total.png", col_plot, width = 13, height = 12)
+ggsave("./figures/Number_of_localities_total.png", point_plot, width = 13, height = 12)
 
 # 2. Total number of collections available for each model ----------------------
-coll_av.df <- colldf %>%
+point_av.df <- pointdf %>%
   #pivot across the three palaeolat values
   pivot_longer(starts_with("p_lat_"), names_to = "model", names_prefix = "p_lat_") %>%
   group_by(bin_assignment, bin_midpoint, model) %>%
   #sum the number of available collections per time bins
-  summarise(coll_av = sum(!is.na(value))) %>% 
+  summarise(point_av = sum(!is.na(value))) %>% 
   mutate(group = rep("TOTAL", 3))
 
 
 #assess number of available collections per GPM relative to the stage length
-coll_av.df2 <- coll_av.df %>% 
+point_av.df2 <- point_av.df %>% 
   mutate(group = rep("PER_My", 3))
 
 stage_duration <- function(bin){
   return(time_bins$duration_myr[which(time_bins$bin == bin)])
 }
-coll_av.df2$duration <- sapply(X = coll_av.df2$bin_assignment, FUN = stage_duration)
+point_av.df2$duration <- sapply(X = point_av.df2$bin_assignment,
+                                FUN = stage_duration)
 
-coll_av.df2 <- coll_av.df2 %>% 
-  mutate(coll_av = coll_av / duration) %>%
+point_av.df2 <- point_av.df2 %>% 
+  mutate(point_av = point_av / duration) %>%
   select(-duration) %>% 
-  bind_rows(coll_av.df)
+  bind_rows(point_av.df)
   #restrict holocene for plotting issues
-coll_av.df2$coll_av[which(coll_av.df2$bin_assignment == 97 & 
-                            coll_av.df2$group == "PER_My")] <- 900
+point_av.df2$point_av[which(point_av.df2$bin_assignment == 97 & 
+                            point_av.df2$group == "PER_My")] <- 900
   #Customise group label
-coll_av.df2$group <- factor(coll_av.df2$group, levels = c("TOTAL", "PER_My"),
-                  labels = c("Total number of available collections","Number of available collections per million years")
+point_av.df2$group <- factor(point_av.df2$group, levels = c("TOTAL", "PER_My"),
+                  labels = c("Total number of sampled localities",
+                             "Number of sampled localities per million years")
 )
 
 #plot
-coll_av_plot <- ggplot(data = coll_av.df2, aes(x = bin_midpoint, y = coll_av, colour = model)) +
+point_av_plot <- ggplot(data = point_av.df2, aes(x = bin_midpoint, y = point_av,
+                                                 colour = model)) +
   scale_x_reverse(breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
   scale_y_continuous(limits = c(0, NA)) +
@@ -119,43 +122,47 @@ coll_av_plot <- ggplot(data = coll_av.df2, aes(x = bin_midpoint, y = coll_av, co
             size = 6) +
   facet_wrap(~group, ncol = 1, scales = "free_y")
 #save
-ggsave("./figures/Number_of_collections_per_model.png", coll_av_plot, width = 13, height = 12)
+ggsave("./figures/Number_of_localities_per_model.png", point_av_plot, width = 13, height = 12)
 
-# 4. Per-stage plot -------------------------------------------------
+# 3. Per-stage plot -------------------------------------------------
 #Retain features of interest and filter by collection
-tmp <- occdf %>% select(collection_no, bin_assignment, PALEOMAP_bin, GOLONKA_bin, MERDITH2021_bin)
+tmp <- occdf %>% select(lng, lat, bin_assignment, PALEOMAP_bin,
+                        GOLONKA_bin, MERDITH2021_bin)
 tmp <- unique(tmp)
 #Create collection dataframe
-colldf2 <- rbind(tmp[, 1:2], tmp[, 1:2], tmp[, 1:2])
-colldf2$model <- c(rep("GOLONKA", nrow(tmp)),
+pointdf2 <- rbind(tmp[, 1:3], tmp[, 1:3], tmp[, 1:3])
+pointdf2$model <- c(rep("GOLONKA", nrow(tmp)),
                   rep("PALEOMAP", nrow(tmp)),
                   rep("MERDITH2021", nrow(tmp)))
-colldf2$plat_bin <- c(tmp$GOLONKA_bin, 
+pointdf2$plat_bin <- c(tmp$GOLONKA_bin, 
                       tmp$PALEOMAP_bin, 
                       tmp$MERDITH2021_bin)
 #Assess number of collections per lat bin through time
-colldf2 <- colldf2 %>% 
+pointdf2 <- pointdf2 %>% 
   group_by(model, bin_assignment, plat_bin) %>% 
   count(plat_bin) %>% 
-  rename("occ_number" = n) %>% 
+  rename("loc_number" = n) %>% 
   ungroup() %>%
-  complete(bin_assignment = time_bins$bin, plat_bin = lat_bins$bin, model, fill = list(occ_number = 0)) %>%
+  complete(bin_assignment = time_bins$bin, plat_bin = lat_bins$bin, model,
+           fill = list(loc_number = 0)) %>%
   full_join(time_bins, by = c("bin_assignment" = "bin")) %>% 
   full_join(lat_bins, by = c("plat_bin" = "bin")) %>%
   filter(!is.na(model)) %>%
   filter(!is.na(plat_bin))
 #Plot
-p <- ggplot(data = colldf2, aes(x = mid,
-                                y = occ_number,
+p <- ggplot(data = pointdf2, aes(x = mid,
+                                y = loc_number,
                                 colour = model)) +
   geom_point(size = 1.5, position = position_dodge(width = 2)) +
   # hack for the y-axis limits for the empty time bins
-  geom_point(data = data.frame(x = 0, y = 4), aes(x = x, y = y), color = "transparent") +
+  geom_point(data = data.frame(x = 0, y = 4), aes(x = x, y = y),
+             color = "transparent") +
   geom_line(linewidth = 0.75, alpha = 1, position = position_dodge(width = 2)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)), ncol = 9, scales = "free") +
+  facet_wrap(~factor(interval_name, levels = rev(time_bins$interval_name)),
+             ncol = 9, scales = "free") +
   coord_cartesian(ylim = c(0, NA)) +
-  labs(y = "Number of collections",
+  labs(y = "Number of localities",
        x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
   theme(strip.text.x = element_text(size = 14),
@@ -170,4 +177,4 @@ for (i in strip_t) {
                            time_bins$interval_name)]
 }
 #Save
-ggsave("./figures/Nb_collections_per_stage.png", g, width = 20, height = 22)
+ggsave("./figures/Nb_localities_per_stage.png", g, width = 20, height = 22)
