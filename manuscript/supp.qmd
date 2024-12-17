@@ -2,16 +2,15 @@
 title: "Supplementary Material: Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient"
 author:
   - "---"
-  - Lewis A. Jones^1^,  William Gearty^2^, Lucas Buffan^3,4^, and Bethany J. Allen^5,6^
+  - Lewis A. Jones^1^,  William Gearty^2^, Lucas Buffan^3^, and Bethany J. Allen^4,5^
   - "---"
-  - "^1^Departamento de Ecoloxía e Bioloxía Animal, Universidade de Vigo, 36310 Vigo, Spain."
+  - "^1^Department of Earth Sciences, University College London, Gower Street, London, WC1E 6BT, UK"
   - "^2^Division of Paleontology, American Museum of Natural History, New York, NY, 10024 USA."
-  - "^3^Département de Biologie, École Normale Supérieure de Lyon, Université Claude Bernard Lyon 1, 69342 Lyon Cedex 07, France."
-  - "^4^Institut des Sciences de l'Évolution, Université de Montpellier, CNRS, IRD, Place Eugène Bataillon, 34095 Montpellier cedex 05, France."
-  - "^5^Department of Biosystems Science and Engineering, ETH Zürich, 4058 Basel, Switzerland."
-  - "^6^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland."
+  - "^3^Institut des Sciences de l'Évolution, Université de Montpellier, CNRS, IRD, Place Eugène Bataillon, 34095 Montpellier cedex 05, France."
+  - "^4^Department of Biosystems Science and Engineering, ETH Zürich, 4056 Basel, Switzerland."
+  - "^5^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland."
   - "---"
-  - "**Corresponding author:** LewisAlan.Jones@uvigo.es"
+  - "**Corresponding author:** Lewis.Jones@ucl.ac.uk"
 format:
   docx:
     reference-doc: template.docx
@@ -27,13 +26,18 @@ format:
       - right=25.4mm
       - heightrounded
 bibliography: references.bib
-csl: biology-letters.csl
+csl: proceedings-of-the-royal-society-b.csl
 crossref: 
   fig-title: "Figure S"
   tbl-title: "Table S"
 ---
 
-```{r, setup, include=FALSE}
+<style>
+body {
+text-align: justify}
+</style>
+
+```{r, setup, include=FALSE, eval=TRUE}
 knitr::opts_chunk$set(out.width = "95%")
 ```
 
@@ -53,21 +57,22 @@ options(scipen = 0)
 kable(df)
 ```
 
+\newpage
 
 # Supplementary figures
 
 ```{r}
 #| label: fig-coll-lat
 #| echo: false
-#| fig-cap: "Number of fossil collections per palaeolatitudinal bin within each Phanerozoic stage that could be palaeogeographically reconstructed using three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Differences in the number of collections within each palaeolatitudinal bin reflects differences between Global Plate Models in their palaeogeographic reconstruction."
-knitr::include_graphics(path = "../figures/Nb_collections_per_stage.png")
+#| fig-cap: "Number of fossil localities per palaeolatitudinal bin within each Phanerozoic stage that could be palaeogeographically reconstructed using four Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], MERDITH2021 [@merdith2021], and TorsvikCocks2017 [@torsvik2016]. Differences in the number of localities within each palaeolatitudinal bin reflects differences between Global Plate Models in their palaeogeographic reconstruction."
+knitr::include_graphics(path = "../figures/Nb_localities_per_stage.png")
 ```
 
 
 ```{r}
 #| label: fig-gradients-raw
 #| echo: false
-#| fig-cap: "Phanerozoic stage-level reconstructions of the latitudinal biodiversity gradient for five major marine invertebrate groups (Bivalvia, Brachiopoda, Cephalopoda, Gastropoda, and Trilobita). Each individual plot depicts the raw normalised genus richness within each palaeolatitudinal bin for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Raw genus richness was normalised for each stage and Global Plate Model by dividing the genus counts within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins."
+#| fig-cap: "Phanerozoic stage-level reconstructions of the latitudinal biodiversity gradient for five major marine invertebrate groups (Bivalvia, Brachiopoda, Cephalopoda, Gastropoda, and Trilobita). Each individual plot depicts the raw normalised genus richness within each palaeolatitudinal bin for four Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], MERDITH2021 [@merdith2021], and TorsvikCocks2017 [@torsvik2016]. Raw genus richness was normalised for each stage and Global Plate Model by dividing the genus counts within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins."
 knitr::include_graphics(path = "../figures/LBGs_raw.png")
 ```
 
@@ -75,7 +80,7 @@ knitr::include_graphics(path = "../figures/LBGs_raw.png")
 ```{r}
 #| label: fig-heat-raw
 #| echo: false
-#| fig-cap: "Phanerozoic heatmaps of raw genus counts for five major marine invertebrate groups (Bivalvia, Brachiopoda, Cephalopoda, Gastropoda, and Trilobita). Each individual panel depicts the normalised genus richness for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Heatmaps depict the normalised raw genus counts within palaeolatitudinal bins (low, middle, and high) within the Northern and Southern Hemisphere. Genus richness was normalised for each stage and Global Plate Model by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. Grey tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates."
+#| fig-cap: "Phanerozoic heatmaps of raw genus counts for five major marine invertebrate groups (Bivalvia, Brachiopoda, Cephalopoda, Gastropoda, and Trilobita). Each individual panel depicts the normalised genus richness for four Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], MERDITH2021 [@merdith2021], and TorsvikCocks2017 [@torsvik2016]. Heatmaps depict the normalised raw genus counts within palaeolatitudinal bins (low, middle, and high) within the Northern and Southern Hemisphere. Genus richness was normalised for each stage and Global Plate Model by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. Grey tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 2.1.0 [@deeptime]."
 knitr::include_graphics(path = "../figures/heatmap_raw.png")
 ```
 
@@ -83,7 +88,7 @@ knitr::include_graphics(path = "../figures/heatmap_raw.png")
 ```{r}
 #| label: fig-heatdiff-raw
 #| echo: false
-#| fig-cap: "Phanerozoic heatmaps of the pairwise difference in normalised raw genus richness for three Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Difference between the normalised raw genus richness within palaeolatitudinal bins for the GOLONKA and MERDITH2021 model (top panel). Difference between the normalised raw genus richness within palaeolatitudinal bins for the PALEOMAP and GOLONKA model (middle panel). Difference between the normalised raw genus richness within palaeolatitudinal bins for the PALEOMAP and MERDITH2021 model (bottom panel). Genus richness was computed for each stage, palaeolatitudinal bin, and model using raw counts. Genus richness was normalised for each stage and Global Plate Model by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. White tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates or where estimates are not available for both GPMs being compared."
+#| fig-cap: "Phanerozoic heatmaps of the pairwise difference in normalised raw genus richness for four Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], MERDITH2021 [@merdith2021], and TorsvikCocks2017 [@torsvik2016].  Genus richness was computed for each stage, palaeolatitudinal bin, and model using raw counts. Genus richness was normalised for each stage and Global Plate Model by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. White tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates or where estimates are not available for both GPMs being compared. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 2.1.0 [@deeptime]."
 knitr::include_graphics(path = "../figures/diffs_heatmap_raw.png")
 ```
 
@@ -91,7 +96,7 @@ knitr::include_graphics(path = "../figures/diffs_heatmap_raw.png")
 ```{r}
 #| label: fig-heatdiff-sqs
 #| echo: false
-#| fig-cap: "Phanerozoic heatmaps of the pairwise difference in normalised estimated (coverage-based rarefaction) genus richness for three Global Plate Models (GPMs): GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Difference between the normalised estimated genus richness within palaeolatitudinal bins for the GOLONKA and MERDITH2021 model (top panel). Difference between the normalised estimated genus richness within palaeolatitudinal bins for the PALEOMAP and GOLONKA model (middle panel). Difference between the normalised estimated genus richness within palaeolatitudinal bins for the PALEOMAP and MERDITH2021 model (bottom panel). Genus richness was estimated for each stage, palaeolatitudinal bin, and model using coverage-based rarefaction using the iNEXT R package ver. 3.0.0 [@hsieh2016] with a coverage level (otherwise known as a quorum level) of 0.4. Estimated genus richness was normalised for each stage and GPM by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. White tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates or where estimates are not available for both GPMs being compared."
+#| fig-cap: "Phanerozoic heatmaps of the pairwise difference in normalised estimated (coverage-based rarefaction) genus richness for four Global Plate Models (GPMs): GOLONKA [@wright2013], PALEOMAP [@scotese2018], MERDITH2021 [@merdith2021], and TorsvikCocks2017 [@torsvik2016]. Genus richness was estimated for each stage, palaeolatitudinal bin, and model using coverage-based rarefaction using the iNEXT R package ver. 3.0.1 [@hsieh2016] with a coverage level (otherwise known as a quorum level) of 0.4. Estimated genus richness was normalised for each stage and GPM by dividing the genus richness within each palaeolatitudinal bin by the maximum value across palaeolatitudinal bins. White tiles indicate palaeolatitudinal bins without sufficient data to generate richness estimates or where estimates are not available for both GPMs being compared. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 2.1.0 [@deeptime]."
 knitr::include_graphics(path = "../figures/diffs_heatmap_sqs.png")
 ```
 
@@ -99,7 +104,7 @@ knitr::include_graphics(path = "../figures/diffs_heatmap_sqs.png")
 ```{r}
 #| label: fig-maxlat-raw
 #| echo: false
-#| fig-cap: "Phanerozoic plot of the palaeolatitudinal bin (low, middle, high) with the greatest raw genus counts within the Northern Hemisphere and Southern Hemisphere for each Global Plate Model: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Grey shading highlights intervals in which the palaeolatitudinal bin with the greatest genus richness is in agreement across the three GPMs. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 1.0.1 [@deeptime]."
+#| fig-cap: "Phanerozoic plot of the palaeolatitudinal bin (low, middle, high) with the greatest raw genus counts within the Northern Hemisphere and Southern Hemisphere for each Global Plate Model: GOLONKA [@wright2013], PALEOMAP [@scotese2018], MERDITH2021 [@merdith2021], and TorsvikCocks2017 [@torsvik2016]. Grey shading highlights intervals in which the palaeolatitudinal bin with the greatest genus richness is in agreement across the four GPMs. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 2.1.0 [@deeptime]."
 knitr::include_graphics(path = "../figures/metric_1_raw.png")
 ```
 
@@ -107,8 +112,10 @@ knitr::include_graphics(path = "../figures/metric_1_raw.png")
 ```{r}
 #| label: fig-rank-raw
 #| echo: false
-#| fig-cap: "Phanerozoic plot of the normalised average rank order pairwise difference between latitudinal biodiversity gradients (raw genus richness) for each Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], and MERDITH2021 [@merdith2021]. Average rank order differences are normalised by maximum possible average difference given the number of ranks available. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 1.0.1 [@deeptime]."
+#| fig-cap: "Phanerozoic plot of the normalised average rank order pairwise difference between latitudinal biodiversity gradients (raw genus richness) for each Global Plate Models: GOLONKA [@wright2013], PALEOMAP [@scotese2018], MERDITH2021 [@merdith2021], and TorsvikCocks2017 [@torsvik2016]. Average rank order differences are normalised by maximum possible average difference given the number of ranks available. Period abbreviations are as follows: Cambrian (Cm); Ordovician (O), Silurian (S), Devonian (D), Carboniferous (C), Permian (P), Triassic (Tr), Jurassic (J), Cretaceous (K), Paleogene (Pg) and Neogene (Ng). The Quaternary is not depicted. The geological time scale axis was added to the plot using the R package ‘deeptime’ ver. 2.1.0 [@deeptime]."
 knitr::include_graphics(path = "../figures/metric_2_raw.png")
 ```
+
+\newpage
 
 # References

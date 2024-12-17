@@ -140,6 +140,7 @@ p <- ggplot(data = DF, aes(x = time, y = med)) +
        y = NULL,
        fill = NULL) +
   coord_geo(list("bottom", "bottom"), dat = list(ics_eras, ics_periods),
+            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
             size = 6) +
   theme_classic(base_size = 24) +

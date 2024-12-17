@@ -112,10 +112,6 @@ for (p in 1:length(params$models)) {
   # Name lists
   names(temp_freq) <- stages
   # Estimate D using estimateD in iNEXT
-  for (i in 1:length(temp_freq)) {
-    estimateD(temp_freq[i], q = 0, datatype = "incidence_freq",
-              base = "coverage", level = params$quorum_level)
-  }
   estD <- estimateD(temp_freq, q = 0, datatype = "incidence_freq",
                     base = "coverage", level = params$quorum_level)
   # Add sample size in additional column (from first value in lists)
