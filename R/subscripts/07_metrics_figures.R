@@ -1,10 +1,10 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
-# File name: 06_metrics_figures.R
+# File name: 07_metrics_figures.R
 # Aim: Assess and plot max diversity bin through time per model (Fig.5 and S4)
 #      and normalised averaged rank order differences in reconstructed palaeodiversity
 #      between GPMs through time (Fig.6 and S4).
-# Last updated: 2023-03-21
+# Last updated: 2024-12-17
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
 # Load libraries --------------------------------------------------------
@@ -27,10 +27,10 @@ time_bins <- readRDS("./data/time_bins.RDS")
 
 # Setup common things for figures
 source("./R/functions/theme_will.R")
-GTS2020_periods <- time_bins(rank = "period") %>%
+ics_periods <- time_bins(scale = "international periods") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
-GTS2020_eras <- time_bins(rank = "era") %>%
+ics_eras <- time_bins(scale = "international eras") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
 
@@ -54,7 +54,7 @@ met1_sqs_rects <- met1_sqs %>%
   summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop")
 
 met1_sqs_rects %>%
-  mutate(era = cut(max_ma, c(GTS2020_eras$max_age[1], GTS2020_eras$min_age), rev(GTS2020_eras$name))) %>%
+  mutate(era = cut(max_ma, c(ics_eras$max_age[1], ics_eras$min_age), rev(ics_eras$name))) %>%
   group_by(era, hemi, all_same) %>%
   count()
 
@@ -79,7 +79,7 @@ gg_met1_sqs <- ggplot(met1_sqs, aes(x = mid_ma, y = as.numeric(factor(mid)), col
                      labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                      expand = expansion(add = .75)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(GTS2020_eras, GTS2020_periods),
+  coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
@@ -105,7 +105,7 @@ met1_raw_rects <- met1_raw %>%
   summarise(all_same = length(unique(max_bin)) == 1, .groups = "drop")
 
 met1_raw_rects %>%
-  mutate(era = cut(max_ma, c(GTS2020_eras$max_age[1], GTS2020_eras$min_age), rev(GTS2020_eras$name))) %>%
+  mutate(era = cut(max_ma, c(ics_eras$max_age[1], ics_eras$min_age), rev(ics_eras$name))) %>%
   group_by(era, hemi, all_same) %>%
   count()
 
@@ -129,7 +129,7 @@ gg_met1_raw <- ggplot(met1_raw, aes(x = mid_ma, y = as.numeric(factor(mid)), col
                      labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                      expand = expansion(add = .75)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
-  coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(GTS2020_eras, GTS2020_periods),
+  coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
@@ -144,7 +144,10 @@ met2_sqs <- div_sqs %>%
   # remove duplicates (with reversed x and y)
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
-           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+           (model.x == "GOLONKA" & model.y == "MERDITH2021") |
+           (model.x == "TorsvikCocks2017" & model.y == "MERDITH2021") |
+           (model.x == "TorsvikCocks2017" & model.y == "PALEOMAP") |
+           (model.x == "TorsvikCocks2017" & model.y == "GOLONKA")) %>%
   group_by(stage, model.x, model.y) %>%
   # get ranks for "x" model
   arrange(-qD.x) %>%
@@ -162,7 +165,10 @@ met2_sqs <- div_sqs %>%
   # remove duplicates (with reversed x and y)
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
-           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+           (model.x == "GOLONKA" & model.y == "MERDITH2021") |
+           (model.x == "TorsvikCocks2017" & model.y == "MERDITH2021") |
+           (model.x == "TorsvikCocks2017" & model.y == "PALEOMAP") |
+           (model.x == "TorsvikCocks2017" & model.y == "GOLONKA")) %>%
   mutate(models = paste(model.x, model.y, sep = "/")) %>%
   left_join(time_bins, by = c("stage" = "bin"))
 
@@ -172,7 +178,7 @@ gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = avg_norm, color = models, gr
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
   scale_y_continuous("Norm. avg. rank order diff.", limits = c(0, 1)) +
   scale_colour_viridis_d(NULL, end = .9) +
-  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
@@ -195,7 +201,10 @@ met2_raw <- div_raw %>%
   # remove duplicates (with reversed x and y)
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
-           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+           (model.x == "GOLONKA" & model.y == "MERDITH2021") |
+           (model.x == "TorsvikCocks2017" & model.y == "MERDITH2021") |
+           (model.x == "TorsvikCocks2017" & model.y == "PALEOMAP") |
+           (model.x == "TorsvikCocks2017" & model.y == "GOLONKA")) %>%
   group_by(stage_bin, model.x, model.y) %>%
   # get ranks for "x" model
   arrange(-n_genera.x) %>%
@@ -212,7 +221,10 @@ met2_raw <- div_raw %>%
   complete(stage_bin = time_bins$bin, model.x, model.y) %>%
   filter((model.x == "PALEOMAP" & model.y == "GOLONKA") |
            (model.x == "PALEOMAP" & model.y == "MERDITH2021") |
-           (model.x == "GOLONKA" & model.y == "MERDITH2021")) %>%
+           (model.x == "GOLONKA" & model.y == "MERDITH2021") |
+           (model.x == "TorsvikCocks2017" & model.y == "MERDITH2021") |
+           (model.x == "TorsvikCocks2017" & model.y == "PALEOMAP") |
+           (model.x == "TorsvikCocks2017" & model.y == "GOLONKA")) %>%
   mutate(models = paste(model.x, model.y, sep = "/")) %>%
   left_join(time_bins, by = c("stage_bin" = "bin"))
 
@@ -222,7 +234,7 @@ gg_met2_raw <- ggplot(met2_raw, aes(x = mid_ma, y = avg_norm, color = models, gr
   scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
   scale_y_continuous("Norm. avg. rank order diff.", limits = c(0, 1)) +
   scale_colour_viridis_d(NULL, end = .9) +
-  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(GTS2020_eras, GTS2020_periods),
+  coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))

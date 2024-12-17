@@ -1,12 +1,12 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: options.R
-# Last updated: 2023-03-06
+# Last updated: 2024-12-16
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Parameters ------------------------------------------------------------
 params <- list(
   # Which Global Plate Models should be used?
-  models = c("PALEOMAP", "GOLONKA", "MERDITH2021"),
+  models = c("PALEOMAP", "GOLONKA", "MERDITH2021", "TorsvikCocks2017"),
   # Naming convention for longitude
   lng = "lng",
   # Naming convention for latitude
@@ -22,11 +22,11 @@ params <- list(
   # The geological rank for conducting analyses
   rank = "stage",
   # The Geological Time Scale to be used
-  GTS = "GTS2020",
+  GTS = "international ages",
   # How should occurrences be temporally binned?
   method = "majority",
   # Threshold for majority binning rule
-  threshold = 95,
+  threshold = 50,
   # PBDB API link for occurrences
   pbdb_api = paste0("https://paleobiodb.org/data1.2/occs/list.csv?base_name=",
                     "Bivalvia,Brachiopoda,Cephalopoda,Gastropoda,Trilobita",

@@ -3,7 +3,7 @@
 # File name: 04_lat_diff_and_GDD_figure.R
 # Aim: Plot the average pairwise latitudinal difference and geodesic
 #      distance through time.
-# Last updated: 2023-12-01
+# Last updated: 2024-12-17
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
 # Load libraries ---------------------------------------------------------------
@@ -15,10 +15,10 @@ library(palaeoverse)
 library(dplyr)
 source("./R/functions/theme_will.R")
 
-GTS2020_periods <- time_bins(rank = "period") %>%
+ics_periods <- time_bins(scale = "international periods") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
-GTS2020_eras <- time_bins(rank = "era") %>%
+ics_eras <- time_bins(scale = "international eras") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
 
@@ -30,7 +30,8 @@ colldf <- occdf %>% select(collection_no,
                            bin_midpoint, 
                            matches("GOLONKA"),
                            matches("PALEOMAP"), 
-                           matches("MERDITH2021"))
+                           matches("MERDITH2021"),
+                           matches("TorsvikCocks2017"))
 colldf <- unique(colldf)
 row.names(colldf) <- 1:nrow(colldf)
 
@@ -38,7 +39,10 @@ row.names(colldf) <- 1:nrow(colldf)
 # Create median pairwise lat. diff. for each occurrence --------------------------
 colldf$median_pair_lat_diff <- sapply(X = 1:nrow(colldf),
                                       FUN = function(x){
+                                        lat_diffGxT <- abs(colldf$p_lat_GOLONKA[x] - colldf$p_lat_TorsvikCocks2017[x])
                                         lat_diffGxP <- abs(colldf$p_lat_GOLONKA[x] - colldf$p_lat_PALEOMAP[x])
+                                        lat_diffPxT <- abs(colldf$p_lat_PALEOMAP[x] - colldf$p_lat_TorsvikCocks2017[x])
+                                        lat_diffMxT <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_TorsvikCocks2017[x])
                                         lat_diffMxP <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_PALEOMAP[x])
                                         lat_diffMxG <- abs(colldf$p_lat_MERDITH2021[x] - colldf$p_lat_GOLONKA[x])
                                         return(median(c(lat_diffGxP, lat_diffMxG, lat_diffMxP), na.rm = TRUE))
@@ -65,6 +69,8 @@ plot_df <- data.frame(time = unique(colldf$bin_midpoint),
                       lower = low,
                       upper = up,
                       metric = rep("Palaeolatitudinal Difference (°)", length(med)))
+# Order by time
+plot_df <- plot_df[order(plot_df$time), ]
 # Save datafile
 saveRDS(object = plot_df, "./results/plat_diff_degrees.RDS")
 
@@ -75,9 +81,10 @@ GDD <- function(x, ds) { #ds is the collection dataset
   gol <- as.numeric(ds[x, c("p_lng_GOLONKA", "p_lat_GOLONKA")])
   pal <- as.numeric(ds[x, c("p_lng_PALEOMAP", "p_lat_PALEOMAP")])
   mer <- as.numeric(ds[x, c("p_lng_MERDITH2021", "p_lat_MERDITH2021")])
-  tmp <-  matrix(c(gol, pal, mer),
-                 ncol = 2,
-                 byrow = TRUE)
+  tc <- as.numeric(ds[x, c("p_lng_TorsvikCocks2017", "p_lat_TorsvikCocks2017")])
+  tmp <- matrix(c(gol, pal, mer),
+                  ncol = 2,
+                  byrow = TRUE)
   dist_mat <- distm(tmp)
   dist_mat <- as.numeric(dist_mat[upper.tri(dist_mat, diag = FALSE)])
   dist_mat <- as.matrix(dist_mat)
@@ -85,7 +92,8 @@ GDD <- function(x, ds) { #ds is the collection dataset
 }
 # Set palaeolongitudes as 0 ----------------------------------------------------
 colldf1 <- colldf
-colldf1[, c("p_lng_GOLONKA", "p_lng_MERDITH2021", "p_lng_PALEOMAP")] <- 0
+colldf1[, c("p_lng_GOLONKA", "p_lng_MERDITH2021", 
+            "p_lng_PALEOMAP", "p_lng_TorsvikCocks2017")] <- 0
 # Assess pairwise latitudinal distance per collections for each time bin -------
 geodes <- c()
 lower <- c()
@@ -131,7 +139,7 @@ p <- ggplot(data = DF, aes(x = time, y = med)) +
   labs(x = "Time (Ma)",
        y = NULL,
        fill = NULL) +
-  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
+  coord_geo(list("bottom", "bottom"), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
             size = 6) +
   theme_classic(base_size = 24) +

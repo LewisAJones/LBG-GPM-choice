@@ -3,7 +3,7 @@
 # File name: 06_nb_collections_figure.R
 # Aim: Plot number of collections through time and binned in the different 
 #      palaeolat bins per stage (Fig.S5).
-# Last updated: 2023-03-21
+# Last updated: 2024-12-17
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
 # Load libraries -------------------------------------------------------
@@ -16,10 +16,10 @@ library(deeptime)
 # 1. Overall plot ------------------------------------------------------
 #Plotting accessories
 source("./R/functions/theme_will.R")
-GTS2020_periods <- time_bins(rank = "period") %>%
+ics_periods <- time_bins(scale = "international periods") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
-GTS2020_eras <- time_bins(rank = "era") %>%
+ics_eras <- time_bins(scale = "international eras") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
 #Load data
@@ -28,7 +28,7 @@ lat_bins <- readRDS("./data/lat_bins.RDS")
 occdf <- readRDS("./data/processed/pbdb_data.RDS")
 pointdf <- occdf %>%
   distinct(lat, lng, bin_assignment, .keep_all = TRUE) %>%
-  select(bin_assignment, p_lat_PALEOMAP, p_lat_GOLONKA, p_lat_MERDITH2021, bin_midpoint)
+  select(bin_assignment, p_lat_PALEOMAP, p_lat_GOLONKA, p_lat_MERDITH2021, p_lat_TorsvikCocks2017, bin_midpoint)
 
 #Total number of collection through time
 n_points <- pointdf %>% group_by(bin_assignment) %>% count() %>%
@@ -59,7 +59,7 @@ point_plot <- ggplot(data = DF, aes(x = mid_time, y = number_of_points)) +
   geom_line(linewidth = 1, colour = "#e7298a") +
   labs(x = "Time (Ma)",
        y = NULL) +
-  coord_geo(list("bottom", "bottom"), expand = FALSE, dat = list(GTS2020_eras, GTS2020_periods),
+  coord_geo(list("bottom", "bottom"), expand = FALSE, dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "none") +
@@ -74,12 +74,12 @@ point_av.df <- pointdf %>%
   group_by(bin_assignment, bin_midpoint, model) %>%
   #sum the number of available collections per time bins
   summarise(point_av = sum(!is.na(value))) %>% 
-  mutate(group = rep("TOTAL", 3))
+  mutate(group = rep("TOTAL", 4))
 
 
 #assess number of available collections per GPM relative to the stage length
 point_av.df2 <- point_av.df %>% 
-  mutate(group = rep("PER_My", 3))
+  mutate(group = rep("PER_My", 4))
 
 stage_duration <- function(bin){
   return(time_bins$duration_myr[which(time_bins$bin == bin)])
@@ -117,7 +117,7 @@ point_av_plot <- ggplot(data = point_av.df2, aes(x = bin_midpoint, y = point_av,
              axis.text.x = element_text(size = 18),
              axis.text.y = element_text(size = 18),
              legend.position = "top") +
-  coord_geo(list("bottom", "bottom"), dat = list(GTS2020_eras, GTS2020_periods),
+  coord_geo(list("bottom", "bottom"), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
             size = 6) +
   facet_wrap(~group, ncol = 1, scales = "free_y")
@@ -127,16 +127,18 @@ ggsave("./figures/Number_of_localities_per_model.png", point_av_plot, width = 13
 # 3. Per-stage plot -------------------------------------------------
 #Retain features of interest and filter by collection
 tmp <- occdf %>% select(lng, lat, bin_assignment, PALEOMAP_bin,
-                        GOLONKA_bin, MERDITH2021_bin)
+                        GOLONKA_bin, MERDITH2021_bin, TorsvikCocks2017_bin)
 tmp <- unique(tmp)
 #Create collection dataframe
-pointdf2 <- rbind(tmp[, 1:3], tmp[, 1:3], tmp[, 1:3])
+pointdf2 <- rbind(tmp[, 1:3], tmp[, 1:3], tmp[, 1:3], tmp[, 1:3])
 pointdf2$model <- c(rep("GOLONKA", nrow(tmp)),
                   rep("PALEOMAP", nrow(tmp)),
-                  rep("MERDITH2021", nrow(tmp)))
+                  rep("MERDITH2021", nrow(tmp)),
+                  rep("TorsvikCocks2017", nrow(tmp)))
 pointdf2$plat_bin <- c(tmp$GOLONKA_bin, 
                       tmp$PALEOMAP_bin, 
-                      tmp$MERDITH2021_bin)
+                      tmp$MERDITH2021_bin,
+                      tmp$TorsvikCocks2017_bin)
 #Assess number of collections per lat bin through time
 pointdf2 <- pointdf2 %>% 
   group_by(model, bin_assignment, plat_bin) %>% 

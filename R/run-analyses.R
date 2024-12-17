@@ -1,7 +1,7 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: run-analyses.R
-# Last updated: 2023-03-21
+# Last updated: 2024-12-17
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Run analyses ----------------------------------------------------------
 # data prep
@@ -13,11 +13,21 @@ rm(list = ls())
 # SQS LBG
 source("./R/subscripts/03_SQS_LBG.R")
 rm(list = ls())
-# diversity figures
-source("./R/subscripts/04_diversity_figures.R")
+# Latitudinal difference figures
+source("./R/subscripts/04_lat_diff_and_GDD_figure.R")
 rm(list = ls())
-# metrics figures
-source("./R/subscripts/05_metrics_figures.R")
+# Diversity figures
+source("./R/subscripts/05_Diversity_figures.R")
 rm(list = ls())
-# average GDD
-source("./R/subscripts/07_Average_GDD.R")
+# Diversity and difference heatmaps
+source("./R/subscripts/06_Diversity_and_Difference_heatmaps.R")
+rm(list = ls())
+# Metrics figures
+source("./R/subscripts/07_metrics_figures.R")
+rm(list = ls())
+# Number of collections through time figures
+source("./R/subscripts/08_nb_localities_figure.R")
+rm(list = ls())
+# Summary stats
+source("./R/subscripts/09_summary_stats.R")
+rm(list = ls())
