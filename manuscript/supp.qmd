@@ -5,10 +5,10 @@ author:
   - Lewis A. Jones^1^,  William Gearty^2^, Lucas Buffan^3^, and Bethany J. Allen^4,5^
   - "---"
   - "^1^Department of Earth Sciences, University College London, Gower Street, London, WC1E 6BT, UK"
-  - "^2^Division of Paleontology, American Museum of Natural History, New York, NY, 10024 USA."
-  - "^3^Institut des Sciences de l'Évolution, Université de Montpellier, CNRS, IRD, Place Eugène Bataillon, 34095 Montpellier cedex 05, France."
-  - "^4^Department of Biosystems Science and Engineering, ETH Zürich, 4056 Basel, Switzerland."
-  - "^5^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland."
+  - "^2^Division of Paleontology, American Museum of Natural History, New York, NY, 10024 USA"
+  - "^3^Institut des Sciences de l'Évolution, Université de Montpellier, CNRS, IRD, Place Eugène Bataillon, 34095 Montpellier cedex 05, France"
+  - "^4^Department of Biosystems Science and Engineering, ETH Zürich, 4056 Basel, Switzerland"
+  - "^5^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland"
   - "---"
   - "**Corresponding author:** Lewis.Jones@ucl.ac.uk"
 format:
@@ -38,7 +38,7 @@ text-align: justify}
 </style>
 
 ```{r, setup, include=FALSE, eval=TRUE}
-knitr::opts_chunk$set(out.width = "95%")
+knitr::opts_chunk$set(out.width = "90%")
 ```
 
 # Supplementary tables
@@ -54,6 +54,16 @@ df$area <- signif(x = df$area, digits = 3)
 df$area_prop <- round(df$area_prop, 3)
 colnames(df) <- c("Bin", "Maximum (º)", "Midpoint (º)", "Minimum (º)", "Area (m^2^)", "Proportion of Area")
 options(scipen = 0)
+kable(df)
+```
+
+```{r}
+#| label: tbl-bin-counts
+#| tbl-cap: "Counts of the latitudinal bin with peak estimated genus richness (coverage-based rarefaction) for each hemisphere, within each stage, and for each Global Plate Model. Within the table, N denotes Northern Hemisphere latitudinal bins and S denotes Southern Hemisphere latitudinal bins. Note that for some stages, no estimates of genus richness could be generated for entire hemispheres, resulting in no peak estimated richness."
+#| tbl-colwidths: [100, 100, 100, 100, 100, 100, 100]
+#| echo: false
+library(knitr)
+df <- readRDS("../results/bin_counts_tbl.RDS")
 kable(df)
 ```
 

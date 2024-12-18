@@ -7,10 +7,12 @@
 
 # Load libraries --------------------------------------------------------
 library(tidyverse)
+time_bins <- readRDS("data/time_bins.RDS")
+lat_bins <- readRDS("data/lat_bins.RDS")
 
 # Palaeogeographic reconstructions --------------------------------------
 # How many collections with palaeocoordinates?
-df <- readRDS("./data/processed/pbdb_data.RDS")
+df <- readRDS("data/processed/pbdb_data.RDS")
 # Reduce to collections
 df <- df[, c("bin_midpoint", "lng","lat", 
              "p_lng_MERDITH2021", "p_lat_MERDITH2021", "MERDITH2021_bin",
@@ -89,6 +91,16 @@ length(which(cambrian$median_pair_lat_diff > val))
 
 # Latitudinal biodiversity gradient reconstructions ---------------------
 maxlat <- readRDS("./results/max_lat_sqs.RDS")
+# Create supplementary table
+tbl <- maxlat %>%
+  group_by(model, max_bin) %>%
+  summarise(count = n()) %>%
+  pivot_wider(names_from = max_bin, values_from = count) %>%
+  select(-`NA`) %>%
+  rename_with(~c("Global Plate Model", "High (N)", "Middle (N)", "Low (N)", 
+                 "Low (S)", "Middle (S)", "High (S)"))
+saveRDS(tbl, "results/bin_counts_tbl.RDS")
+
 # Which stages are tropical peaks in diversity under any model?
 n_peak_trop <- unique(maxlat$stage[which(maxlat$max_bin == 3)])
 s_peak_trop <- unique(maxlat$stage[which(maxlat$max_bin == 4)])
@@ -111,6 +123,7 @@ sum(!is.na(match(x = s_peak_trop, table = s_peak_tem)))
 
 # Which stages have the same peak in diversity?
 df <- readRDS(file = "./data/processed/interpolations.RDS")
+df <- subset(df, !is.na(paleolat_bin))
 n_df <- subset(df, paleolat_bin <= 3)
 s_df <- subset(df, paleolat_bin >= 4)
 df %<>% 

@@ -126,7 +126,7 @@ DF$metric <- factor(DF$metric, levels = c("Palaeolatitudinal Difference (°)",
                                           "Palaeolatitudinal Great Circle Distance (km)"))
 
 p <- ggplot(data = DF, aes(x = time, y = med)) +
-  scale_x_reverse(limits = c(542, 0),
+  scale_x_reverse(limits = c(538.800, 0),
                   breaks = c(0, 100, 200, 300, 400, 500),
                   labels = c(0, 100, 200, 300, 400, 500)) +
   scale_y_continuous(limits = c(0, NA)) +
@@ -140,7 +140,6 @@ p <- ggplot(data = DF, aes(x = time, y = med)) +
        y = NULL,
        fill = NULL) +
   coord_geo(list("bottom", "bottom"), dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE),
             size = 6) +
   theme_classic(base_size = 24) +

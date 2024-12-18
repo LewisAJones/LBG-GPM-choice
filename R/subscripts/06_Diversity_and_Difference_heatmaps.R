@@ -34,7 +34,7 @@ gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
   geom_hline(yintercept = 3.5) +
   annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
   annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
-  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_discrete("Palaeolatitudinal bin",
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
@@ -43,7 +43,6 @@ gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
@@ -58,7 +57,7 @@ gg_heatmap_raw <- ggplot(data = div_raw_join %>% mutate(n_genera_norm1 = ifelse(
   geom_hline(yintercept = 3.5) +
   annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
   annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
-  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_discrete("Palaeolatitudinal bin",
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
@@ -67,7 +66,6 @@ gg_heatmap_raw <- ggplot(data = div_raw_join %>% mutate(n_genera_norm1 = ifelse(
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
@@ -111,7 +109,7 @@ diffs_heatmap_sqs <- ggplot(data = diffs_sqs) +
   geom_hline(yintercept = 3.5) +
   annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
   annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
-  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_discrete("Palaeolatitudinal bin",
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
@@ -120,7 +118,6 @@ diffs_heatmap_sqs <- ggplot(data = diffs_sqs) +
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
@@ -163,7 +160,7 @@ diffs_heatmap_raw <- ggplot(data = diffs_raw) +
   geom_hline(yintercept = 3.5) +
   annotate(geom = "text", x = 538, y = 0.25, label = "S. Hemisphere", hjust = 0, size = 5) +
   annotate(geom = "text", x = 538, y = 6.9, label = "N. Hemisphere", hjust = 0, size = 5) +
-  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_discrete("Palaeolatitudinal bin",
                    limits = factor(sort(lats$mid)),
                    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
@@ -172,7 +169,6 @@ diffs_heatmap_raw <- ggplot(data = diffs_raw) +
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),

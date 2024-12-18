@@ -74,13 +74,12 @@ gg_met1_sqs <- ggplot(met1_sqs, aes(x = mid_ma, y = as.numeric(factor(mid)), col
   annotate(geom = "text", x = 538, y = c(0.6, 6.4),
            label = c("S. Hemisphere", "N. Hemisphere"),
            hjust = 0, size = 5) +
-  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_continuous("Most diverse bin", breaks = 1:6,
                      labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                      expand = expansion(add = .75)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
@@ -125,13 +124,12 @@ gg_met1_raw <- ggplot(met1_raw, aes(x = mid_ma, y = as.numeric(factor(mid)), col
   annotate(geom = "text", x = 538, y = c(0.6, 6.4),
            label = c("S. Hemisphere", "N. Hemisphere"),
            hjust = 0, size = 5) +
-  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_continuous("Most diverse bin", breaks = 1:6,
                      labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
                      expand = expansion(add = .75)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
@@ -179,11 +177,10 @@ saveRDS(object = met2_sqs, file = "results/rank_order_sqs.RDS")
 gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = avg_norm, color = models, group = models)) +
   geom_point(size = 1.5, position = position_dodge(width = 2)) +
   geom_line(linewidth = .75, position = position_dodge(width = 2)) +
-  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_continuous("Norm. avg. rank order diff.", limits = c(0, 1)) +
   scale_colour_viridis_d(NULL, end = .9) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
@@ -236,11 +233,10 @@ met2_raw <- div_raw %>%
 gg_met2_raw <- ggplot(met2_raw, aes(x = mid_ma, y = avg_norm, color = models, group = models)) +
   geom_point(size = 1.5, position = position_dodge(width = 2)) +
   geom_line(linewidth = .75, position = position_dodge(width = 2)) +
-  scale_x_reverse("Time (Ma)", limits = c(541, 0), expand = expansion()) +
+  scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_continuous("Norm. avg. rank order diff.", limits = c(0, 1)) +
   scale_colour_viridis_d(NULL, end = .9) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
-            xlim = c(0, 538.800),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
