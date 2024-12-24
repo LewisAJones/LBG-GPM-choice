@@ -167,8 +167,10 @@ p <- ggplot(data = pointdf2, aes(x = mid,
   labs(y = "Number of localities",
        x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
-  theme(strip.text.x = element_text(size = 14),
-        legend.position = "top")
+  theme(legend.position = "top",
+        strip.text = element_text(size = 12,
+                                  margin = margin(3.3, 4.4, 3.3, 4.4)),
+        strip.background = element_rect(size = 1))
 
 #Update strip colours
 g <- ggplot_gtable(ggplot_build(p))
@@ -180,3 +182,4 @@ for (i in strip_t) {
 }
 #Save
 ggsave("./figures/Nb_localities_per_stage.png", g, width = 20, height = 22)
+  

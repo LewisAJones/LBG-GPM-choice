@@ -47,8 +47,11 @@ p <- ggplot(data = div_sqs_join, aes(x = mid,
   labs(y = "Normalised estimated genus richness",
        x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
-  theme(legend.position = "top", panel.spacing = unit(1.5, "mm"),
-        strip.text = element_text(margin = margin(3.3, 4.4, 3.3, 4.4)))
+  theme(legend.position = "top", 
+        panel.spacing = unit(1.5, "mm"),
+        strip.text = element_text(size = 11,
+                                  margin = margin(3.3, 4.4, 3.3, 4.4)),
+        strip.background = element_rect(size = 0.9))
 
 #save
 ggsave("./figures/LBGs_sqs.png", p, width = 14.4, height = 17.6)
@@ -67,8 +70,12 @@ p <- ggplot(data = div_raw_join, aes(x = mid,
   labs(y = "Normalised raw genus richness",
        x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
-  theme(legend.position = "top", panel.spacing = unit(1.5, "mm"),
-        strip.text = element_text(margin = margin(3.3, 4.4, 3.3, 4.4)))
+  theme(legend.position = "top", 
+        panel.spacing = unit(1.5, "mm"),
+        strip.text = element_text(size = 11,
+                                  margin = margin(3.3, 4.4, 3.3, 4.4)),
+        strip.background = element_rect(size = 0.9))
+
 
 #save
 ggsave("./figures/LBGs_raw.png", p, width = 14.4, height = 17.6)
