@@ -277,3 +277,6 @@ TSWLatexianTemp*
 .Rproj.user
 .DS_Store
 .Rhistory
+
+# Personal stuff (Lucas)
+./manuscript/complete_draft/
