@@ -12,6 +12,7 @@ library(dplyr)
 library(grid)
 library(tidyr)
 library(ggplot2)
+library(ggh4x)
 library(broom)
 library(deeptime)
 library(palaeoverse)
@@ -71,18 +72,19 @@ gg_met1_sqs <- ggplot(met1_sqs, aes(x = mid_ma, y = as.numeric(factor(mid)), col
   geom_line(aes(group = interaction(hemi, model)), linewidth = .75,
             position = position_dodge(width = 2)) +
   geom_hline(yintercept = 3.5) +
-  annotate(geom = "text", x = 538, y = c(0.6, 6.4),
-           label = c("S. Hemisphere", "N. Hemisphere"),
-           hjust = 0, size = 5) +
   scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_continuous("Most diverse bin", breaks = 1:6,
                      labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
-                     expand = expansion(add = .75)) +
+                     expand = expansion(add = .5)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
+  guides(y.sec = guide_axis_manual(breaks = c(2, 5), 
+                                   labels = c("S. Hemi.", "N. Hemi."),
+                                   angle = 90, label_size = 16)) +
   theme_classic(base_size = 20) +
-  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             axis.ticks.length.y.right = unit(0, "in"))
 ggsave("./figures/metric_1.png", gg_met1_sqs, width = 13, height = 6)
 saveRDS(met1_sqs, "./results/max_lat_sqs.RDS")
 
@@ -121,18 +123,19 @@ gg_met1_raw <- ggplot(met1_raw, aes(x = mid_ma, y = as.numeric(factor(mid)), col
   geom_line(aes(group = interaction(hemi, model)), linewidth = .75,
             position = position_dodge(width = 2)) +
   geom_hline(yintercept = 3.5) +
-  annotate(geom = "text", x = 538, y = c(0.6, 6.4),
-           label = c("S. Hemisphere", "N. Hemisphere"),
-           hjust = 0, size = 5) +
   scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_continuous("Most diverse bin", breaks = 1:6,
                      labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
-                     expand = expansion(add = .75)) +
+                     expand = expansion(add = .5)) +
   scale_colour_viridis_d(NULL, option = "plasma", end = .8) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, ylim = c(1, 6), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
+  guides(y.sec = guide_axis_manual(breaks = c(2, 5), 
+                                   labels = c("S. Hemi.", "N. Hemi."),
+                                   angle = 90, label_size = 16)) +
   theme_classic(base_size = 20) +
-  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
+             axis.ticks.length.y.right = unit(0, "in"))
 ggsave("./figures/metric_1_raw.png", gg_met1_raw, width = 13, height = 6)
 
 # Metric #2: rank order diffs ---------------------------------------
@@ -174,17 +177,17 @@ met2_sqs <- div_sqs %>%
 
 saveRDS(object = met2_sqs, file = "results/rank_order_sqs.RDS")
 
-gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = avg_norm, color = models, group = models)) +
-  geom_point(size = 1.5, position = position_dodge(width = 2)) +
-  geom_line(linewidth = .75, position = position_dodge(width = 2)) +
+gg_met2_sqs <- ggplot(met2_sqs, aes(x = mid_ma, y = avg_norm, group = models)) +
+  geom_point(size = 1.5) +
+  geom_line(linewidth = .75) +
   scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_continuous("Norm. avg. rank order diff.", limits = c(0, 1)) +
-  scale_colour_viridis_d(NULL, end = .9) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
-  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
-ggsave("./figures/metric_2.png", gg_met2_sqs, width = 13, height = 6)
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5)) +
+  facet_wrap(vars(models), ncol = 1)
+ggsave("./figures/metric_2.png", gg_met2_sqs, width = 13, height = 18)
 
 met2_sqs %>%
   nest_by(models) %>%
@@ -230,16 +233,16 @@ met2_raw <- div_raw %>%
   mutate(models = paste(model.x, model.y, sep = "/")) %>%
   left_join(time_bins, by = c("stage_bin" = "bin"))
 
-gg_met2_raw <- ggplot(met2_raw, aes(x = mid_ma, y = avg_norm, color = models, group = models)) +
-  geom_point(size = 1.5, position = position_dodge(width = 2)) +
-  geom_line(linewidth = .75, position = position_dodge(width = 2)) +
+gg_met2_raw <- ggplot(met2_raw, aes(x = mid_ma, y = avg_norm, group = models)) +
+  geom_point(size = 1.5) +
+  geom_line(linewidth = .75) +
   scale_x_reverse("Time (Ma)", limits = c(538.800, 0), expand = expansion()) +
   scale_y_continuous("Norm. avg. rank order diff.", limits = c(0, 1)) +
-  scale_colour_viridis_d(NULL, end = .9) +
   coord_geo(list("bottom", "bottom"), expand = TRUE, dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
   theme_classic(base_size = 20) +
-  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5))
+  theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5)) +
+  facet_wrap(vars(models), ncol = 1)
 ggsave("./figures/metric_2_raw.png", gg_met2_raw, width = 13, height = 6)
 
 met2_raw %>%

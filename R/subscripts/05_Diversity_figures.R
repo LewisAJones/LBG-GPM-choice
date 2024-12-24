@@ -26,6 +26,10 @@ ics_eras <- time_bins(scale = "international eras") %>%
 # Source data -----------------------------------------------------------
 source("./R/functions/data_for_div.R")
 
+deeptime_stages <- stages %>%
+  rename(name = interval_name, max_age = max_ma, min_age = min_ma,
+         color = colour, lab_color = font)
+
 # Plot data -------------------------------------------------------------
 shp <- sort(na.omit(unique(div_sqs_join$Method)))
 # sqs plot
@@ -38,22 +42,16 @@ p <- ggplot(data = div_sqs_join, aes(x = mid,
                          limits = na.exclude(unique(div_sqs_join$model))) +
   scale_shape_discrete(NULL, limits = shp) +
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
-  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), ncol = 9) +
+  facet_wrap_color(~factor(interval_name, levels = rev(stages$interval_name)),
+                   colors = deeptime_stages, ncol = 9) +
   labs(y = "Normalised estimated genus richness",
        x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
-  theme(legend.position = "top")
+  theme(legend.position = "top", panel.spacing = unit(1.5, "mm"),
+        strip.text = element_text(margin = margin(3.3, 4.4, 3.3, 4.4)))
 
-#Update strip colours
-g <- ggplot_gtable(ggplot_build(p))
-strip_t <- which(grepl('strip-t', g$layout$name))
-for (i in strip_t) {
-  g$grobs[[i]]$grobs[[1]]$children[[1]]$gp$fill <-
-    stages$colour[match(g$grobs[[i]]$grobs[[1]]$children[[2]]$children[[1]]$label,
-                        stages$interval_name)]
-}
 #save
-ggsave("./figures/LBGs_sqs.png", g, width = 14.4, height = 17.6)
+ggsave("./figures/LBGs_sqs.png", p, width = 14.4, height = 17.6)
 
 # raw plot
 p <- ggplot(data = div_raw_join, aes(x = mid,
@@ -64,19 +62,13 @@ p <- ggplot(data = div_raw_join, aes(x = mid,
   scale_colour_viridis_d(NULL, option = "plasma", end = .8,
                          limits = na.exclude(unique(div_sqs_join$model))) +
   scale_y_continuous(limits = c(0, 1), expand = expansion(add = 0.1)) +
-  facet_wrap(~factor(interval_name, levels = rev(stages$interval_name)), ncol = 9) +
+  facet_wrap_color(~factor(interval_name, levels = rev(stages$interval_name)),
+                   colors = deeptime_stages, ncol = 9) +
   labs(y = "Normalised raw genus richness",
        x = "Palaeolatitude (º)") +
   theme_bw(base_size = 18) +
-  theme(legend.position = "top")
+  theme(legend.position = "top", panel.spacing = unit(1.5, "mm"),
+        strip.text = element_text(margin = margin(3.3, 4.4, 3.3, 4.4)))
 
-#Update strip colours
-g <- ggplot_gtable(ggplot_build(p))
-strip_t <- which(grepl('strip-t', g$layout$name))
-for (i in strip_t) {
-  g$grobs[[i]]$grobs[[1]]$children[[1]]$gp$fill <-
-    stages$colour[match(g$grobs[[i]]$grobs[[1]]$children[[2]]$children[[1]]$label,
-                        stages$interval_name)]
-}
 #save
-ggsave("./figures/LBGs_raw.png", g, width = 14.4, height = 17.6)
+ggsave("./figures/LBGs_raw.png", p, width = 14.4, height = 17.6)
