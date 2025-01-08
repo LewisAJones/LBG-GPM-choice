@@ -35,6 +35,4 @@ In this repository, files and code are organised as:
 
 The workflow and documentation for data analysis can be found in: `/R/run_analysis.R`.
 
-The workflow for data visualisation can be found in: `/R/generate_figures.R`.
-
 Documentation and comments relating to the workflow can be found within the aforementioned scripts, as well as the relevant subscripts.
