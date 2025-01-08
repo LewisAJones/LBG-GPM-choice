@@ -2,13 +2,14 @@
 title: "Supplementary Material: Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient"
 author:
   - "---"
-  - Lewis A. Jones^1^,  William Gearty^2^, Lucas Buffan^3^, and Bethany J. Allen^4,5^
+  - Lewis A. Jones^1^,  William Gearty^2,3^, Lucas Buffan^4^, and Bethany J. Allen^5,6^
   - "---"
   - "^1^Department of Earth Sciences, University College London, Gower Street, London, WC1E 6BT, UK"
-  - "^2^Division of Paleontology, American Museum of Natural History, New York, NY, 10024 USA"
-  - "^3^Institut des Sciences de l'Évolution, Université de Montpellier, CNRS, IRD, Place Eugène Bataillon, 34095 Montpellier cedex 05, France"
-  - "^4^Department of Biosystems Science and Engineering, ETH Zürich, 4056 Basel, Switzerland"
-  - "^5^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland"
+  - "^2^Division of Paleontology, American Museum of Natural History, New York, NY, 10024, USA"
+  - "^3^Open Source Program Office, Syracuse University, Syracuse, NY, 13244, USA"
+  - "^4^Institut des Sciences de l'Évolution de Montpellier, Université de Montpellier, CNRS, IRD, Place Eugène Bataillon, 34095 Montpellier cedex 05, France"
+  - "^5^Department of Biosystems Science and Engineering, ETH Zürich, 4056 Basel, Switzerland"
+  - "^6^Computational Evolution Group, Swiss Institute of Bioinformatics, 1015 Lausanne, Switzerland"
   - "---"
   - "**Corresponding author:** Lewis.Jones@ucl.ac.uk"
 format:
@@ -42,6 +43,22 @@ knitr::opts_chunk$set(out.width = "90%")
 ```
 
 # Supplementary tables
+
+```{r}
+#| label: tbl-time-bins
+#| tbl-cap: "Chronostratigraphic stage-level time bins used in this study. Time bins follow the International Geological Timescale Ver. 2023/09 with the exception of the Holocene and Pleistocene stages, which have been collapsed into their equivalent Epoch-level bins."
+#| tbl-colwidths: [100, 100, 100, 100, 100, 100]
+#| echo: false
+library(knitr)
+df <- readRDS("../data/time_bins.RDS")
+df <- df[, c("bin", "interval_name", "max_ma", "min_ma", "duration_myr")]
+df$max_ma <- signif(x = df$max_ma, digits = 3)
+df$min_ma <- signif(x = df$min_ma, digits = 3)
+df$duration_myr <- signif(x = df$duration_myr, digits = 3)
+colnames(df) <- c("Bin", "Interval", "Maximum Age (Ma)", "Minimum Age (Ma)", "Duration (Myr)")
+options(scipen = 0)
+kable(df)
+```
 
 ```{r}
 #| label: tbl-bins

@@ -196,7 +196,7 @@ met2_sqs %>%
 
 ggsave("./figures/metric_2_reg.png",
        gg_met2_sqs + geom_smooth(method = "lm"),
-       width = 13, height = 6)
+       width = 13, height = 12)
 
 met2_raw <- div_raw %>%
   filter(!is.na(paleolat_bin), !is.na(n_genera), n_genera > 0) %>%
@@ -243,7 +243,7 @@ gg_met2_raw <- ggplot(met2_raw, aes(x = mid_ma, y = avg_norm, group = models)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5)) +
   facet_wrap(vars(models), ncol = 1)
-ggsave("./figures/metric_2_raw.png", gg_met2_raw, width = 13, height = 6)
+ggsave("./figures/metric_2_raw.png", gg_met2_raw, width = 13, height = 12)
 
 met2_raw %>%
   nest_by(models) %>%
@@ -252,7 +252,7 @@ met2_raw %>%
 
 ggsave("./figures/metric_2_raw_reg.png",
        gg_met2_raw + geom_smooth(method = "lm"),
-       width = 13, height = 6)
+       width = 13, height = 12)
 
 # Combine #1 and #2 -------------------------------------------------
 ggsave("./figures/metrics_1_2_sqs.png",

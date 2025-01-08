@@ -1,11 +1,11 @@
 # Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient
 
-Author(s): [Lewis A. Jones](mailto:LewisA.Jones@outlook.com), [Bethany J. Allen](mailto:Bethany.Allen@bsse.ethz.ch), [William Gearty](willgearty@gmail.com) and [Lucas Buffan](mailto:lucas.buffan@ens-lyon.fr).
+Author(s): [Lewis A. Jones](mailto:LewisA.Jones@outlook.com), [William Gearty](willgearty@gmail.com), [Lucas Buffan](mailto:lucas.buffan@ens-lyon.fr), and [Bethany J. Allen](mailto:Bethany.Allen@bsse.ethz.ch).
 
-This repository contains the data and code required to run the analyses of the article, "Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient" (Jones et al. 2023). 
+This repository contains the data and code required to run the analyses of the article, "Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient" (Jones et al. 2025). 
 
 To cite the paper: 
-> Lewis A. Jones, Bethany J. Allen, William Gearty, Lucas Buffan. 2023. Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient.
+> Lewis A. Jones, William Gearty, Lucas Buffan, and Bethany J. Allen. 2025. Global plate model choice impacts reconstructions of the latitudinal biodiversity gradient.
 
 -------
 
@@ -13,9 +13,10 @@ To cite the paper:
 
 In this study, we evaluate the influence of Global Plate Model choice on reconstructions of latitudinal biodiversity gradients in deep time. Specifically, we test whether different types of gradient (unimodal, flat, bimodal) might emerge based on Global Plate Model choice. This has implications for our understanding of deep time macroecolgical patterns and their drivers. Our study focused on three widely used open-source models, which are available via the [GPlates Web Service](https://gwsdoc.gplates.org/reconstruction-models):
 
-* MERDITH model (Merdith et al., 2021) - GPlates ID = MERDITH2021
+* MERDITH2021 model (Merdith et al., 2021) - GPlates ID = MERDITH2021
 * PALEOMAP model (Scotese & Wright, 2018) - GPlates ID = PALEOMAP
 * GOLONKA model (Wright et al., 2013) - GPlates ID = GOLONKA
+* TorsvikCocks2017 model (Torsvik and Cocks, 2016) - GPlates ID = TorsvikCocks2017
 
 -------
 ## Repository structure
@@ -26,6 +27,7 @@ In this repository, files and code are organised as:
 * **Analysis** code in the `/R/` folder
 * **Results** in the `/results/` folder
 * **Figures** in the `/figures/` folder
+* **Manuscript** files in the `/manuscript/` folder
 
 -------
 
