@@ -52,9 +52,6 @@ knitr::opts_chunk$set(out.width = "90%")
 library(knitr)
 df <- readRDS("../data/time_bins.RDS")
 df <- df[, c("bin", "interval_name", "max_ma", "min_ma", "duration_myr")]
-df$max_ma <- signif(x = df$max_ma, digits = 3)
-df$min_ma <- signif(x = df$min_ma, digits = 3)
-df$duration_myr <- signif(x = df$duration_myr, digits = 3)
 colnames(df) <- c("Bin", "Interval", "Maximum Age (Ma)", "Minimum Age (Ma)", "Duration (Myr)")
 options(scipen = 0)
 kable(df)
@@ -69,9 +66,9 @@ library(knitr)
 df <- readRDS("../data/lat_bins.RDS")
 df$area <- signif(x = df$area, digits = 3)
 df$area_prop <- round(df$area_prop, 3)
-colnames(df) <- c("Bin", "Maximum (º)", "Midpoint (º)", "Minimum (º)", "Area (m^2^)", "Proportion of Area")
+colnames(df) <- c("Bin", "Minimum (º)", "Midpoint (º)", "Maximum (º)", "Area (m^2^)", "Proportion of Area")
 options(scipen = 0)
-kable(df)
+kable(df, digits = 3)
 ```
 
 ```{r}

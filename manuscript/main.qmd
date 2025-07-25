@@ -174,7 +174,7 @@ Our study demonstrates that reconstructing deep time LBGs is not a trivial task.
 
 # Data accessibility
 
-The data and code generated in this study have been included within the paper, its supplementary material, and dedicated GitHub repository: [https://github.com/LewisAJones/LBG-GPM-choice](https://github.com/LewisAJones/LBG-GPM-choice). In addition, they have been uploaded to a dedicated Zenodo repository: [XXX](XXX).
+The data and code generated in this study have been included within the paper, its supplementary material, and dedicated GitHub repository: [https://github.com/LewisAJones/LBG-GPM-choice](https://github.com/LewisAJones/LBG-GPM-choice). In addition, they have been uploaded to a dedicated Zenodo repository: [https://doi.org/10.5281/zenodo.14616817](https://doi.org/10.5281/zenodo.14616817).
 
 # Authors' contributions
 
