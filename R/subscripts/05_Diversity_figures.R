@@ -1,9 +1,9 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: 05_Diversity_figures.R
-# Aim: Plot stage-level diversity in our palaeolatitudinal bins (Fig. 2 and S1)
-#      and diversity heatmaps (Fig. 3 and S2).
-# Last updated: 2023-12-01
+# Aim: Plot stage-level diversity in palaeolatitudinal bins and diversity 
+#      heatmaps
+# Last updated: 2026-09-02
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
 # Load libraries --------------------------------------------------------
@@ -15,7 +15,7 @@ library(palaeoverse)
 library(deeptime)
 
 # Setup common things for figures ---------------------------------------
-source("./R/functions/theme_will.R")
+source("R/functions/theme_will.R")
 ics_periods <- time_bins(scale = "international periods") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
@@ -24,7 +24,7 @@ ics_eras <- time_bins(scale = "international eras") %>%
          color = colour, lab_color = font)
 
 # Source data -----------------------------------------------------------
-source("./R/functions/data_for_div.R")
+source("R/functions/data_for_div.R")
 
 deeptime_stages <- stages %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
@@ -51,10 +51,10 @@ p <- ggplot(data = div_sqs_join, aes(x = mid,
         panel.spacing = unit(1.5, "mm"),
         strip.text = element_text(size = 11,
                                   margin = margin(3.3, 4.4, 3.3, 4.4)),
-        strip.background = element_rect(size = 0.9))
+        strip.background = element_rect(linewidth = 0.9))
 
 #save
-ggsave("./figures/LBGs_sqs.png", p, width = 14.4, height = 17.6)
+ggsave("figures/LBGs_sqs.png", p, width = 14.4, height = 17.6)
 
 # raw plot
 p <- ggplot(data = div_raw_join, aes(x = mid,
@@ -78,4 +78,4 @@ p <- ggplot(data = div_raw_join, aes(x = mid,
 
 
 #save
-ggsave("./figures/LBGs_raw.png", p, width = 14.4, height = 17.6)
+ggsave("figures/LBGs_raw.png", p, width = 14.4, height = 17.6)

@@ -6,5 +6,6 @@ theme_will <- function(...) {
         panel.border = element_rect(linetype = "solid", colour = "black",
                                     fill = NA, linewidth = 2),
         panel.background = element_blank(),
+        strip.background = element_rect(colour = NA),
         ...)
 }
