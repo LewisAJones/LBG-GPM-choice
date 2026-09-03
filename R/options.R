@@ -1,7 +1,7 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
 # File name: options.R
-# Last updated: 2024-12-16
+# Last updated: 2026-08-28
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Parameters ------------------------------------------------------------
 params <- list(

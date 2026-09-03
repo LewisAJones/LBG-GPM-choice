@@ -1,9 +1,8 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
-# File name: 06_Diversity_and_Difference_heatmaps.R
-# Aim: Data processing for 05_Diversity_figure.R and
-#      06_Diversity_and_Difference_heatmaps.R
-# Last updated: 2023-12-01
+# File name: data_for_div.R
+# Aim: Data processing for diversity figures
+# Last updated: 2026-09-02
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
 # Load libraries --------------------------------------------------------
@@ -12,12 +11,12 @@ library(tidyr)
 
 # Data ------------------------------------------------------------------
 # Load bins
-lats <- readRDS("./data/lat_bins.RDS")
-stages <- readRDS("./data/time_bins.RDS")
+lats <- read.csv("data/lat_bins.csv")
+stages <- read.csv("data/time_bins.csv")
 
 # Load data
-div_sqs <- readRDS("./data/processed/interpolations.RDS")
-div_raw <- readRDS("./data/processed/genus_counts.RDS")
+div_sqs <- read.csv("data/processed/interpolations.csv")
+div_raw <- read.csv("data/processed/genus_counts.csv")
 
 # Wrangling -------------------------------------------------------------
 # Set factor levels

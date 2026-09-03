@@ -2,16 +2,16 @@
 # Project: LBG-GPM-choice
 # File name: 02_raw_LBG.R
 # Aim: Estimate diversity through time using each GPM with raw counts.
-# Last updated: 2024-12-16
+# Last updated: 2026-09-02
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Load libraries --------------------------------------------------------
 library(palaeoverse)
 library(dplyr)
 library(rlang)
 # Load project options
-source("./R/options.R")
+source("R/options.R")
 # Get data --------------------------------------------------------------
-occdf <- readRDS("./data/processed/pbdb_data.RDS")
+occdf <- readRDS("data/processed/pbdb_data.RDS")
 # Process data ----------------------------------------------------------
 # Streamline to necessary variables
 genus_occs <- occdf[, c("collection_no", "phylum", "family", "genus",
@@ -69,4 +69,4 @@ for (i in 1:length(params$models)) {
   genus_counts <- rbind.data.frame(genus_counts, counts)
 }
 # Save genus counts
-saveRDS(object = genus_counts, file = "./data/processed/genus_counts.RDS")
+write.csv(genus_counts, file = "data/processed/genus_counts.csv", row.names = FALSE)

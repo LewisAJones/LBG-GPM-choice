@@ -1,9 +1,9 @@
 # Header ----------------------------------------------------------------
 # Project: LBG-GPM-choice
-# File name: 06_Diversity_and_Difference_heatmaps.R
-# Aim: Plot stage-level  heatmaps of diversity (Fig. 3 and S2) and pairwise 
-#      difference in normalised diversity between models (Fig. 4 and S3).
-# Last updated: 2023-12-01
+# File name: 06_diversity_and_difference_heatmaps.R
+# Aim: Plot stage-level heatmaps of diversity and pairwise difference in 
+#      normalised diversity between models.
+# Last updated: 2026-09-02
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 
 # Load libraries --------------------------------------------------------
@@ -16,7 +16,7 @@ library(deeptime)
 library(ggh4x)
 
 # Setup common things for figures ---------------------------------------
-source("./R/functions/theme_will.R")
+source("R/functions/theme_will.R")
 ics_periods <- time_bins(scale = "international periods") %>%
   rename(name = interval_name, max_age = max_ma, min_age = min_ma,
          color = colour, lab_color = font)
@@ -25,7 +25,7 @@ ics_eras <- time_bins(scale = "international eras") %>%
          color = colour, lab_color = font)
 
 # Source data -----------------------------------------------------------
-source("./R/functions/data_for_div.R")
+source("R/functions/data_for_div.R")
 
 # Heatmap ---------------------------------------------------------------
 # sqs plot
@@ -34,23 +34,28 @@ gg_heatmap_sqs <- ggplot(data = div_sqs_join) +
                 width = duration_myr, height = 1, fill = qD_norm1)) +
   geom_hline(yintercept = 3.5) +
   scale_x_reverse("Time (Ma)", limits = c(538.800, 0)) +
-  scale_y_discrete("Palaeolatitudinal bin",
-                   limits = factor(sort(lats$mid)),
-                   labels = c("High", "Middle", "Low", "Low", "Middle", "High")) +
+  scale_y_discrete(
+    "Palaeolatitudinal bin",
+    limits = factor(sort(lats$mid)),
+    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+    sec.axis = dup_axis(
+      name = "",
+      breaks = c(2, 5),
+      labels = c("S. Hem.", "N. Hem."),
+      guide  = guide_axis(angle = 270)
+    )
+  ) +
   scale_fill_viridis_c("Normalised estimated genus richness", limits = c(0, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
-  guides(y.sec = guide_axis_manual(breaks = factor(sort(lats$mid))[c(2, 5)], 
-                                   labels = c("S. Hemi.", "N. Hemi."),
-                                   angle = 90, label_size = 16)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
              legend.title = element_text(margin = margin(0, 15, 0, 0)),
              axis.ticks.length.y.right = unit(0, "in")) +
   facet_wrap(~model, ncol = 1)
-ggsave("./figures/heatmap_SQS.png", gg_heatmap_sqs, width = 13, height = 13.5)
+ggsave("figures/heatmap_SQS.png", gg_heatmap_sqs, width = 13, height = 13.5)
 
 # raw plot
 gg_heatmap_raw <- ggplot(data = div_raw_join %>% mutate(n_genera_norm1 = ifelse(n_genera_norm1 == 0, NA, n_genera_norm1))) +
@@ -58,23 +63,28 @@ gg_heatmap_raw <- ggplot(data = div_raw_join %>% mutate(n_genera_norm1 = ifelse(
                 width = duration_myr, height = 1, fill = n_genera_norm1)) +
   geom_hline(yintercept = 3.5) +
   scale_x_reverse("Time (Ma)", limits = c(538.800, 0)) +
-  scale_y_discrete("Palaeolatitudinal bin",
-                   limits = factor(sort(lats$mid)),
-                   labels = c("High", "Middle", "Low", "Low", "Middle", "High")) +
+  scale_y_discrete(
+    "Palaeolatitudinal bin",
+    limits = factor(sort(lats$mid)),
+    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+    sec.axis = dup_axis(
+      name = "",
+      breaks = c(2, 5),
+      labels = c("S. Hem.", "N. Hem."),
+      guide  = guide_axis(angle = 270)
+    )
+  ) +
   scale_fill_viridis_c("Normalised raw genus richness", limits = c(0, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
-  guides(y.sec = guide_axis_manual(breaks = factor(sort(lats$mid))[c(2, 5)], 
-                                   labels = c("S. Hemi.", "N. Hemi."),
-                                   angle = 90, label_size = 16)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
              legend.title = element_text(margin = margin(0, 15, 0, 0)),
              axis.ticks.length.y.right = unit(0, "in")) +
   facet_wrap(~model, ncol = 1)
-ggsave("./figures/heatmap_raw.png", gg_heatmap_raw, width = 13, height = 13.5)
+ggsave("figures/heatmap_raw.png", gg_heatmap_raw, width = 13, height = 13.5)
 
 # Difference heatmaps ####
 diffs_sqs <- div_sqs %>%
@@ -111,23 +121,27 @@ diffs_heatmap_sqs <- ggplot(data = diffs_sqs) +
                 width = duration_myr, height = 1, fill = diff)) +
   geom_hline(yintercept = 3.5) +
   scale_x_reverse("Time (Ma)", limits = c(538.800, 0)) +
-  scale_y_discrete("Palaeolatitudinal bin",
-                   limits = factor(sort(lats$mid)),
-                   labels = c("High", "Middle", "Low", "Low", "Middle", "High")) +
+  scale_y_discrete(
+    "Palaeolatitudinal bin",
+    limits = factor(sort(lats$mid)),
+    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+    sec.axis = dup_axis(
+      name = "",
+      breaks = c(2, 5),
+      labels = c("S. Hem.", "N. Hem."),
+      guide  = guide_axis(angle = 270)
+    )) +
   scale_fill_viridis_c("Difference in normalised estimated genus richness", limits = c(-1, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
-  guides(y.sec = guide_axis_manual(breaks = factor(sort(lats$mid))[c(2, 5)], 
-                                   labels = c("S. Hemi.", "N. Hemi."),
-                                   angle = 90, label_size = 16)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
              legend.title = element_text(margin = margin(0, 15, 0, 0)),
              axis.ticks.length.y.right = unit(0, "in")) +
   facet_wrap(~models, ncol = 1)
-ggsave("./figures/diffs_heatmap_sqs.png", diffs_heatmap_sqs, width = 13, height = 18)
+ggsave("figures/diffs_heatmap_sqs.png", diffs_heatmap_sqs, width = 13, height = 18)
 
 diffs_raw <- div_raw %>%
   filter(!is.na(paleolat_bin), !is.na(n_genera), n_genera > 0) %>%
@@ -163,21 +177,25 @@ diffs_heatmap_raw <- ggplot(data = diffs_raw) +
                 width = duration_myr, height = 1, fill = diff)) +
   geom_hline(yintercept = 3.5) +
   scale_x_reverse("Time (Ma)", limits = c(538.800, 0)) +
-  scale_y_discrete("Palaeolatitudinal bin",
-                   limits = factor(sort(lats$mid)),
-                   labels = c("High", "Middle", "Low", "Low", "Middle", "High")) +
+  scale_y_discrete(
+    "Palaeolatitudinal bin",
+    limits = factor(sort(lats$mid)),
+    labels = c("High", "Middle", "Low", "Low", "Middle", "High"),
+    sec.axis = dup_axis(
+      name = "",
+      breaks = c(2, 5),
+      labels = c("S. Hem.", "N. Hem."),
+      guide  = guide_axis(angle = 270)
+    )) +
   scale_fill_viridis_c("Difference in normalised raw genus richness", limits = c(-1, 1),
                        option = "plasma", end = .8, na.value = "grey80",
                        guide = guide_colorbar(barwidth = 15)) +
   coord_geo(list("bottom", "bottom"), dat = list(ics_eras, ics_periods),
             lwd = 1, bord = c("left", "right", "bottom"), abbrv = list(FALSE, TRUE)) +
-  guides(y.sec = guide_axis_manual(breaks = factor(sort(lats$mid))[c(2, 5)], 
-                                   labels = c("S. Hemi.", "N. Hemi."),
-                                   angle = 90, label_size = 16)) +
   theme_classic(base_size = 20) +
   theme_will(legend.position = "top", legend.margin = margin(-5, -5, -5, -5),
              legend.title = element_text(margin = margin(0, 15, 0, 0)),
              axis.ticks.length.y.right = unit(0, "in")) +
   facet_wrap(~models, ncol = 1)
-ggsave("./figures/diffs_heatmap_raw.png", diffs_heatmap_raw, width = 13, height = 18)
+ggsave("figures/diffs_heatmap_raw.png", diffs_heatmap_raw, width = 13, height = 18)
 

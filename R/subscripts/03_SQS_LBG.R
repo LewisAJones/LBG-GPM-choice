@@ -3,7 +3,7 @@
 # File name: 03_SQS_LBG.R
 # Aim: Estimate diversity through time according to each GPM with a 
 #      coverage-based extrapolation/rarefaction subsampling (SQS) algorithm.
-# Last updated: 2024-12-16
+# Last updated: 2026-09-02
 # Repository: https://github.com/LewisAJones/LBG-GPM-choice
 # Load libraries --------------------------------------------------------
 library(palaeoverse)
@@ -11,9 +11,9 @@ library(dplyr)
 library(rlang)
 library(iNEXT)
 # Load project options
-source("./R/options.R")
+source("R/options.R")
 # Get data --------------------------------------------------------------
-occdf <- readRDS("./data/processed/pbdb_data.RDS")
+occdf <- readRDS("data/processed/pbdb_data.RDS")
 # Process data ----------------------------------------------------------
 # Streamline to necessary variables
 genus_occs <- occdf[, c("collection_no", "phylum", "family", "genus",
@@ -35,7 +35,7 @@ for (i in 1:length(params$models)){
   # Keep NA values
   keep_NAs <- filter(counts, is.na(!!column_name))
   # Rename columns
-  colnames(keep_NAs) <- c("stage_bin", "paleolat_bin", "n_genera")
+  colnames(keep_NAs) <- c("stage_bin", "paleolat_bin", "n_occ")
   # Add model label
   keep_NAs$model <- params$models[i]
   # Record NAs in separate dataframe
@@ -133,9 +133,10 @@ interpolations <- select(interpolations, stage, paleolat_bin, model,
                          reference_t, t, Method, SC, qD, qD.LCL, qD.UCL)
 interpolations <- arrange(interpolations, model, stage, paleolat_bin)
 # Save interpolated estimates and NA counts
-saveRDS(object = interpolations,
-        file = "./data/processed/interpolations.RDS")
-saveRDS(object = count_NAs, file = "./data/processed/NA_counts.RDS")
+write.csv(interpolations, 
+          file = "data/processed/interpolations.csv", row.names = FALSE)
+write.csv(count_NAs, 
+          file = "data/processed/NA_counts.csv", row.names = FALSE)
 # Notify
 if (params$notify) {
   beepr::beep(4)
